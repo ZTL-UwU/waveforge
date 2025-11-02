@@ -43,16 +43,16 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 		}
 
 		auto diag_tag = world.tagOf(new_x, y + 1);
-		if (diag_tag.type == PixelType::Air) {
-			world.swapPixels(x, y, new_x, y + 1);
+		if (diag_tag.pclass == PixelClass::Gas) {
 			dir = d;
+			world.swapPixels(x, y, new_x, y + 1);
 			return;
 		}
 
 		auto side_tag = world.tagOf(new_x, y);
-		if (side_tag.type == PixelType::Air) {
-			world.swapPixels(x, y, new_x, y);
+		if (side_tag.pclass == PixelClass::Gas) {
 			dir = d;
+			world.swapPixels(x, y, new_x, y);
 			return;
 		}
 	}
