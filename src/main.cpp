@@ -56,24 +56,31 @@ int main() {
 			for (int dx = -half; dx <= half; ++dx) {
 				int x = world_x + dx;
 				int y = world_y + dy;
-				if (x < 0 || x >= world.width() || y < 0
-				    || y >= world.height()) {
+				if (x < 0 || x >= world.width() || y < 0 || y >= world.height())
 					continue;
-				}
-				if (ptype == wf::PixelType::Sand) {
-					world.replacePixel(
-						x, y,
-						pro::make_proxy<wf::PixelFacade, wf::element::Sand>()
-					);
-				} else if (ptype == wf::PixelType::Water) {
-					world.replacePixel(
-						x, y,
-						pro::make_proxy<wf::PixelFacade, wf::element::Water>()
-					);
+
+				switch (ptype) {
+				case wf::PixelType::Sand:
+					world.replacePixel(x, y, pro::make_proxy<wf::PixelFacade, wf::element::Sand>());
+					break;
+				case wf::PixelType::Water:
+					world.replacePixel(x, y, pro::make_proxy<wf::PixelFacade, wf::element::Water>());
+					break;
+				case wf::PixelType::Stone:
+					world.replacePixel(x, y, pro::make_proxy<wf::PixelFacade, wf::element::Stone>());
+					break;
+				case wf::PixelType::Air:
+					world.replacePixelWithAir(x, y);
+					break;
+				default:
+					break;
 				}
 			}
 		}
 	};
+
+	// current brush selection: 1=Sand, 2=Water, 3=Stone
+	wf::PixelType current_brush = wf::PixelType::Sand;
 
 	while (window.isOpen()) {
 		// SFML variant in this tree returns std::optional<Event>
@@ -93,10 +100,11 @@ int main() {
 					int wy = static_cast<int>(pos.y) / scale;
 					if (mb->button == sf::Mouse::Button::Left) {
 						left_down = true;
-						paint_at(wx, wy, wf::PixelType::Sand);
+						paint_at(wx, wy, current_brush);
 					} else if (mb->button == sf::Mouse::Button::Right) {
 						right_down = true;
-						paint_at(wx, wy, wf::PixelType::Water);
+						// right button erases
+						paint_at(wx, wy, wf::PixelType::Air);
 					}
 				}
 			}
@@ -121,10 +129,10 @@ int main() {
 					int wx = static_cast<int>(mm->position.x) / scale;
 					int wy = static_cast<int>(mm->position.y) / scale;
 					if (left_down) {
-						paint_at(wx, wy, wf::PixelType::Sand);
+						paint_at(wx, wy, current_brush);
 					}
 					if (right_down) {
-						paint_at(wx, wy, wf::PixelType::Water);
+						paint_at(wx, wy, wf::PixelType::Air);
 					}
 				}
 			}
@@ -137,6 +145,22 @@ int main() {
 						brush_size = std::min(brush_size + 1, brush_max);
 					} else if (mw->delta < 0) {
 						brush_size = std::max(brush_size - 1, brush_min);
+					}
+				}
+			}
+			// keyboard: number keys select brush
+			if (ev->is<sf::Event::KeyPressed>()) {
+				const auto *k = ev->getIf<sf::Event::KeyPressed>();
+				if (k) {
+					if (k->code == sf::Keyboard::Key::Num1) {
+						current_brush = wf::PixelType::Sand;
+						std::puts("Brush: Sand (1)");
+					} else if (k->code == sf::Keyboard::Key::Num2) {
+						current_brush = wf::PixelType::Water;
+						std::puts("Brush: Water (2)");
+					} else if (k->code == sf::Keyboard::Key::Num3) {
+						current_brush = wf::PixelType::Stone;
+						std::puts("Brush: Stone (3)");
 					}
 				}
 			}
