@@ -8,7 +8,9 @@ namespace element {
 
 std::size_t Sand::hash() const noexcept {
 	// Some arbitrary hash value for sand
-	return ('S' << 24) | ('A' << 16) | ('N' << 8) | 'D';
+	const std::size_t magic = ('S' << 24) | ('A' << 16) | ('N' << 8) | 'D';
+	std::hash<float> float_hasher;
+	return float_hasher(vx) ^ (float_hasher(vy) << 1) ^ magic;
 }
 
 PixelTag Sand::defaultTag() const noexcept {
