@@ -1,5 +1,7 @@
+#include "wforge/2d.h"
 #include "wforge/colorpalette.h"
 #include "wforge/fallsand.h"
+#include <cmath>
 
 namespace wf {
 namespace element {
@@ -22,30 +24,136 @@ bool isSwappaleTag(PixelTag tag) noexcept {
 		|| tag.pclass == PixelClass::Particle;
 }
 
+constexpr float sandFriction = 0.8f;
+constexpr float airDrag = 0.95f;
+constexpr float waterDrag = 0.7f;
+constexpr float bounceBackYFactor = -0.3f;
+constexpr float bounceBackXFactor = 0.4f;
+
 void Sand::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
+		// at bottom edge, remove sand
 		world.replacePixelWithAir(x, y);
 		return;
 	}
 
+	vy += PixelWorld::gAcceleration;
+
 	auto below_tag = world.tagOf(x, y + 1);
-	if (isSwappaleTag(below_tag)) {
-		world.swapPixels(x, y, x, y + 1);
-		return;
+	if (below_tag.pclass == PixelClass::Solid) {
+		// Is on ground. Apply friction
+		vx *= sandFriction;
+		vy = std::min(0.0f, vy);
+	} else if (below_tag.pclass == PixelClass::Fluid) {
+		vy *= waterDrag;
+	} else {
+		vy *= airDrag;
 	}
 
-	int firstDir = (world.rand() % 2) * 2 - 1; // -1 or +1
-	for (auto dir : {firstDir, -firstDir}) {
-		int new_x = x + dir;
-		if (new_x < 0 || new_x >= world.width()) {
+	int target_x = x + static_cast<int>(std::round(vx));
+	int target_y = y + static_cast<int>(std::round(vy));
+
+	auto to_x = x, to_y = y;
+	bool forced_stop = false;
+	for (auto [tx, ty] : tilesOnSegment({x, y}, {target_x, target_y})) {
+		if (tx == x && ty == y) {
+			continue;
+		}
+
+		if (tx < 0 || tx >= world.width() || ty < 0 || ty >= world.height()) {
+			// Out of bounds
 			world.replacePixelWithAir(x, y);
 			return;
 		}
 
-		auto diag_tag = world.tagOf(new_x, y + 1);
-		if (isSwappaleTag(diag_tag)) {
-			world.swapPixels(x, y, new_x, y + 1);
+		auto target_tag = world.tagOf(tx, ty);
+		if (isSwappaleTag(target_tag)) {
+			to_x = tx;
+			to_y = ty;
+			continue;
+		}
+
+		// Can't move further? Stop here
+		forced_stop = true;
+		break;
+	}
+
+	if (vy > 0 && to_y + 1 < world.height()) {
+		auto below_tag_after = world.tagOf(to_x, to_y + 1);
+		if (below_tag_after.pclass == PixelClass::Solid) {
+			forced_stop = true;
+		}
+	} else if (vy < 0 && to_y - 1 >= 0) {
+		auto above_tag = world.tagOf(to_x, to_y - 1);
+		if (above_tag.pclass == PixelClass::Solid) {
+			forced_stop = true;
+		}
+	}
+
+	if (forced_stop) {
+		bool freeDir[2] = {false, false};
+		for (int d : {-1, 1}) {
+			int side_x = to_x + d;
+			if (side_x < 0 || side_x >= world.width()) {
+				freeDir[(d + 1) / 2] = true;
+				continue;
+			}
+
+			auto side_tag = world.tagOf(side_x, to_y);
+			freeDir[(d + 1) / 2] = (side_tag.pclass != PixelClass::Solid);
+		}
+
+		if (std::abs(vx) < 0.01f) {
+			int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+			for (int d : {rand_dir, -rand_dir}) {
+				if (freeDir[(d + 1) / 2]) {
+					vx = d * vy * bounceBackXFactor;
+					break;
+				}
+			}
+		} else if (vx < 0) {
+			vx -= vy * bounceBackXFactor;
+			if (!freeDir[0]) {
+				if (freeDir[1]) {
+					vx = -vx * bounceBackXFactor;
+				} else {
+					vx = 0;
+				}
+			}
+		} else if (vx > 0) {
+			vx += vy * bounceBackXFactor;
+			if (!freeDir[1]) {
+				if (freeDir[0]) {
+					vx = -vx * bounceBackXFactor;
+				} else {
+					vx = 0;
+				}
+			}
+		}
+
+		vy *= bounceBackYFactor;
+	}
+
+	if (to_x != x || to_y != y) {
+		world.swapPixels(x, y, to_x, to_y);
+	} else {
+		// Consider diagonal swap
+		if (below_tag.pclass != PixelClass::Solid) {
 			return;
+		}
+		int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+		for (int d : {rand_dir, -rand_dir}) {
+			int new_x = x + d;
+			if (new_x < 0 || new_x >= world.width()) {
+				world.replacePixelWithAir(x, y);
+				return;
+			}
+
+			auto diag_tag = world.tagOf(new_x, y + 1);
+			if (isSwappaleTag(diag_tag)) {
+				world.swapPixels(x, y, new_x, y + 1);
+				return;
+			}
 		}
 	}
 }

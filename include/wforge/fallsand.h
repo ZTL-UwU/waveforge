@@ -53,6 +53,8 @@ struct PixelTag {
 
 class PixelWorld {
 public:
+	constexpr static float gAcceleration = 0.5f;
+
 	PixelWorld();
 	PixelWorld(int width, int height);
 
@@ -103,17 +105,21 @@ struct Stone : AbstractElement {
 	PixelTag defaultTag() const noexcept;
 };
 
-struct Sand {
+struct Sand : AbstractElement {
 	std::size_t hash() const noexcept;
 	PixelTag defaultTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
+
+protected:
+	float vx = 0, vy = 0;
 };
 
-struct Water {
+struct Water : AbstractElement {
 	std::size_t hash() const noexcept;
 	PixelTag defaultTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
 
+protected:
 	int dir;
 };
 

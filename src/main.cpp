@@ -15,14 +15,14 @@ int main() {
 	for (int x = 10; x < width - 10; ++x) {
 		world.replacePixel(
 			x, platform_y,
-			pro::make_proxy_inplace<wf::PixelFacade, wf::element::Stone>()
+			pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
 		);
 	}
 
 	// generator positions
 	int sand_x = width / 2 - 8;
 	int water_x = width / 2 + 8;
-	int gen_y = platform_y - 50;
+	int gen_y = platform_y - 40;
 
 	// renderer
 	wf::Renderer renderer(scale);
@@ -53,8 +53,7 @@ int main() {
 			if (world.typeOfIs(sand_x, gen_y, wf::PixelType::Air)) {
 				world.replacePixel(
 					sand_x, gen_y,
-					pro::make_proxy_inplace<
-						wf::PixelFacade, wf::element::Sand>()
+					pro::make_proxy<wf::PixelFacade, wf::element::Sand>()
 				);
 			}
 		}
@@ -62,8 +61,7 @@ int main() {
 			if (world.typeOfIs(water_x + dx, gen_y, wf::PixelType::Air)) {
 				world.replacePixel(
 					water_x + dx, gen_y,
-					pro::make_proxy_inplace<
-						wf::PixelFacade, wf::element::Water>()
+					pro::make_proxy<wf::PixelFacade, wf::element::Water>()
 				);
 			}
 		}

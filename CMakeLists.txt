@@ -30,6 +30,7 @@ add_executable(waveforge
   src/fallsand/stone.cpp
   src/fallsand/sand.cpp
   src/fallsand/water.cpp
+  src/2d.cpp
   src/render.cpp
 )
 
