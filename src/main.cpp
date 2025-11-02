@@ -1,6 +1,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/render.h"
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <proxy/proxy.h>
 
 int main() {
@@ -40,11 +41,104 @@ int main() {
 	window.setFramerateLimit(20);
 
 	int frame = 0;
+
+	// brush settings
+	int brush_size = 1; // in world pixels, square brush
+	const int brush_min = 1;
+	const int brush_max = 64;
+
+	bool left_down = false;
+	bool right_down = false;
+
+	auto paint_at = [&](int world_x, int world_y, wf::PixelType ptype) {
+		int half = brush_size / 2;
+		for (int dy = -half; dy <= half; ++dy) {
+			for (int dx = -half; dx <= half; ++dx) {
+				int x = world_x + dx;
+				int y = world_y + dy;
+				if (x < 0 || x >= world.width() || y < 0
+				    || y >= world.height()) {
+					continue;
+				}
+				if (ptype == wf::PixelType::Sand) {
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Sand>()
+					);
+				} else if (ptype == wf::PixelType::Water) {
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Water>()
+					);
+				}
+			}
+		}
+	};
+
 	while (window.isOpen()) {
 		// SFML variant in this tree returns std::optional<Event>
 		while (auto ev = window.pollEvent()) {
+			// window closed
 			if (ev->is<sf::Event::Closed>()) {
 				window.close();
+				break;
+			}
+
+			// mouse button pressed
+			if (ev->is<sf::Event::MouseButtonPressed>()) {
+				const auto *mb = ev->getIf<sf::Event::MouseButtonPressed>();
+				if (mb) {
+					auto pos = mb->position;
+					int wx = static_cast<int>(pos.x) / scale;
+					int wy = static_cast<int>(pos.y) / scale;
+					if (mb->button == sf::Mouse::Button::Left) {
+						left_down = true;
+						paint_at(wx, wy, wf::PixelType::Sand);
+					} else if (mb->button == sf::Mouse::Button::Right) {
+						right_down = true;
+						paint_at(wx, wy, wf::PixelType::Water);
+					}
+				}
+			}
+
+			// mouse button released
+			if (ev->is<sf::Event::MouseButtonReleased>()) {
+				const auto *mb = ev->getIf<sf::Event::MouseButtonReleased>();
+				if (mb) {
+					if (mb->button == sf::Mouse::Button::Left) {
+						left_down = false;
+					}
+					if (mb->button == sf::Mouse::Button::Right) {
+						right_down = false;
+					}
+				}
+			}
+
+			// mouse moved (support dragging)
+			if (ev->is<sf::Event::MouseMoved>()) {
+				const auto *mm = ev->getIf<sf::Event::MouseMoved>();
+				if (mm) {
+					int wx = static_cast<int>(mm->position.x) / scale;
+					int wy = static_cast<int>(mm->position.y) / scale;
+					if (left_down) {
+						paint_at(wx, wy, wf::PixelType::Sand);
+					}
+					if (right_down) {
+						paint_at(wx, wy, wf::PixelType::Water);
+					}
+				}
+			}
+
+			// mouse wheel to adjust brush size
+			if (ev->is<sf::Event::MouseWheelScrolled>()) {
+				const auto *mw = ev->getIf<sf::Event::MouseWheelScrolled>();
+				if (mw) {
+					if (mw->delta > 0) {
+						brush_size = std::min(brush_size + 1, brush_max);
+					} else if (mw->delta < 0) {
+						brush_size = std::max(brush_size - 1, brush_min);
+					}
+				}
 			}
 		}
 
