@@ -96,7 +96,9 @@ int PixelWorld::rand() noexcept {
 
 void PixelWorld::step() noexcept {
 	for (int y = _height - 1; y >= 0; --y) {
-		for (int x = 0; x < _width; ++x) {
+		bool reverse_x = this->rand() % 2 == 0;
+		for (int ix = 0; ix < _width; ++ix) {
+			int x = reverse_x ? (_width - 1 - ix) : ix;
 			while (!tagOf(x, y).dirty) {
 				tagOf(x, y).dirty = true;
 				elementOf(x, y)->step(*this, x, y);
