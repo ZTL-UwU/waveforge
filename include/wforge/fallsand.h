@@ -49,6 +49,7 @@ struct PixelTag {
 	PixelClass pclass : 2;
 	unsigned int color_index : 8; // 256 colors
 	bool dirty : 1 = false;
+	bool free_falling : 1 = true;
 };
 
 class PixelWorld {
@@ -91,21 +92,21 @@ private:
 
 namespace element {
 
-struct AbstractElement {
+struct EmptySubsElement {
 	void step(PixelWorld &world, int x, int y) noexcept {}
 };
 
-struct Air : AbstractElement {
+struct Air : EmptySubsElement {
 	std::size_t hash() const noexcept;
 	PixelTag defaultTag() const noexcept;
 };
 
-struct Stone : AbstractElement {
+struct Stone : EmptySubsElement {
 	std::size_t hash() const noexcept;
 	PixelTag defaultTag() const noexcept;
 };
 
-struct Sand : AbstractElement {
+struct Sand : EmptySubsElement {
 	std::size_t hash() const noexcept;
 	PixelTag defaultTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
@@ -114,7 +115,7 @@ protected:
 	float vx = 0, vy = 0;
 };
 
-struct Water : AbstractElement {
+struct Water : EmptySubsElement {
 	std::size_t hash() const noexcept;
 	PixelTag defaultTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
