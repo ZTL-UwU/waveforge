@@ -56,18 +56,29 @@ int main() {
 			for (int dx = -half; dx <= half; ++dx) {
 				int x = world_x + dx;
 				int y = world_y + dy;
-				if (x < 0 || x >= world.width() || y < 0 || y >= world.height())
+				if (x < 0 || x >= world.width() || y < 0
+				    || y >= world.height()) {
 					continue;
+				}
 
 				switch (ptype) {
 				case wf::PixelType::Sand:
-					world.replacePixel(x, y, pro::make_proxy<wf::PixelFacade, wf::element::Sand>());
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Sand>()
+					);
 					break;
 				case wf::PixelType::Water:
-					world.replacePixel(x, y, pro::make_proxy<wf::PixelFacade, wf::element::Water>());
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Water>()
+					);
 					break;
 				case wf::PixelType::Stone:
-					world.replacePixel(x, y, pro::make_proxy<wf::PixelFacade, wf::element::Stone>());
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
+					);
 					break;
 				case wf::PixelType::Air:
 					world.replacePixelWithAir(x, y);
