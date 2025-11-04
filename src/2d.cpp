@@ -1,7 +1,51 @@
 #include "wforge/2d.h"
 #include <cmath>
+#include <utility>
 
 namespace wf {
+
+Direction oppositeDirection(Direction dir) noexcept {
+	switch (dir) {
+	case Direction::Left:
+		return Direction::Right;
+	case Direction::Right:
+		return Direction::Left;
+	case Direction::Up:
+		return Direction::Down;
+	case Direction::Down:
+		return Direction::Up;
+	default:
+		std::unreachable();
+	}
+}
+
+int xDeltaOf(Direction dir) noexcept {
+	switch (dir) {
+	case Direction::Left:
+		return -1;
+	case Direction::Right:
+		return 1;
+	case Direction::Up:
+	case Direction::Down:
+		return 0;
+	default:
+		std::unreachable();
+	}
+}
+
+int yDeltaOf(Direction dir) noexcept {
+	switch (dir) {
+	case Direction::Up:
+		return -1;
+	case Direction::Down:
+		return 1;
+	case Direction::Left:
+	case Direction::Right:
+		return 0;
+	default:
+		std::unreachable();
+	}
+}
 
 std::generator<std::array<int, 2>> tilesOnSegment(
 	std::array<int, 2> start, std::array<int, 2> end

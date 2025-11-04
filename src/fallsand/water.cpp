@@ -10,7 +10,7 @@ std::size_t Water::hash() const noexcept {
 	return magic ^ static_cast<std::size_t>(dir);
 }
 
-PixelTag Water::defaultTag() const noexcept {
+PixelTag Water::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Water,
 		.pclass = PixelClass::Fluid,

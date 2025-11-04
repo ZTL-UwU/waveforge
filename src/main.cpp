@@ -176,25 +176,6 @@ int main() {
 				}
 			}
 		}
-
-		// spawn periodically
-		if ((frame % 4) == 0) {
-			if (world.typeOfIs(sand_x, gen_y, wf::PixelType::Air)) {
-				world.replacePixel(
-					sand_x, gen_y,
-					pro::make_proxy<wf::PixelFacade, wf::element::Sand>()
-				);
-			}
-		}
-		for (int dx = -1; dx <= 1; ++dx) {
-			if (world.typeOfIs(water_x + dx, gen_y, wf::PixelType::Air)) {
-				world.replacePixel(
-					water_x + dx, gen_y,
-					pro::make_proxy<wf::PixelFacade, wf::element::Water>()
-				);
-			}
-		}
-
 		world.step();
 
 		renderer.uploadFromWorld(world);

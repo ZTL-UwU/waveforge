@@ -27,6 +27,10 @@ constexpr ColorPaletteEntry _colors[] = {
 		.name = "Water",
 		.color = sf::Color(64, 164, 223, 200),
 	},
+	{
+		.name = "DebugRed",
+		.color = sf::Color(255, 0, 0, 255),
+	}
 };
 
 constexpr int _color_palette_size = sizeof(_colors) / sizeof(ColorPaletteEntry);

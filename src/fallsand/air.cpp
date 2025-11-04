@@ -9,7 +9,7 @@ std::size_t Air::hash() const noexcept {
 	return ('A' << 16) | ('I' << 8) | 'R';
 }
 
-PixelTag Air::defaultTag() const noexcept {
+PixelTag Air::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Air,
 		.pclass = PixelClass::Gas,

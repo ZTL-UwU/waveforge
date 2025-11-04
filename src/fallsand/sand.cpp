@@ -13,11 +13,12 @@ std::size_t Sand::hash() const noexcept {
 	return float_hasher(vx) ^ (float_hasher(vy) << 1) ^ magic;
 }
 
-PixelTag Sand::defaultTag() const noexcept {
+PixelTag Sand::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Sand,
 		.pclass = PixelClass::Solid,
 		.color_index = colorIndexOf("Sand"),
+		.is_free_falling = true,
 	};
 }
 
@@ -32,6 +33,14 @@ constexpr float waterDrag = 0.8f;
 constexpr float bounceBackYFactor = -0.3f;
 constexpr float bounceBackXFactor = 0.4f;
 constexpr int inertialResistance = 10;
+constexpr float sand_mass = 3.0f;
+
+void Sand::transferMomentum(
+	PixelWorld &world, int x, int y, float px, float py
+) noexcept {
+	vx += px / sand_mass;
+	vy += py / sand_mass;
+}
 
 void Sand::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
@@ -52,16 +61,16 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 	} else if (below_tag.pclass == PixelClass::Fluid) {
 		vx *= waterDrag;
 		vy *= waterDrag;
-		my_tag.free_falling = true;
+		my_tag.is_free_falling = true;
 	} else {
 		vx *= airDrag;
 		vy *= airDrag;
-		my_tag.free_falling = true;
+		my_tag.is_free_falling = true;
 	}
 
 	int target_x = x + static_cast<int>(std::round(vx));
 	int target_y = y + static_cast<int>(std::round(vy));
-	if (target_x == x && target_y == y && my_tag.free_falling) {
+	if (target_x == x && target_y == y && my_tag.is_free_falling) {
 		// Consider diagonal swap
 		if (below_tag.pclass != PixelClass::Solid) {
 			return;
@@ -80,7 +89,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 				return;
 			}
 		}
-		my_tag.free_falling = false;
+		my_tag.is_free_falling = false;
 		return;
 	}
 
@@ -103,12 +112,12 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 
 		to_x = tx;
 		to_y = ty;
-		if (my_tag.free_falling) {
+		if (my_tag.is_free_falling) {
 			for (auto [nx, ny] : neighborsOf({tx, ty}, world_dim)) {
 				if (world.rand() % inertialResistance == 0) {
 					continue;
 				}
-				world.tagOf(nx, ny).free_falling = true;
+				world.tagOf(nx, ny).is_free_falling = true;
 			}
 		}
 	}

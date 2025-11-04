@@ -1,6 +1,7 @@
 #ifndef WFORGE_FALLSAND_H
 #define WFORGE_FALLSAND_H
 
+#include "wforge/2d.h"
 #include "wforge/debug.h"
 #include <cstdint>
 #include <memory>
@@ -12,8 +13,10 @@ namespace wf {
 namespace _dispatch {
 
 PRO_DEF_MEM_DISPATCH(MemHash, hash);
-PRO_DEF_MEM_DISPATCH(MemDefualtTag, defaultTag);
+PRO_DEF_MEM_DISPATCH(MemNewTag, newTag);
 PRO_DEF_MEM_DISPATCH(MemStep, step);
+PRO_DEF_MEM_DISPATCH(MemDealtPressure, dealtPressure);
+PRO_DEF_MEM_DISPATCH(MemTransferMomentum, transferMomentum);
 
 } // namespace _dispatch
 
@@ -23,8 +26,10 @@ class PixelWorld;
 /* clang-format off */
 struct PixelFacade : pro::facade_builder
 	::add_convention<_dispatch::MemHash, std::size_t() const noexcept>
-	::add_convention<_dispatch::MemDefualtTag, PixelTag() const noexcept>
+	::add_convention<_dispatch::MemNewTag, PixelTag() const noexcept>
 	::add_convention<_dispatch::MemStep, void(PixelWorld &world, int x, int y) noexcept>
+	::add_convention<_dispatch::MemDealtPressure, void(PixelWorld &world, int x, int y, float pressure, Direction from_dir) noexcept>
+	::add_convention<_dispatch::MemTransferMomentum, void(PixelWorld &world, int x, int y, float px, float py) noexcept>
 	::build {};
 /* clang-format on */
 
@@ -49,7 +54,7 @@ struct PixelTag {
 	PixelClass pclass : 2;
 	unsigned int color_index : 8; // 256 colors
 	bool dirty : 1 = false;
-	bool free_falling : 1 = true;
+	bool is_free_falling : 1 = false;
 };
 
 class PixelWorld {
@@ -94,22 +99,37 @@ namespace element {
 
 struct EmptySubsElement {
 	void step(PixelWorld &world, int x, int y) noexcept {}
+	void dealtPressure(
+		PixelWorld &world, int x, int y, float pressure, Direction from_dir
+	) noexcept {}
+	void transferMomentum(
+		PixelWorld &world, int x, int y, float px, float py
+	) noexcept {}
+};
+
+struct SolidElement : EmptySubsElement {
+	void dealtPressure(
+		PixelWorld &world, int x, int y, float pressure, Direction from_dir
+	) noexcept;
 };
 
 struct Air : EmptySubsElement {
 	std::size_t hash() const noexcept;
-	PixelTag defaultTag() const noexcept;
+	PixelTag newTag() const noexcept;
 };
 
-struct Stone : EmptySubsElement {
+struct Stone : SolidElement {
 	std::size_t hash() const noexcept;
-	PixelTag defaultTag() const noexcept;
+	PixelTag newTag() const noexcept;
 };
 
-struct Sand : EmptySubsElement {
+struct Sand : SolidElement {
 	std::size_t hash() const noexcept;
-	PixelTag defaultTag() const noexcept;
+	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
+	void transferMomentum(
+		PixelWorld &world, int x, int y, float px, float py
+	) noexcept;
 
 protected:
 	float vx = 0, vy = 0;
@@ -117,7 +137,7 @@ protected:
 
 struct Water : EmptySubsElement {
 	std::size_t hash() const noexcept;
-	PixelTag defaultTag() const noexcept;
+	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
 
 protected:

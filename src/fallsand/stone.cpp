@@ -9,7 +9,7 @@ std::size_t Stone::hash() const noexcept {
 	return ('S' << 24) | ('T' << 16) | ('O' << 8) | 'N';
 }
 
-PixelTag Stone::defaultTag() const noexcept {
+PixelTag Stone::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Stone,
 		.pclass = PixelClass::Solid,

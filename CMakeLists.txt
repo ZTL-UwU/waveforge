@@ -23,6 +23,14 @@ FetchContent_Declare(msft_proxy4
 )
 FetchContent_MakeAvailable(msft_proxy4)
 
+include(FetchContent)
+FetchContent_Declare(
+  cpptrace
+  GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
+  GIT_TAG        v1.0.4 # <HASH or TAG>
+)
+FetchContent_MakeAvailable(cpptrace)
+
 add_executable(waveforge
   src/main.cpp
   src/fallsand/world.cpp
@@ -30,6 +38,7 @@ add_executable(waveforge
   src/fallsand/stone.cpp
   src/fallsand/sand.cpp
   src/fallsand/water.cpp
+  src/fallsand/element.cpp
   src/2d.cpp
   src/render.cpp
 )
@@ -47,4 +56,5 @@ target_link_libraries(waveforge PRIVATE
   SFML::Window
   SFML::System
   msft_proxy4::proxy
+  cpptrace::cpptrace
 )
