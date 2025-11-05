@@ -30,7 +30,7 @@ bool isSwappaleTag(PixelTag tag) noexcept {
 constexpr float sandFriction = 0.8f;
 constexpr float airDrag = 0.95f;
 constexpr float waterDrag = 0.8f;
-constexpr float bounceBackYFactor = -0.3f;
+constexpr float bounceBackYFactor = 0.3f;
 constexpr float bounceBackXFactor = 0.4f;
 constexpr int inertialResistance = 10;
 constexpr float sand_mass = 3.0f;
@@ -124,13 +124,17 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 
 	if (vy > 0 && to_y + 1 < world.height()) {
 		auto below_tag_after = world.tagOf(to_x, to_y + 1);
-		if (below_tag_after.pclass == PixelClass::Solid) {
+		if (below_tag_after.pclass == PixelClass::Solid
+		    && !below_tag_after.is_free_falling) {
 			forced_stop = true;
+			vy = -vy * bounceBackYFactor;
 		}
 	} else if (vy < 0 && to_y - 1 >= 0) {
 		auto above_tag = world.tagOf(to_x, to_y - 1);
-		if (above_tag.pclass == PixelClass::Solid) {
+		if (above_tag.pclass == PixelClass::Solid
+		    && !above_tag.is_free_falling) {
 			forced_stop = true;
+			vy = -vy * bounceBackYFactor;
 		}
 	}
 
@@ -174,8 +178,6 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 				}
 			}
 		}
-
-		vy *= bounceBackYFactor;
 	}
 
 	if (to_x != x || to_y != y) {
