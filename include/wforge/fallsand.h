@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include <proxy/proxy.h>
+#include <proxy/v4/proxy.h>
 #include <proxy/v4/proxy_macros.h>
 
 namespace wf {
@@ -51,6 +52,7 @@ struct PixelTag {
 	unsigned int color_index : 8; // 256 colors
 	bool dirty : 1 = false;
 	bool is_free_falling : 1 = false;
+	int fluid_dir : 2; // -1 = left, 0 = none, +1 = right
 };
 
 class PixelWorld {
@@ -82,6 +84,10 @@ public:
 	bool classOfIs(int x, int y, PixelClass pclass) const noexcept;
 
 	void step() noexcept;
+
+protected:
+	void resetDirtyFlags() noexcept;
+	void fluidAnalysisStep() noexcept;
 
 private:
 	int _width;
@@ -126,9 +132,6 @@ struct Water : EmptySubsElement {
 	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
-
-protected:
-	int dir;
 };
 
 } // namespace element

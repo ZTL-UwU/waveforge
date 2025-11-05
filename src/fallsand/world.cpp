@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <proxy/proxy.h>
+#include <random>
 #include <utility>
 
 namespace wf {
@@ -96,10 +97,18 @@ bool PixelWorld::classOfIs(int x, int y, PixelClass pclass) const noexcept {
 
 int PixelWorld::rand() noexcept {
 	// TODO: Replace with better RNG
-	return std::rand();
+	static std::mt19937 rng(998244353);
+	return rng();
+}
+
+void PixelWorld::resetDirtyFlags() noexcept {
+	for (int i = 0; i < _width * _height; ++i) {
+		_tags[i].dirty = false;
+	}
 }
 
 void PixelWorld::step() noexcept {
+	fluidAnalysisStep();
 	for (int y = _height - 1; y >= 0; --y) {
 		bool reverse_x = this->rand() % 2 == 0;
 		for (int ix = 0; ix < _width; ++ix) {
@@ -111,11 +120,7 @@ void PixelWorld::step() noexcept {
 		}
 	}
 
-	for (int y = 0; y < _height; ++y) {
-		for (int x = 0; x < _width; ++x) {
-			tagOf(x, y).dirty = false;
-		}
-	}
+	resetDirtyFlags();
 }
 
 } // namespace wf

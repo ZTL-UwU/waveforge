@@ -120,14 +120,11 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 		if (below_tag_after.pclass == PixelClass::Solid
 		    && !below_tag_after.is_free_falling) {
 			forced_stop = true;
-			vy = -vy * bounceBackYFactor;
 		}
 	} else if (vy < 0 && to_y - 1 >= 0) {
 		auto above_tag = world.tagOf(to_x, to_y - 1);
-		if (above_tag.pclass == PixelClass::Solid
-		    && !above_tag.is_free_falling) {
+		if (above_tag.pclass == PixelClass::Solid) {
 			forced_stop = true;
-			vy = -vy * bounceBackYFactor;
 		}
 	}
 
@@ -171,6 +168,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 				}
 			}
 		}
+		vy *= -bounceBackYFactor;
 	}
 
 	if (to_x != x || to_y != y) {

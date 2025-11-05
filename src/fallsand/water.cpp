@@ -7,7 +7,7 @@ namespace element {
 
 std::size_t Water::hash() const noexcept {
 	const std::size_t magic = ('W' << 24) | ('A' << 16) | ('T' << 8) | 'R';
-	return magic ^ static_cast<std::size_t>(dir);
+	return magic;
 }
 
 PixelTag Water::newTag() const noexcept {
@@ -18,24 +18,28 @@ PixelTag Water::newTag() const noexcept {
 	};
 }
 
+const int water_dispersion_rate = 2;
+
 void Water::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
 		world.replacePixelWithAir(x, y);
 		return;
 	}
 
+	auto &my_tag = world.tagOf(x, y);
+
 	auto below_tag = world.tagOf(x, y + 1);
 	if (below_tag.type == PixelType::Air) {
-		dir = 0;
+		// my_tag.fluid_dir = 0;
 		world.swapPixels(x, y, x, y + 1);
 		return;
 	}
 
-	if (dir == 0) {
-		dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+	if (my_tag.fluid_dir == 0) {
+		my_tag.fluid_dir = (world.rand() % 2 == 0) ? 1 : -1;
 	}
 
-	for (auto d : {dir, -dir}) {
+	for (auto d : {my_tag.fluid_dir, -my_tag.fluid_dir}) {
 		int new_x = x + d;
 		if (new_x < 0 || new_x >= world.width()) {
 			world.replacePixelWithAir(x, y);
@@ -44,18 +48,19 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 
 		auto diag_tag = world.tagOf(new_x, y + 1);
 		if (diag_tag.pclass == PixelClass::Gas) {
-			dir = d;
+			my_tag.fluid_dir = d;
 			world.swapPixels(x, y, new_x, y + 1);
-			return;
+			break;
 		}
 
 		auto side_tag = world.tagOf(new_x, y);
 		if (side_tag.pclass == PixelClass::Gas) {
-			dir = d;
+			my_tag.fluid_dir = d;
 			world.swapPixels(x, y, new_x, y);
-			return;
+			break;
 		}
 	}
+	my_tag.fluid_dir = 0;
 }
 
 } // namespace element

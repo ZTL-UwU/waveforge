@@ -35,6 +35,7 @@ add_executable(waveforge
   src/main.cpp
   src/fallsand/world.cpp
   src/fallsand/air.cpp
+  src/fallsand/fluid.cpp
   src/fallsand/stone.cpp
   src/fallsand/sand.cpp
   src/fallsand/water.cpp
