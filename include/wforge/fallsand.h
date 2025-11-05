@@ -15,8 +15,6 @@ namespace _dispatch {
 PRO_DEF_MEM_DISPATCH(MemHash, hash);
 PRO_DEF_MEM_DISPATCH(MemNewTag, newTag);
 PRO_DEF_MEM_DISPATCH(MemStep, step);
-PRO_DEF_MEM_DISPATCH(MemDealtPressure, dealtPressure);
-PRO_DEF_MEM_DISPATCH(MemTransferMomentum, transferMomentum);
 
 } // namespace _dispatch
 
@@ -28,8 +26,6 @@ struct PixelFacade : pro::facade_builder
 	::add_convention<_dispatch::MemHash, std::size_t() const noexcept>
 	::add_convention<_dispatch::MemNewTag, PixelTag() const noexcept>
 	::add_convention<_dispatch::MemStep, void(PixelWorld &world, int x, int y) noexcept>
-	::add_convention<_dispatch::MemDealtPressure, void(PixelWorld &world, int x, int y, float pressure, Direction from_dir) noexcept>
-	::add_convention<_dispatch::MemTransferMomentum, void(PixelWorld &world, int x, int y, float px, float py) noexcept>
 	::build {};
 /* clang-format on */
 
@@ -99,12 +95,6 @@ namespace element {
 
 struct EmptySubsElement {
 	void step(PixelWorld &world, int x, int y) noexcept {}
-	void dealtPressure(
-		PixelWorld &world, int x, int y, float pressure, Direction from_dir
-	) noexcept {}
-	void transferMomentum(
-		PixelWorld &world, int x, int y, float px, float py
-	) noexcept {}
 };
 
 struct SolidElement : EmptySubsElement {
@@ -127,9 +117,6 @@ struct Sand : SolidElement {
 	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
-	void transferMomentum(
-		PixelWorld &world, int x, int y, float px, float py
-	) noexcept;
 
 protected:
 	float vx = 0, vy = 0;

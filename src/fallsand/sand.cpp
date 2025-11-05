@@ -35,13 +35,6 @@ constexpr float bounceBackXFactor = 0.4f;
 constexpr int inertialResistance = 10;
 constexpr float sand_mass = 3.0f;
 
-void Sand::transferMomentum(
-	PixelWorld &world, int x, int y, float px, float py
-) noexcept {
-	vx += px / sand_mass;
-	vy += py / sand_mass;
-}
-
 void Sand::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
 		// at bottom edge, remove sand
