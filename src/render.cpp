@@ -2,6 +2,8 @@
 #include "wforge/colorpalette.h"
 #include "wforge/fallsand.h"
 #include <SFML/Graphics.hpp>
+#include <cstdio>
+#include <string>
 
 namespace wf {
 
@@ -66,6 +68,15 @@ void Renderer::uploadFromWorld(const PixelWorld &world) noexcept {
 void Renderer::draw(sf::RenderTarget &target) noexcept {
 	if (_sprite) {
 		target.draw(*_sprite);
+	}
+}
+
+bool Renderer::saveFrame(const std::string &path) const noexcept {
+	try {
+		auto img = _texture.copyToImage();
+		return img.saveToFile(path);
+	} catch (...) {
+		return false;
 	}
 }
 

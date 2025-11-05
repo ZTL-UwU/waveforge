@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <map>
+#include <random>
 #include <vector>
 
 namespace wf {
@@ -171,6 +172,20 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 			return a[0] < b[0];
 		}
 		);
+
+		std::mt19937 rng(rand());
+		// shuffle pixels with the same y to avoid artifacts
+		auto l = comp.surface_pixels.begin();
+		for (auto r = comp.surface_pixels.begin();
+		     r != comp.surface_pixels.end(); ++r) {
+			if (r->at(1) != l->at(1)) {
+				std::shuffle(l, r, rng);
+				l = r;
+			}
+		}
+		if (l != comp.surface_pixels.end()) {
+			std::shuffle(l, comp.surface_pixels.end(), rng);
+		}
 
 		int p = 0;
 		int cur_remove_y = comp.surface_pixels[0][1];

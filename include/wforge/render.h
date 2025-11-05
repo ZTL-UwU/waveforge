@@ -5,6 +5,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace wf {
@@ -24,6 +25,9 @@ public:
 
 	// draw to the given render target (window)
 	void draw(sf::RenderTarget &target) noexcept;
+
+	// Save current texture to a file (PNG). Returns true on success.
+	bool saveFrame(const std::string &path) const noexcept;
 
 private:
 	int _width{0};

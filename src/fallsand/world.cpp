@@ -95,7 +95,7 @@ bool PixelWorld::classOfIs(int x, int y, PixelClass pclass) const noexcept {
 	return tagOf(x, y).pclass == pclass;
 }
 
-int PixelWorld::rand() noexcept {
+unsigned int PixelWorld::rand() noexcept {
 	// TODO: Replace with better RNG
 	static std::mt19937 rng(998244353);
 	return rng();

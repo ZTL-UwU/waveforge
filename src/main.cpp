@@ -2,9 +2,12 @@
 #include "wforge/render.h"
 #include <SFML/Graphics.hpp>
 #include <algorithm>
+#include <filesystem>
 #include <proxy/proxy.h>
 
 int main() {
+	// Toggle this to enable per-frame image output for debugging
+	constexpr bool SAVE_FRAMES = false;
 	constexpr int width = 200;
 	constexpr int height = 150;
 	constexpr int scale = 4; // screen pixels per world pixel
@@ -41,6 +44,11 @@ int main() {
 	window.setFramerateLimit(20);
 
 	int frame = 0;
+
+	if (SAVE_FRAMES) {
+		// ensure output directory exists
+		std::filesystem::create_directories("frames");
+	}
 
 	// brush settings
 	int brush_size = 1; // in world pixels, square brush
@@ -183,6 +191,18 @@ int main() {
 		window.clear(sf::Color::Black);
 		renderer.draw(window);
 		window.display();
+
+		if (SAVE_FRAMES) {
+			char filename[256];
+			std::snprintf(
+				filename, sizeof(filename), "frames/frame_%06d.png", frame
+			);
+			if (!renderer.saveFrame(filename)) {
+				std::fprintf(
+					stderr, "Failed to save frame %d to %s\n", frame, filename
+				);
+			}
+		}
 
 		++frame;
 	}

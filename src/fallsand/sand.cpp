@@ -61,8 +61,8 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 		my_tag.is_free_falling = true;
 	}
 
-	int target_x = x + static_cast<int>(std::round(vx));
-	int target_y = y + static_cast<int>(std::round(vy));
+	int target_x = x + std::round(vx);
+	int target_y = y + std::round(vy);
 	if (target_x == x && target_y == y && my_tag.is_free_falling) {
 		// Consider diagonal swap
 		if (below_tag.pclass != PixelClass::Solid) {
@@ -145,7 +145,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 			int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
 			for (int d : {rand_dir, -rand_dir}) {
 				if (freeDir[(d + 1) / 2]) {
-					vx = d * vy * bounceBackXFactor;
+					vx = d * std::abs(vy) * bounceBackXFactor;
 					break;
 				}
 			}

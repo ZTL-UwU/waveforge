@@ -50,37 +50,38 @@ int yDeltaOf(Direction dir) noexcept {
 std::generator<std::array<int, 2>> tilesOnSegment(
 	std::array<int, 2> start, std::array<int, 2> end
 ) noexcept {
-	co_yield start;
-	if (start == end) {
+	// Use Bresenham's line algorithm to generate integer tiles between
+	// start and end inclusively. The previous implementation used a
+	// rounding-based approach which can introduce directional bias due to
+	// the order of increments; Bresenham is symmetric and avoids that.
+	int x0 = start[0];
+	int y0 = start[1];
+	int x1 = end[0];
+	int y1 = end[1];
+
+	int dx = std::abs(x1 - x0);
+	int sx = (x0 < x1) ? 1 : -1;
+	int dy = -std::abs(y1 - y0);
+	int sy = (y0 < y1) ? 1 : -1;
+	int err = dx + dy; // error value
+
+	// yield the starting tile first (preserves previous behavior)
+	co_yield {x0, y0};
+	if (x0 == x1 && y0 == y1) {
 		co_return;
 	}
 
-	int xDiff = end[0] - start[0];
-	int yDiff = end[1] - start[1];
-	bool xDiffIsLarger = std::abs(xDiff) > std::abs(yDiff);
-	int xModifier = (xDiff < 0) ? -1 : 1;
-	int yModifier = (yDiff < 0) ? -1 : 1;
-
-	int longerSideLength = std::max(std::abs(xDiff), std::abs(yDiff));
-	int shorterSideLength = std::min(std::abs(xDiff), std::abs(yDiff));
-	float slope = (shorterSideLength == 0 || longerSideLength == 0)
-		? 0
-		: 1.0f * shorterSideLength / longerSideLength;
-
-	for (int i = 1; i <= longerSideLength; ++i) {
-		int shorterSideIncrease = std::round(i * slope);
-		int dx, dy;
-		if (xDiffIsLarger) {
-			dx = i;
-			dy = shorterSideIncrease;
-		} else {
-			dy = i;
-			dx = shorterSideIncrease;
+	while (x0 != x1 || y0 != y1) {
+		int e2 = 2 * err;
+		if (e2 >= dy) {
+			err += dy;
+			x0 += sx;
 		}
-
-		int x = start[0] + (dx * xModifier);
-		int y = start[1] + (dy * yModifier);
-		co_yield {x, y};
+		if (e2 <= dx) {
+			err += dx;
+			y0 += sy;
+		}
+		co_yield {x0, y0};
 	}
 }
 

@@ -37,6 +37,7 @@ enum class PixelType : std::uint8_t {
 	Stone,
 	Sand,
 	Water,
+	WaterParticle,
 };
 
 enum class PixelClass : std::uint8_t {
@@ -52,7 +53,7 @@ struct PixelTag {
 	unsigned int color_index : 8; // 256 colors
 	bool dirty : 1 = false;
 	bool is_free_falling : 1 = false;
-	int fluid_dir : 2; // -1 = left, 0 = none, +1 = right
+	signed int fluid_dir : 2; // -1 = left, 0 = none, +1 = right
 };
 
 class PixelWorld {
@@ -70,7 +71,7 @@ public:
 		return _height;
 	}
 
-	int rand() noexcept;
+	unsigned int rand() noexcept;
 
 	PixelTag tagOf(int x, int y) const noexcept;
 	PixelTag &tagOf(int x, int y) noexcept;
@@ -132,6 +133,18 @@ struct Water : EmptySubsElement {
 	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
+};
+
+struct WaterParticle : EmptySubsElement {
+	std::size_t hash() const noexcept;
+	PixelTag newTag() const noexcept;
+	void step(PixelWorld &world, int x, int y) noexcept;
+
+	WaterParticle() noexcept = default;
+	WaterParticle(float init_vx, float init_vy) noexcept;
+
+protected:
+	float vx = 0, vy = 0;
 };
 
 } // namespace element
