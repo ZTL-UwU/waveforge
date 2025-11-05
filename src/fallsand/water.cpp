@@ -30,10 +30,11 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 
 	auto below_tag = world.tagOf(x, y + 1);
 	if (below_tag.type == PixelType::Air) {
-		// my_tag.fluid_dir = 0;
+		my_tag.is_free_falling = true;
 		world.swapPixels(x, y, x, y + 1);
 		return;
 	}
+	my_tag.is_free_falling = false;
 
 	if (my_tag.fluid_dir == 0) {
 		my_tag.fluid_dir = (world.rand() % 2 == 0) ? 1 : -1;

@@ -149,7 +149,8 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 	for (const auto &[coord, comp_id] : ctx.pixel_to_component) {
 		auto [x, y] = coord;
 		auto &comp = ctx.components[comp_id];
-		if (y == 0 || isAirLike(tagOf(x, y - 1))) {
+		if (y == 0
+		    || isAirLike(tagOf(x, y - 1)) && !tagOf(x, y).is_free_falling) {
 			comp.surface_pixels.push_back({x, y});
 		}
 	}
