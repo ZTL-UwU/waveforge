@@ -49,6 +49,7 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 		my_tag.fluid_dir = (world.rand() % 2 == 0) ? 1 : -1;
 	}
 
+	bool tiny_water_flow = below_tag.pclass == PixelClass::Solid;
 	for (auto d : {my_tag.fluid_dir, -my_tag.fluid_dir}) {
 		int new_x = x + d;
 		if (new_x < 0 || new_x >= world.width()) {
@@ -59,6 +60,7 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 		auto diag_tag = world.tagOf(new_x, y + 1);
 		if (diag_tag.pclass == PixelClass::Gas) {
 			my_tag.fluid_dir = d;
+			my_tag.is_free_falling = true;
 			world.swapPixels(x, y, new_x, y + 1);
 			break;
 		}
@@ -68,6 +70,12 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 			my_tag.fluid_dir = d;
 			world.swapPixels(x, y, new_x, y);
 			break;
+		}
+
+		if (tiny_water_flow && side_tag.pclass == PixelClass::Fluid
+		    && side_tag.fluid_dir != 0) {
+			my_tag.fluid_dir = side_tag.fluid_dir;
+			return;
 		}
 	}
 	my_tag.fluid_dir = 0;
