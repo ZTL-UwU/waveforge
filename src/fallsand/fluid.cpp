@@ -14,12 +14,6 @@ using Coord = std::array<int, 2>;
 
 struct ConnectedComponent {
 	int id;
-	int size = 0;
-
-	// Remark: heighest_y < lowest_y (y increases downwards)
-	int heighest_y = 0;
-	int lowest_y = 0;
-
 	std::vector<Coord> surface_pixels;
 };
 
@@ -41,6 +35,8 @@ bool isAirLike(const PixelTag &tag) noexcept {
 
 } // namespace
 
+constexpr float surface_adjust_factor = 0.7;
+
 void PixelWorld::fluidAnalysisStep() noexcept {
 	AnalysisContext ctx;
 
@@ -59,9 +55,6 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 			// New component found
 			ConnectedComponent comp = {
 				.id = static_cast<int>(ctx.components.size()),
-				.size = 0,
-				.heighest_y = y,
-				.lowest_y = y,
 			};
 
 			// Flood fill
@@ -73,10 +66,6 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 
 				tagOf(cx, cy).dirty = true;
 				ctx.pixel_to_component[{cx, cy}] = comp.id;
-
-				comp.size += 1;
-				comp.heighest_y = std::min(comp.heighest_y, cy);
-				comp.lowest_y = std::max(comp.lowest_y, cy);
 
 				// Check neighbors
 				for (auto [nx, ny] : neighborsOf({cx, cy}, world_dim)) {
@@ -193,9 +182,15 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 			p += 1;
 		}
 
+		int max_delta_y = comp.surface_pixels.back()[1] - cur_remove_y;
+		p = std::min<int>(p, std::round(max_delta_y * surface_adjust_factor));
+
 		for (int i = 0; i <= p && p + i + 1 < n; ++i) {
 			auto [ax, ay] = comp.surface_pixels[i];
 			auto [bx, by] = comp.surface_pixels[n - 1 - i];
+			if (by - 1 <= ay) {
+				break;
+			}
 			swapPixels(ax, ay, bx, by - 1);
 		}
 	}
