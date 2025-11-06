@@ -2,7 +2,6 @@
 #define WFORGE_FALLSAND_H
 
 #include "wforge/2d.h"
-#include "wforge/debug.h"
 #include <cstdint>
 #include <memory>
 #include <proxy/proxy.h>
