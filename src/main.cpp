@@ -190,6 +190,29 @@ int main() {
 
 		window.clear(sf::Color::Black);
 		renderer.draw(window);
+
+		// draw brush outline (red) at current mouse/world position
+		sf::Vector2i mpos = sf::Mouse::getPosition(window);
+		int mouse_wx = mpos.x / scale;
+		int mouse_wy = mpos.y / scale;
+		int half = brush_size / 2;
+		sf::RectangleShape brushRect(
+			sf::Vector2f(
+				static_cast<float>(brush_size * scale),
+				static_cast<float>(brush_size * scale)
+			)
+		);
+		brushRect.setFillColor(sf::Color::Transparent);
+		brushRect.setOutlineColor(sf::Color::Red);
+		brushRect.setOutlineThickness(1.0f);
+		// top-left in pixels
+		brushRect.setPosition(
+			sf::Vector2f(
+				static_cast<float>((mouse_wx - half) * scale),
+				static_cast<float>((mouse_wy - half) * scale)
+			)
+		);
+		window.draw(brushRect);
 		window.display();
 
 		if (SAVE_FRAMES) {
