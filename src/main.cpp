@@ -1,18 +1,20 @@
-#include "wforge/fallsand.h"
+#include "wforge/assets.h"
+#include "wforge/level.h"
 #include "wforge/render.h"
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <algorithm>
-#include <filesystem>
+#include <cmath>
 #include <proxy/proxy.h>
 
 int main() {
-	// Toggle this to enable per-frame image output for debugging
-	constexpr bool SAVE_FRAMES = false;
-	constexpr int width = 200;
-	constexpr int height = 150;
-	constexpr int scale = 4; // screen pixels per world pixel
+	constexpr int width = 320;
+	constexpr int height = 240;
+	constexpr int scale = 6; // screen pixels per world pixel
 
-	wf::PixelWorld world(width, height);
+	wf::AssetsManager::loadAllAssets();
+	wf::Level level(width, height);
+	auto &world = level.fallsand;
 
 	// create simple stone platform
 	int platform_y = height - 10;
@@ -23,10 +25,11 @@ int main() {
 		);
 	}
 
-	// generator positions
-	int sand_x = width / 2 - 8;
-	int water_x = width / 2 + 8;
-	int gen_y = platform_y - 40;
+	auto &duck_sprite = *wf::AssetsManager::instance().getAsset<sf::Sprite>(
+		"duck/sprite"
+	);
+	duck_sprite.setScale({scale, scale});
+	level.duck.position = sf::Vector2f(width / 2., platform_y - 50);
 
 	// renderer
 	wf::Renderer renderer(scale);
@@ -41,14 +44,15 @@ int main() {
 		),
 		"Waveforge - fallsand demo"
 	);
-	window.setFramerateLimit(20);
+	window.setFramerateLimit(24);
+
+	auto background_music = wf::AssetsManager::instance().getAsset<sf::Music>(
+		"music/Pixelated Paradise-X"
+	);
+	background_music->setLooping(true);
+	background_music->play();
 
 	int frame = 0;
-
-	if (SAVE_FRAMES) {
-		// ensure output directory exists
-		std::filesystem::create_directories("frames");
-	}
 
 	// brush settings
 	int brush_size = 1; // in world pixels, square brush
@@ -107,6 +111,7 @@ int main() {
 			// window closed
 			if (ev->is<sf::Event::Closed>()) {
 				window.close();
+				background_music->stop();
 				break;
 			}
 
@@ -184,12 +189,29 @@ int main() {
 				}
 			}
 		}
-		world.step();
+		level.step();
 
 		renderer.uploadFromWorld(world);
 
-		window.clear(sf::Color::Black);
+		// clear to black background
+		window.clear(sf::Color::White);
 		renderer.draw(window);
+
+		// draw the duck sprite at rounded world position to keep pixel-perfect
+		// look
+		{
+			sf::Vector2f wp = level.duck.position;
+			int rx = std::round(wp.x);
+			int ry = std::round(wp.y);
+			// set integer pixel position (world -> screen)
+			duck_sprite.setPosition(
+				sf::Vector2f(
+					static_cast<float>(rx * scale),
+					static_cast<float>(ry * scale)
+				)
+			);
+			window.draw(duck_sprite);
+		}
 
 		// draw brush outline (red) at current mouse/world position
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
@@ -214,18 +236,6 @@ int main() {
 		);
 		window.draw(brushRect);
 		window.display();
-
-		if (SAVE_FRAMES) {
-			char filename[256];
-			std::snprintf(
-				filename, sizeof(filename), "frames/frame_%06d.png", frame
-			);
-			if (!renderer.saveFrame(filename)) {
-				std::fprintf(
-					stderr, "Failed to save frame %d to %s\n", frame, filename
-				);
-			}
-		}
 
 		++frame;
 	}

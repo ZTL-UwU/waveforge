@@ -39,6 +39,8 @@ add_executable(waveforge
   src/fallsand/stone.cpp
   src/fallsand/sand.cpp
   src/fallsand/water.cpp
+  src/level.cpp
+  src/assets.cpp
   src/2d.cpp
   src/render.cpp
 )
@@ -55,6 +57,7 @@ target_link_libraries(waveforge PRIVATE
   SFML::Graphics
   SFML::Window
   SFML::System
+  SFML::Audio
   msft_proxy4::proxy
   cpptrace::cpptrace
 )

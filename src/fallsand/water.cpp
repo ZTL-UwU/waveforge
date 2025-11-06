@@ -50,7 +50,7 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 	}
 
 	bool tiny_water_flow = below_tag.pclass == PixelClass::Solid;
-	for (auto d : {my_tag.fluid_dir, -my_tag.fluid_dir}) {
+	for (auto d : std::array<int, 2>{my_tag.fluid_dir, -my_tag.fluid_dir}) {
 		int new_x = x + d;
 		if (new_x < 0 || new_x >= world.width()) {
 			world.replacePixelWithAir(x, y);
