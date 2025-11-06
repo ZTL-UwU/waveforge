@@ -2,7 +2,7 @@
 #include "wforge/fallsand.h"
 #include <algorithm>
 #include <cassert>
-#include <map>
+#include <cstring>
 #include <random>
 #include <vector>
 
@@ -19,14 +19,7 @@ struct ConnectedComponent {
 
 struct AnalysisContext {
 	std::vector<ConnectedComponent> components;
-
-	// Why not a plain array here?
-	// It mostly depends on the ratio of fluid pixels to total pixels.
-	// Let's assume the majority of pixels are non-fluid, or even basically air.
-	// Why not std::unordered_map?
-	// Although std::map is O(log n), in partical use it's usually faster to
-	// std::unordered_map due to better cache locality and other factors.
-	std::map<Coord, int> pixel_to_component;
+	std::vector<Coord> fluid_pixels;
 };
 
 bool isAirLike(const PixelTag &tag) noexcept {
@@ -39,6 +32,8 @@ constexpr float surface_adjust_factor = 0.7;
 
 void PixelWorld::fluidAnalysisStep() noexcept {
 	AnalysisContext ctx;
+
+	std::memset(_fluid_cid.get(), -1, sizeof(int) * _width * _height);
 
 	// Step 1: Identify fluid connected components
 	Coord world_dim = {_width, _height};
@@ -65,7 +60,8 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 				stack.pop_back();
 
 				tagOf(cx, cy).dirty = true;
-				ctx.pixel_to_component[{cx, cy}] = comp.id;
+				_fluid_cid[cy * _width + cx] = comp.id;
+				ctx.fluid_pixels.push_back({cx, cy});
 
 				// Check neighbors
 				for (auto [nx, ny] : neighborsOf({cx, cy}, world_dim)) {
@@ -126,7 +122,7 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 			dircnt[tag.fluid_dir + 1] += 1;
 			loc.push_back(x);
 
-			auto cid = ctx.pixel_to_component[{x, y}];
+			auto cid = _fluid_cid[y * _width + x];
 			if (last_comp_id != cid) {
 				handle();
 				last_comp_id = cid;
@@ -136,9 +132,9 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 	}
 
 	// Step 3: Analyze surface pixels
-	for (const auto &[coord, comp_id] : ctx.pixel_to_component) {
+	for (auto coord : ctx.fluid_pixels) {
 		auto [x, y] = coord;
-		auto &comp = ctx.components[comp_id];
+		auto &comp = ctx.components[_fluid_cid[y * _width + x]];
 		if (y == 0
 		    || isAirLike(tagOf(x, y - 1)) && !tagOf(x, y).is_free_falling) {
 			comp.surface_pixels.push_back({x, y});

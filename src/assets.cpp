@@ -3,7 +3,6 @@
 #include <SFML/Graphics/Image.hpp>
 #include <cstdlib>
 #include <exception>
-#include <format>
 #include <iostream>
 #include <string_view>
 #include <utility>
@@ -11,6 +10,7 @@
 #ifndef NDEBUG
 #include <cpptrace/cpptrace.hpp>
 #include <cpptrace/from_current.hpp>
+#include <format>
 #endif
 
 namespace wf {

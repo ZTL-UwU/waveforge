@@ -59,8 +59,8 @@ class PixelWorld {
 public:
 	constexpr static float gAcceleration = 0.5f;
 
-	PixelWorld();
-	PixelWorld(int width, int height);
+	PixelWorld() noexcept;
+	PixelWorld(int width, int height) noexcept;
 
 	int width() const noexcept {
 		return _width;
@@ -95,6 +95,7 @@ private:
 
 	std::unique_ptr<PixelTag[]> _tags;
 	std::unique_ptr<PixelElement[]> _elements;
+	std::unique_ptr<int[]> _fluid_cid;
 };
 
 namespace element {

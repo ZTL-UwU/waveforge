@@ -1,23 +1,25 @@
 #include "wforge/fallsand.h"
-#include <cpptrace/cpptrace.hpp>
-#include <cstdlib>
-#include <format>
-#include <iostream>
 #include <memory>
 #include <proxy/proxy.h>
 #include <random>
 #include <utility>
 
+#ifndef NDEBUG
+#include <cpptrace/cpptrace.hpp>
+#include <format>
+#include <iostream>
+#endif
+
 namespace wf {
 
-PixelWorld::PixelWorld()
-	: _width(0), _height(0), _tags(nullptr), _elements(nullptr) {}
+PixelWorld::PixelWorld() noexcept: _width(0), _height(0) {}
 
-PixelWorld::PixelWorld(int width, int height)
+PixelWorld::PixelWorld(int width, int height) noexcept
 	: _width(width)
 	, _height(height)
 	, _tags(std::make_unique<PixelTag[]>(width * height))
-	, _elements(std::make_unique<PixelElement[]>(width * height)) {
+	, _elements(std::make_unique<PixelElement[]>(width * height))
+	, _fluid_cid(std::make_unique<int[]>(width * height)) {
 	PixelTag airTag = element::Air().newTag();
 	for (int i = 0; i < width * height; ++i) {
 		_tags[i] = airTag;
