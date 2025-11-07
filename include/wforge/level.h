@@ -16,6 +16,12 @@ struct DuckEntity {
 	sf::Vector2f position; // anchor at top-left
 	sf::Vector2f velocity;
 
+	bool isOutOfWorld(const Level &level) const noexcept;
+	bool willCollideAt(
+		const Level &level, int target_x, int target_y
+	) const noexcept;
+	bool currentlyColliding(const Level &level) const noexcept;
+
 	void step(const Level &level) noexcept;
 };
 

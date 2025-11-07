@@ -40,6 +40,7 @@ add_executable(waveforge
   src/fallsand/sand.cpp
   src/fallsand/water.cpp
   src/level.cpp
+  src/duck.cpp
   src/assets.cpp
   src/2d.cpp
   src/render.cpp
