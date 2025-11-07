@@ -1,3 +1,4 @@
+#include "wforge/colorpalette.h"
 #include "wforge/fallsand.h"
 #include <memory>
 #include <proxy/proxy.h>
@@ -123,6 +124,29 @@ void PixelWorld::step() noexcept {
 	}
 
 	resetDirtyFlags();
+}
+
+void PixelWorld::renderToBuffer(std::span<std::uint8_t> buf) const noexcept {
+#ifndef NDEBUG
+	if (buf.size() != _width * _height * 4) {
+		std::cerr << std::format(
+			"PixelWorld::renderToTexture: buffer size mismatch: expected {}, "
+			"got "
+			"{}\n",
+			_width * _height * 4, buf.size()
+		);
+		cpptrace::generate_trace().print();
+		std::abort();
+	}
+#endif
+
+	for (int i = 0; i < _width * _height; ++i) {
+		auto color = colorOfIndex(_tags[i].color_index);
+		buf[i * 4 + 0] = color.r;
+		buf[i * 4 + 1] = color.g;
+		buf[i * 4 + 2] = color.b;
+		buf[i * 4 + 3] = color.a;
+	}
 }
 
 } // namespace wf

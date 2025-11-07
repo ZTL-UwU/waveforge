@@ -85,6 +85,8 @@ public:
 
 	void step() noexcept;
 
+	void renderToBuffer(std::span<std::uint8_t> buf) const noexcept;
+
 protected:
 	void resetDirtyFlags() noexcept;
 	void fluidAnalysisStep() noexcept;

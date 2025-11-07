@@ -43,7 +43,6 @@ add_executable(waveforge
   src/duck.cpp
   src/assets.cpp
   src/2d.cpp
-  src/render.cpp
 )
 
 target_compile_features(waveforge PRIVATE cxx_std_23)

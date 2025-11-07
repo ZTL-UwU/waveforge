@@ -1,10 +1,11 @@
 #include "wforge/assets.h"
 #include "wforge/level.h"
-#include "wforge/render.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <cmath>
+#include <iostream>
+#include <memory>
 #include <proxy/proxy.h>
 
 int main() {
@@ -31,9 +32,16 @@ int main() {
 	duck_sprite.setScale({scale, scale});
 	level.duck.position = sf::Vector2f(width / 2., platform_y - 50);
 
-	// renderer
-	wf::Renderer renderer(scale);
-	renderer.init(width, height);
+	// render pixel world
+	auto pixel_buffer = std::make_unique<std::uint8_t[]>(width * height * 4);
+	sf::Texture world_texture;
+	if (!world_texture.resize({width, height})) {
+		std::cerr << "Failed to create world texture\n";
+		return EXIT_FAILURE;
+	}
+	world_texture.setSmooth(false);
+	auto world_sprite = sf::Sprite(world_texture);
+	world_sprite.setScale({scale, scale});
 
 	sf::RenderWindow window(
 		sf::VideoMode(
@@ -191,11 +199,11 @@ int main() {
 		}
 		level.step();
 
-		renderer.uploadFromWorld(world);
-
 		// clear to black background
 		window.clear(sf::Color::White);
-		renderer.draw(window);
+		world.renderToBuffer({pixel_buffer.get(), width * height * 4});
+		world_texture.update(pixel_buffer.get());
+		window.draw(world_sprite);
 
 		// draw the duck sprite at rounded world position to keep pixel-perfect
 		// look
