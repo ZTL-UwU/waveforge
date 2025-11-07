@@ -30,7 +30,22 @@ cmake --build build --config RelWithDebInfo
 
 The dependencies will be automatically downloaded and built. Find the executable in `build` directory.
 
-## Team
+## Implementation notes
+
+This is quite a straightforward C++ project with simple structure:
+
+- `include/wforge`: header files
+- `src`: source files
+- `assets`: asset files including music and sound effects
+- `CMakeLists.txt`: CMake build script (all in one file for simplicity)
+
+The physics simulation is written from scratch. We use SFML for graphics rendering and audio playback. [proxy](https://github.com/microsoft/proxy) is used to for polymorphism (i.e. fat pointers) instead of traditional virtual functions for simplier and unified lifetime management.
+
+The physics simulation is inspired by Noita's falling everything engine (but we are doing somewhat better at fluid simulation here), which is basically a cellular automaton with some rules for different pixel classes. Performance is not optimal yet, but it's acceptable for now (in Release mode).
+
+The current `main.cpp` (mainly used for testing) and the rendering code are quite messy (partly because it's mostly written by Github Copilot). Instead of drawing bunches of rectangles for each pixel, we dynamically create a texture representing the pixel world and render it all at once for better performance.
+
+## Team Members
 
 - Project Management & Programming: [fang_erj](https://github.com/szdytom)
 - Music: stevvven
