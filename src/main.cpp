@@ -5,7 +5,15 @@
 #include <algorithm>
 #include <proxy/proxy.h>
 
-int main() {
+std::filesystem::path wf::_executable_path;
+int main(int argc, char **argv) {
+	if (argc > 0) {
+		wf::_executable_path = std::filesystem::absolute(argv[0]);
+	} else {
+		// fallback: current working directory
+		wf::_executable_path = std::filesystem::current_path();
+	}
+
 	constexpr int width = 320;
 	constexpr int height = 240;
 	constexpr int scale = 6; // screen pixels per world pixel

@@ -71,6 +71,8 @@ private:
 	sf::Texture _goal_1, _goal_2;
 };
 
+extern std::filesystem::path _executable_path;
+
 } // namespace wf
 
 #endif // WFORGE_ASSETS_H

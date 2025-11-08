@@ -28,9 +28,7 @@ cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo .
 cmake --build build --config RelWithDebInfo
 ```
 
-The direct dependencies will be automatically downloaded and built. Find the executable in `build` directory.
-
-To run the game, either invoke it in terminal from the project root directory (instead of `build` directory), or copy the `assets` directory to `build` directory.
+The direct dependencies will be automatically downloaded and built. Find the executable in `build` directory. The built program can be found at `build/waveforge` (or `build/waveforge.exe` on Windows).
 
 For Linux systems, SFML requires some additional system libraries. The simplest way is to install SFML via your package manager, so that all those internal dependencies are automatically handled. For example:
 

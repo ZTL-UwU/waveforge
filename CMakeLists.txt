@@ -8,8 +8,7 @@ FetchContent_Declare(SFML
   GIT_REPOSITORY https://github.com/SFML/SFML.git
   GIT_TAG 3.0.2
   GIT_SHALLOW ON
-  EXCLUDE_FROM_ALL
-  SYSTEM
+  EXCLUDE_FROM_ALL SYSTEM
 )
 FetchContent_MakeAvailable(SFML)
 
@@ -18,18 +17,27 @@ FetchContent_Declare(msft_proxy4
   GIT_REPOSITORY https://github.com/microsoft/proxy.git
   GIT_TAG 4.0.1
   GIT_SHALLOW ON
-  EXCLUDE_FROM_ALL
-  SYSTEM
+  EXCLUDE_FROM_ALL SYSTEM
 )
 FetchContent_MakeAvailable(msft_proxy4)
 
-include(FetchContent)
+# cpptrace
 FetchContent_Declare(
   cpptrace
   GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
-  GIT_TAG        v1.0.4 # <HASH or TAG>
+  GIT_TAG        v1.0.4
+  GIT_SHALLOW ON
+  EXCLUDE_FROM_ALL SYSTEM
 )
 FetchContent_MakeAvailable(cpptrace)
+
+# nlohmann_json
+FetchContent_Declare(
+	json
+	URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+	EXCLUDE_FROM_ALL SYSTEM
+)
+FetchContent_MakeAvailable(json)
 
 add_executable(waveforge
   src/main.cpp
@@ -48,12 +56,10 @@ add_executable(waveforge
 
 target_compile_features(waveforge PRIVATE cxx_std_23)
 
-# Include paths
 target_include_directories(waveforge PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# Link SFML components.
 target_link_libraries(waveforge PRIVATE
   SFML::Graphics
   SFML::Window
@@ -61,4 +67,5 @@ target_link_libraries(waveforge PRIVATE
   SFML::Audio
   msft_proxy4::proxy
   cpptrace::cpptrace
+  nlohmann_json::nlohmann_json
 )

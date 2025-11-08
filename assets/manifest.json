@@ -1,0 +1,82 @@
+{
+	"format": 1,
+	"sequence": [
+		{
+			"id": "duck/raw",
+			"type": "image",
+			"file": "duck.png",
+			"description": "Loading duck PNG"
+		},
+		{
+			"id": "duck/image",
+			"type": "trim-image",
+			"input": "duck/raw",
+			"description": "Trimming duck image"
+		},
+		{
+			"id": "duck/shape",
+			"type": "calculate-shape",
+			"input": "duck/image",
+			"description": "Calculating duck shape"
+		},
+		{
+			"id": "duck/texture",
+			"type": "create-texture",
+			"input": "duck/image",
+			"description": "Creating duck texture"
+		},
+		{
+			"id": "goal/image_1",
+			"type": "image",
+			"file": "goal1.png",
+			"description": "Loading goal image 1"
+		},
+		{
+			"id": "goal/image_2",
+			"type": "image",
+			"file": "goal2.png",
+			"description": "Loading goal image 2"
+		},
+		{
+			"id": "goal/sprite",
+			"type": "create-goal-sprite",
+			"description": "Creating goal sprite"
+		},
+		{
+			"id": "music/Pixelated Paradise-X",
+			"type": "music",
+			"file": "Pixelated Paradise-X.mp3",
+			"description": "Loading Pixelated Paradise-X music",
+			"collections": [
+				"background/level-music"
+			]
+		},
+		{
+			"id": "music/Pixelated Paradise",
+			"type": "music",
+			"file": "Pixelated Paradise.mp3",
+			"description": "Loading Pixelated Paradise music",
+			"collections": [
+				"background/main-menu-music"
+			]
+		},
+		{
+			"id": "music/Pixel Tide",
+			"type": "music",
+			"file": "Pixel Tide.mp3",
+			"description": "Loading Pixel Tide music",
+			"collections": [
+				"background/main-menu-music"
+			]
+		},
+		{
+			"id": "music/Pixel Tide-X",
+			"type": "music",
+			"file": "Pixel Tide-X.mp3",
+			"description": "Loading Pixel Tide-X music",
+			"collections": [
+				"background/level-music"
+			]
+		}
+	]
+}

@@ -3,8 +3,11 @@
 #include <SFML/Graphics/Image.hpp>
 #include <cstdlib>
 #include <exception>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
-#include <string_view>
+#include <nlohmann/json.hpp>
+#include <string>
 #include <utility>
 
 #ifndef NDEBUG
@@ -12,6 +15,8 @@
 #include <cpptrace/from_current.hpp>
 #include <format>
 #endif
+
+namespace fs = std::filesystem;
 
 namespace wf {
 
@@ -112,100 +117,217 @@ void AssetsManager::cacheAssetRaw(const std::string &id, void *asset) noexcept {
 	_asset_cache[id] = asset;
 }
 
-using AssetLoaderStepFunc = void (*)(AssetsManager &mgr);
-
 namespace {
 
-void loadDuckRawPNG(AssetsManager &mgr) {
+std::filesystem::path findAssetsRoot() {
+	if (auto env_path = std::getenv("WAVEFORGE_ASSETS_PATH")) {
+		fs::path res(env_path);
+		fs::path manifest_path = res / "manifest.json";
+		if (fs::exists(manifest_path)) {
+			return fs::absolute(res);
+		}
+
+		std::cerr << std::format(
+			"AssetsManager: WAVEFORGE_ASSETS_PATH is set to '{}', but file "
+			"'{}' does not exist.\n",
+			res.string(), manifest_path.string()
+		);
+#ifndef NDEBUG
+		cpptrace::generate_trace().print();
+#endif
+		std::abort();
+	}
+
+	auto cur_path = fs::current_path();
+	fs::path possible_pathes[] = {
+		cur_path / "assets",
+		cur_path.parent_path() / "assets",
+		wf::_executable_path / "assets",
+		wf::_executable_path.parent_path() / "assets",
+#ifdef __linux__
+		fs::path("/usr/share/waveforge/assets"),
+		fs::path("/usr/local/share/waveforge/assets"),
+#endif
+	};
+
+	for (const auto &res : possible_pathes) {
+		fs::path manifest_path = res / "manifest.json";
+		if (fs::exists(manifest_path)) {
+			return fs::absolute(res);
+		}
+	}
+
+	std::cerr << "AssetsManager: could not find assets root. Tried:\n";
+	for (const auto &res : possible_pathes) {
+		std::cerr << "  " << res << "\n";
+	}
+#ifndef NDEBUG
+	cpptrace::generate_trace().print();
+#endif
+	std::abort();
+}
+
+constexpr int current_manifest_format = 1;
+
+using operationFunc = void (*)(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+);
+
+void fImage(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &file = entry.at("file");
+	auto file_path = assets_root / file;
+	const std::string &id = entry.at("id");
 	auto img = new sf::Image();
-	if (!img->loadFromFile("assets/duck.png")) {
-		throw std::runtime_error("Failed to load asset: assets/duck/raw.png");
+	if (!img->loadFromFile(file_path)) {
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: failed to load image asset from file '{}'",
+				file_path.string()
+			)
+		);
 	}
-	mgr.cacheAsset("duck/raw", img);
+
+	mgr.cacheAsset(id, img);
 }
 
-void trimDuckRNG(AssetsManager &mgr) {
-	auto raw_img = mgr.getAsset<sf::Image>("duck/raw");
-	auto trimmed_img = new sf::Image(trimImage(raw_img));
-	mgr.cacheAsset("duck/image", trimmed_img);
-	mgr.cacheAsset("duck/shape", new PixelShape(*trimmed_img));
-}
+void fTexture(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &input_id = entry.at("input");
+	const auto &img = mgr.getAsset<sf::Image>(input_id);
+	const std::string &id = entry.at("id");
 
-void createDuckSprite(AssetsManager &mgr) {
-	auto img = mgr.getAsset<sf::Image>("duck/image");
-	// allocate texture on heap and keep ownership in asset manager
 	auto texture = new sf::Texture();
-	texture->setSmooth(false);
 	if (!texture->loadFromImage(img)) {
-		delete texture;
-		throw std::runtime_error("Failed to create texture for duck sprite");
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: failed to create texture from image asset '{}'",
+				input_id
+			)
+		);
 	}
 
-	// cache texture first so sprite can safely reference it
-	mgr.cacheAsset("duck/texture", texture);
+	mgr.cacheAsset(id, texture);
 }
 
-void loadMusicPPX(AssetsManager &mgr) {
-	auto music = new sf::Music("assets/Pixelated Paradise-X.mp3");
-	mgr.cacheAsset("music/Pixelated Paradise-X", music);
+void fMusic(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &file = entry.at("file");
+	auto file_path = assets_root / file;
+	const std::string &id = entry.at("id");
+
+	auto music = new sf::Music();
+	if (!music->openFromFile(file_path)) {
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: failed to load music asset from file '{}'",
+				file_path.string()
+			)
+		);
+	}
+
+	mgr.cacheAsset(id, music);
 }
 
-void loadGoalSprites(AssetsManager &mgr) {
-	auto goal_img_1 = new sf::Image();
-	if (!goal_img_1->loadFromFile("assets/goal1.png")) {
-		throw std::runtime_error("Failed to load asset: assets/goal1.png");
-	}
-	mgr.cacheAsset("goal/image_1", goal_img_1);
+void fTrimImage(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &input_id = entry.at("input");
+	const auto &img = mgr.getAsset<sf::Image>(input_id);
+	const std::string &id = entry.at("id");
+	auto trimmed = new sf::Image(trimImage(img));
+	mgr.cacheAsset(id, trimmed);
+}
 
-	auto goal_img_2 = new sf::Image();
-	if (!goal_img_2->loadFromFile("assets/goal2.png")) {
-		throw std::runtime_error("Failed to load asset: assets/goal2.png");
-	}
-	mgr.cacheAsset("goal/image_2", goal_img_2);
+void fPixelShape(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &input_id = entry.at("input");
+	auto &img = mgr.getAsset<sf::Image>(input_id);
+	const std::string &id = entry.at("id");
+	auto shape = new PixelShape(img);
+	mgr.cacheAsset(id, shape);
+}
 
-	auto goal_sprite = new GoalSprite(*goal_img_1, *goal_img_2);
-	mgr.cacheAsset("goal/sprite", goal_sprite);
+void fGoalSprite(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	auto &img1 = mgr.getAsset<sf::Image>("goal/image_1");
+	auto &img2 = mgr.getAsset<sf::Image>("goal/image_2");
+	const std::string &id = entry.at("id");
+	auto goal_sprite = new GoalSprite(img1, img2);
+	mgr.cacheAsset(id, goal_sprite);
 }
 
 } // namespace
 
 void AssetsManager::loadAllAssets() {
-	struct LoadStep {
-		std::string_view description;
-		AssetLoaderStepFunc func;
+	auto assets_root = findAssetsRoot();
+	std::cerr << "AssetsManager: loading assets from " << assets_root << "\n";
+
+	std::ifstream manifest_file(assets_root / "manifest.json");
+	if (!manifest_file.is_open()) {
+		std::cerr << "AssetsManager: could not open manifest file\n";
+		std::abort();
+	}
+
+	std::map<std::string, operationFunc> operations = {
+		{"image", fImage},
+		{"create-texture", fTexture},
+		{"music", fMusic},
+		{"trim-image", fTrimImage},
+		{"calculate-shape", fPixelShape},
+		{"create-goal-sprite", fGoalSprite},
 	};
 
-	constexpr LoadStep steps[] = {
-		{"Loading duck PNG", loadDuckRawPNG},
-		{"Processing duck image and calculating bounding box", trimDuckRNG},
-		{"Creating duck sprite from processed image", createDuckSprite},
-		{"Loading Pixelated Paradise-X music", loadMusicPPX},
-		{"Loading goal sprites", loadGoalSprites},
-	};
-
-	auto &mgr = AssetsManager::instance();
 #ifndef NDEBUG
 	CPPTRACE_TRY {
 #else
 	try {
 #endif
-		for (const auto &step : steps) {
-			std::cout << step.description << "...\n";
-			step.func(mgr);
+		nlohmann::json manifest = nlohmann::json::parse(manifest_file);
+		AssetsManager &mgr = AssetsManager::instance();
+
+		if (manifest.at("format").get<int>() != current_manifest_format) {
+			throw std::runtime_error(
+				std::format(
+					"Unsupported manifest format: {}, expected {}",
+					manifest.at("format").get<int>(), current_manifest_format
+				)
+			);
 		}
+
+		const auto &entries = manifest.at("sequence");
+		for (const auto &entry : entries) {
+			const std::string &op_name = entry.at("type");
+			const std::string &description = entry.at("description");
+			std::cerr << description << "...\n";
+			auto it = operations.find(op_name);
+			if (it == operations.end()) {
+				throw std::runtime_error(
+					std::format("Unknown asset operation type: '{}'", op_name)
+				);
+			}
+
+			auto func = it->second;
+			func(entry, assets_root, mgr);
+		}
+	}
 #ifndef NDEBUG
-	}
 	CPPTRACE_CATCH(const std::exception &e) {
-		std::cerr << "Exception during asset loading: " << e.what() << "\n";
+		std::cerr << "AssetsManager: failed to parse manifest file: "
+				  << e.what() << "\n";
 		cpptrace::from_current_exception().print();
-		std::abort();
-	}
 #else
-	} catch (const std::exception &e) {
-		std::cerr << "Exception during asset loading: " << e.what() << "\n";
+	catch (const std::exception &e) {
+		std::cerr << "AssetsManager: failed to parse manifest file: "
+				  << e.what() << "\n";
+#endif
 		std::abort();
 	}
-#endif
 }
 
 } // namespace wf
