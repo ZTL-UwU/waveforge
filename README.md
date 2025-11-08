@@ -15,7 +15,7 @@ The codebase for now is a prove of concept. The physics simulation is basic but 
 - Right mouse button: erase pixels
 - Scroll wheel: change brush size
 
-The duck is interactable with the physics simulation now, a goal (for testing purpose) is added at the top right corner.
+The duck is interactable with the physics simulation now, a goal (for testing purpose) is added at the top right corner. Having the duck reach the goal will print a message to the console, stating that you win, while having the duck fall out of the screen will print a message stating that you lose. However, this is not how the final game will be like, as player won't be able to directly spawn pixels in the final game, but use items (with limited supply) to manipulate the environment instead.
 
 Four music tracks are created and added to the repository, but only "Pixelated Paradise-X" is loaded as background music currently.
 
