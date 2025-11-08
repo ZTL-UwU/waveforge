@@ -19,7 +19,7 @@ The duck is interactable with the physics simulation now, a goal (for testing pu
 
 Four music tracks are created and added to the repository, but only "Pixelated Paradise-X" is loaded as background music currently.
 
-## Build
+## Build instructions
 
 You need to have CMake and a C++23 compatible compiler installed.
 
@@ -28,7 +28,23 @@ cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo .
 cmake --build build --config RelWithDebInfo
 ```
 
-The dependencies will be automatically downloaded and built. Find the executable in `build` directory.
+The direct dependencies will be automatically downloaded and built. Find the executable in `build` directory.
+
+To run the game, either invoke it in terminal from the project root directory (instead of `build` directory), or copy the `assets` directory to `build` directory.
+
+For Linux systems, SFML requires some additional system libraries. The simplest way is to install SFML via your package manager, so that all those internal dependencies are automatically handled. For example:
+
+```bash
+# Debian/Ubuntu
+sudo apt install libsfml-dev
+
+# Arch Linux and dirivatives
+sudo pacman -S sfml
+```
+
+You can also install those dependencies manually if you prefer not to install SFML system-wide. Please refer to SFML's official documentation for more details.
+
+P.S. I haven't tested building on Windows yet (I'll try tonight maybe), but it should work fine as CMake is cross-platform and SFML only relies on WinAPI there, instead of additional system libraries.
 
 ## Implementation notes
 
