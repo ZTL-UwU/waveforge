@@ -15,7 +15,7 @@ The codebase for now is a prove of concept. The physics simulation is basic but 
 - Right mouse button: erase pixels
 - Scroll wheel: change brush size
 
-The duck is interactable with the physics simulation now, but there is no goal or level design yet.
+The duck is interactable with the physics simulation now, a goal (for testing purpose) is added at the top right corner.
 
 Four music tracks are created and added to the repository, but only "Pixelated Paradise-X" is loaded as background music currently.
 
@@ -43,11 +43,11 @@ The physics simulation is written from scratch. We use SFML for graphics renderi
 
 The physics simulation is inspired by Noita's falling everything engine (but we are doing somewhat better at fluid simulation here), which is basically a cellular automaton with some rules for different pixel classes. Performance is not optimal yet, but it's acceptable for now (in Release mode).
 
-The current `main.cpp` (mainly used for testing) and the rendering code are quite messy (partly because it's mostly written by Github Copilot). Instead of drawing bunches of rectangles for each pixel, we dynamically create a texture representing the pixel world and render it all at once for better performance.
+The current `main.cpp` (mainly used for testing) is quite messy (partly because it's mostly written by Github Copilot). Instead of drawing bunches of rectangles for each pixel, the rendering system dynamically create a texture representing the pixel world and render it all at once for better performance.
 
 ## Team Members
 
 - Project Management & Programming: [fang_erj](https://github.com/szdytom)
 - Music: stevvven
 
-Look for more team members in the future! Contact me with email szdytom[at]qq.com if you are interested.
+Look for more team members in the future! Contact me with email szdytom[at]qq.com  or discord @fang_erj if you are interested.
