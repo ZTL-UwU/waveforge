@@ -15,12 +15,18 @@
 
 namespace wf {
 
+namespace {
+
+constexpr int _ticks_per_progress = 3;
+
+}
+
 GoalArea::GoalArea(): GoalArea(0, 0) {}
 
 GoalArea::GoalArea(int x, int y)
 	: x(x)
 	, y(y)
-	, progress(0)
+	, _progress(0)
 	, _sprite(AssetsManager::instance().getAsset<GoalSprite>("goal/sprite")) {
 	_width = _sprite.width();
 	_height = _sprite.height();
@@ -28,18 +34,26 @@ GoalArea::GoalArea(int x, int y)
 
 void GoalArea::step(const Level &level) noexcept {
 	if (_isDuckInside(level)) {
-		progress = std::min(progress + 1, _height);
+		_progress = std::min(_progress + 1, _height * _ticks_per_progress);
 	} else {
-		progress = std::max(progress - 1, 0);
+		_progress = std::max(0, _progress - 1);
 	}
 }
 
+void GoalArea::resetProgress() noexcept {
+	_progress = 0;
+}
+
+int GoalArea::progress() const noexcept {
+	return _progress / _ticks_per_progress;
+}
+
 bool GoalArea::isCompleted() const noexcept {
-	return progress >= _height;
+	return _progress >= _height * _ticks_per_progress;
 }
 
 void GoalArea::render(sf::RenderTarget &target, int scale) const noexcept {
-	_sprite.render(target, x, y, progress, scale);
+	_sprite.render(target, x, y, progress(), scale);
 }
 
 bool GoalArea::_isDuckInside(const Level &level) const noexcept {

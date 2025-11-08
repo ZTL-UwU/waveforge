@@ -30,7 +30,6 @@ struct GoalArea {
 	// Anchor at top-left
 	int x;
 	int y;
-	int progress;
 
 	GoalArea();
 	GoalArea(int x, int y);
@@ -43,6 +42,9 @@ struct GoalArea {
 		return _height;
 	}
 
+	void resetProgress() noexcept;
+	int progress() const noexcept;
+
 	void step(const Level &level) noexcept;
 	void render(sf::RenderTarget &target, int scale) const noexcept;
 
@@ -50,6 +52,7 @@ struct GoalArea {
 
 private:
 	int _width, _height;
+	int _progress;
 	GoalSprite &_sprite;
 
 	bool _isDuckInside(const Level &level) const noexcept;
