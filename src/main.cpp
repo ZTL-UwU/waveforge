@@ -37,13 +37,8 @@ int main() {
 	wf::LevelRenderer renderer(level, scale);
 
 	sf::RenderWindow window(
-		sf::VideoMode(
-			sf::Vector2u(
-				static_cast<unsigned int>(width * scale),
-				static_cast<unsigned int>(height * scale)
-			)
-		),
-		"Waveforge - fallsand demo"
+		sf::VideoMode(sf::Vector2u(width * scale, height * scale)),
+		"Waveforge Demo"
 	);
 	window.setFramerateLimit(24);
 
@@ -201,7 +196,7 @@ int main() {
 		int mouse_wx = mpos.x / scale;
 		int mouse_wy = mpos.y / scale;
 		int half = brush_size / 2;
-		float brush_outline_size = (brush_size + 1) * scale;
+		float brush_outline_size = brush_size * scale;
 		sf::RectangleShape brushRect({brush_outline_size, brush_outline_size});
 		brushRect.setFillColor(sf::Color::Transparent);
 		brushRect.setOutlineColor(sf::Color::Red);
