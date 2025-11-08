@@ -18,9 +18,13 @@ struct DuckEntity {
 	sf::Vector2f velocity;
 
 	bool isOutOfWorld(const Level &level) const noexcept;
+
+	// Pixel-perfect collision detection against fallsand world
 	bool willCollideAt(
 		const Level &level, int target_x, int target_y
 	) const noexcept;
+
+	// basicly willCollideAt at current position
 	bool currentlyColliding(const Level &level) const noexcept;
 
 	void step(const Level &level) noexcept;
@@ -44,6 +48,7 @@ struct GoalArea {
 
 	void resetProgress() noexcept;
 	int progress() const noexcept;
+	int maxProgress() const noexcept;
 
 	void step(const Level &level) noexcept;
 	void render(sf::RenderTarget &target, int scale) const noexcept;

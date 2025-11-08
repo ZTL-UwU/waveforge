@@ -1,7 +1,6 @@
 #ifndef WFORGE_FALLSAND_H
 #define WFORGE_FALLSAND_H
 
-#include "wforge/2d.h"
 #include <cstdint>
 #include <memory>
 #include <proxy/proxy.h>
@@ -12,6 +11,7 @@ namespace wf {
 
 namespace _dispatch {
 
+// See microsoft/proxy library for the semantics of dispatch conventions
 PRO_DEF_MEM_DISPATCH(MemHash, hash);
 PRO_DEF_MEM_DISPATCH(MemNewTag, newTag);
 PRO_DEF_MEM_DISPATCH(MemStep, step);
@@ -22,6 +22,7 @@ struct PixelTag;
 class PixelWorld;
 
 /* clang-format off */
+// See microsoft/proxy library for the semantics of proxy and facade
 struct PixelFacade : pro::facade_builder
 	::add_convention<_dispatch::MemHash, std::size_t() const noexcept>
 	::add_convention<_dispatch::MemNewTag, PixelTag() const noexcept>
@@ -49,8 +50,8 @@ enum class PixelClass : std::uint8_t {
 struct PixelTag {
 	PixelType type : 6;
 	PixelClass pclass : 2;
-	unsigned int color_index : 8; // 256 colors
-	bool dirty : 1 = false;
+	unsigned int color_index : 8; // 256 colors, see Colorpalette.h
+	bool dirty : 1 = false;       // updated in current step
 	bool is_free_falling : 1 = false;
 	signed int fluid_dir : 2; // -1 = left, 0 = none, +1 = right
 };
@@ -89,6 +90,8 @@ public:
 
 protected:
 	void resetDirtyFlags() noexcept;
+
+	// Global fluid analysis, custom heuristics
 	void fluidAnalysisStep() noexcept;
 
 private:
@@ -97,6 +100,9 @@ private:
 
 	std::unique_ptr<PixelTag[]> _tags;
 	std::unique_ptr<PixelElement[]> _elements;
+
+	// used internally for fluidAnalysisStep
+	// Connected component ID for fluid pixels
 	std::unique_ptr<int[]> _fluid_cid;
 };
 
@@ -107,9 +113,8 @@ struct EmptySubsElement {
 };
 
 struct SolidElement : EmptySubsElement {
-	void dealtPressure(
-		PixelWorld &world, int x, int y, float pressure, Direction from_dir
-	) noexcept;
+	// Common superclass for solid elements
+	// Empty for now
 };
 
 struct Air : EmptySubsElement {

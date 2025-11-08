@@ -1,3 +1,4 @@
+#include "wforge/2d.h"
 #include "wforge/assets.h"
 #include "wforge/fallsand.h"
 #include "wforge/level.h"

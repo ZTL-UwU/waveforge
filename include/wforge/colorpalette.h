@@ -10,6 +10,8 @@ struct ColorPaletteEntry {
 	sf::Color color; // in RGBA
 };
 
+// All indexed colors must be here, for dynamic generated textures
+// Colors in static assets (e.g. PNG files) can be outside this palette
 constexpr ColorPaletteEntry _colors[] = {
 	{
 		.name = "Air",
@@ -35,10 +37,14 @@ constexpr ColorPaletteEntry _colors[] = {
 
 constexpr int _color_palette_size = sizeof(_colors) / sizeof(ColorPaletteEntry);
 
+// Returns color index for name, or -1 if not found
+// HINT: define color index variables as small ints (like 8/16 bits)
+// so compile fails if -1 is returned
 inline consteval unsigned int colorIndexOf(const char *name) {
 	for (unsigned int i = 0; i < _color_palette_size; ++i) {
 		auto j = _colors[i].name;
 		auto k = name;
+		// Cannot use std::strcmp in consteval context
 		while (*j != '\0' && *k != '\0' && *j == *k) {
 			++j;
 			++k;

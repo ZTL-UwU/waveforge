@@ -10,6 +10,7 @@
 
 namespace wf {
 
+// Bitmap shape of a pixel-based entity
 struct PixelShape {
 	PixelShape(const sf::Image &img) noexcept;
 
@@ -21,6 +22,7 @@ struct PixelShape {
 		return _height;
 	}
 
+	// not fully transparent at (x, y)
 	bool hasPixel(int x, int y) const noexcept;
 
 private:
@@ -29,34 +31,41 @@ private:
 	const std::uint8_t *_data; // no ownership, ~static
 };
 
+// Trim fully-transparent borders from an image
 sf::Image trimImage(const sf::Image &img) noexcept;
 
-// Cache of loaded assets
+// Cache of loaded assets, singleton
 class AssetsManager {
 public:
 	static AssetsManager &instance() noexcept;
 
+	// Load all assets from the `assets/` directory, respecting manifest.json
+	// See assets/README.md and assets/manifest.json for details
 	static void loadAllAssets();
 
+	// throws for unrecognized asset ID
+	// WARNING: no check for type correctness, always ensure T is correct!
 	template<typename T>
 	T &getAsset(const std::string &id) noexcept {
-		return *static_cast<T *>(getAssetRaw(id));
+		return *static_cast<T *>(_getAssetRaw(id));
 	}
 
+	// asset ownership is transferred to AssetsManager
 	template<typename T>
 	void cacheAsset(const std::string &id, T *asset) noexcept {
-		cacheAssetRaw(id, static_cast<void *>(asset));
+		_cacheAssetRaw(id, static_cast<void *>(asset));
 	}
 
 private:
 	AssetsManager() = default;
 
-	void *getAssetRaw(const std::string &id) noexcept;
-	void cacheAssetRaw(const std::string &id, void *asset) noexcept;
+	void *_getAssetRaw(const std::string &id) noexcept;
+	void _cacheAssetRaw(const std::string &id, void *asset) noexcept;
 
-	std::map<std::string, void *> _asset_cache;
+	std::map<std::string, void *> _asset_cache; // owned pointers
 };
 
+// Goal area sprite, which animates based on progress
 struct GoalSprite {
 	GoalSprite(sf::Image &goal_1, sf::Image &goal_2);
 
@@ -71,6 +80,7 @@ private:
 	sf::Texture _goal_1, _goal_2;
 };
 
+// defined and set at program start, used to locate assets directory
 extern std::filesystem::path _executable_path;
 
 } // namespace wf

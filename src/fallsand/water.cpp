@@ -1,3 +1,4 @@
+#include "wforge/2d.h"
 #include "wforge/colorpalette.h"
 #include "wforge/fallsand.h"
 #include <cmath>

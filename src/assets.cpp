@@ -91,7 +91,7 @@ AssetsManager &AssetsManager::instance() noexcept {
 	return mgr;
 }
 
-void *AssetsManager::getAssetRaw(const std::string &id) noexcept {
+void *AssetsManager::_getAssetRaw(const std::string &id) noexcept {
 	auto it = _asset_cache.find(id);
 	if (it == _asset_cache.end()) {
 		std::cerr << "AssetsManager::getAsset: asset not found: " << id << "\n";
@@ -104,7 +104,9 @@ void *AssetsManager::getAssetRaw(const std::string &id) noexcept {
 	return it->second;
 }
 
-void AssetsManager::cacheAssetRaw(const std::string &id, void *asset) noexcept {
+void AssetsManager::_cacheAssetRaw(
+	const std::string &id, void *asset
+) noexcept {
 	if (_asset_cache.find(id) != _asset_cache.end()) {
 #ifndef NDEBUG
 		std::cerr << "AssetsManager::cacheAsset: asset already cached: " << id
