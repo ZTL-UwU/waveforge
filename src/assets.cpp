@@ -126,9 +126,9 @@ void loadDuckRawPNG(AssetsManager &mgr) {
 
 void trimDuckRNG(AssetsManager &mgr) {
 	auto raw_img = mgr.getAsset<sf::Image>("duck/raw");
-	auto trimmed_img = new sf::Image(trimImage(*raw_img));
-	mgr.cacheAsset("duck/shape", new PixelShape(*trimmed_img));
+	auto trimmed_img = new sf::Image(trimImage(raw_img));
 	mgr.cacheAsset("duck/image", trimmed_img);
+	mgr.cacheAsset("duck/shape", new PixelShape(*trimmed_img));
 }
 
 void createDuckSprite(AssetsManager &mgr) {
@@ -136,19 +136,35 @@ void createDuckSprite(AssetsManager &mgr) {
 	// allocate texture on heap and keep ownership in asset manager
 	auto texture = new sf::Texture();
 	texture->setSmooth(false);
-	if (!texture->loadFromImage(*img)) {
+	if (!texture->loadFromImage(img)) {
 		delete texture;
 		throw std::runtime_error("Failed to create texture for duck sprite");
 	}
 
 	// cache texture first so sprite can safely reference it
 	mgr.cacheAsset("duck/texture", texture);
-	mgr.cacheAsset("duck/sprite", new sf::Sprite(*texture));
 }
 
 void loadMusicPPX(AssetsManager &mgr) {
 	auto music = new sf::Music("assets/Pixelated Paradise-X.mp3");
 	mgr.cacheAsset("music/Pixelated Paradise-X", music);
+}
+
+void loadGoalSprites(AssetsManager &mgr) {
+	auto goal_img_1 = new sf::Image();
+	if (!goal_img_1->loadFromFile("assets/goal1.png")) {
+		throw std::runtime_error("Failed to load asset: assets/goal1.png");
+	}
+	mgr.cacheAsset("goal/image_1", goal_img_1);
+
+	auto goal_img_2 = new sf::Image();
+	if (!goal_img_2->loadFromFile("assets/goal2.png")) {
+		throw std::runtime_error("Failed to load asset: assets/goal2.png");
+	}
+	mgr.cacheAsset("goal/image_2", goal_img_2);
+
+	auto goal_sprite = new GoalSprite(*goal_img_1, *goal_img_2);
+	mgr.cacheAsset("goal/sprite", goal_sprite);
 }
 
 } // namespace
@@ -164,6 +180,7 @@ void AssetsManager::loadAllAssets() {
 		{"Processing duck image and calculating bounding box", trimDuckRNG},
 		{"Creating duck sprite from processed image", createDuckSprite},
 		{"Loading Pixelated Paradise-X music", loadMusicPPX},
+		{"Loading goal sprites", loadGoalSprites},
 	};
 
 	auto &mgr = AssetsManager::instance();

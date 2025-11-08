@@ -3,9 +3,6 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <memory>
 #include <proxy/proxy.h>
 
 int main() {
@@ -25,23 +22,19 @@ int main() {
 			pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
 		);
 	}
-
-	auto &duck_sprite = *wf::AssetsManager::instance().getAsset<sf::Sprite>(
-		"duck/sprite"
-	);
-	duck_sprite.setScale({scale, scale});
 	level.duck.position = sf::Vector2f(width / 2., platform_y - 50);
 
-	// render pixel world
-	auto pixel_buffer = std::make_unique<std::uint8_t[]>(width * height * 4);
-	sf::Texture world_texture;
-	if (!world_texture.resize({width, height})) {
-		std::cerr << "Failed to create world texture\n";
-		return EXIT_FAILURE;
+	level.goal.x = width - level.goal.width();
+	level.goal.y = 20;
+	int goal_platform_y = level.goal.y + level.goal.height();
+	for (int x = level.goal.x - 5; x < width; ++x) {
+		world.replacePixel(
+			x, goal_platform_y,
+			pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
+		);
 	}
-	world_texture.setSmooth(false);
-	auto world_sprite = sf::Sprite(world_texture);
-	world_sprite.setScale({scale, scale});
+
+	wf::LevelRenderer renderer(level, scale);
 
 	sf::RenderWindow window(
 		sf::VideoMode(
@@ -54,11 +47,11 @@ int main() {
 	);
 	window.setFramerateLimit(24);
 
-	auto background_music = wf::AssetsManager::instance().getAsset<sf::Music>(
+	auto &background_music = wf::AssetsManager::instance().getAsset<sf::Music>(
 		"music/Pixelated Paradise-X"
 	);
-	background_music->setLooping(true);
-	background_music->play();
+	background_music.setLooping(true);
+	background_music.play();
 
 	int frame = 0;
 
@@ -119,7 +112,7 @@ int main() {
 			// window closed
 			if (ev->is<sf::Event::Closed>()) {
 				window.close();
-				background_music->stop();
+				background_music.stop();
 				break;
 			}
 
@@ -201,51 +194,40 @@ int main() {
 
 		// clear to black background
 		window.clear(sf::Color::White);
-		world.renderToBuffer({pixel_buffer.get(), width * height * 4});
-		world_texture.update(pixel_buffer.get());
-		window.draw(world_sprite);
-
-		// draw the duck sprite at rounded world position to keep pixel-perfect
-		// look
-		{
-			sf::Vector2f wp = level.duck.position;
-			int rx = std::round(wp.x);
-			int ry = std::round(wp.y);
-			// set integer pixel position (world -> screen)
-			duck_sprite.setPosition(
-				sf::Vector2f(
-					static_cast<float>(rx * scale),
-					static_cast<float>(ry * scale)
-				)
-			);
-			window.draw(duck_sprite);
-		}
+		renderer.render(window);
 
 		// draw brush outline (red) at current mouse/world position
 		sf::Vector2i mpos = sf::Mouse::getPosition(window);
 		int mouse_wx = mpos.x / scale;
 		int mouse_wy = mpos.y / scale;
 		int half = brush_size / 2;
-		sf::RectangleShape brushRect(
-			sf::Vector2f(
-				static_cast<float>(brush_size * scale),
-				static_cast<float>(brush_size * scale)
-			)
-		);
+		float brush_outline_size = (brush_size + 1) * scale;
+		sf::RectangleShape brushRect({brush_outline_size, brush_outline_size});
 		brushRect.setFillColor(sf::Color::Transparent);
 		brushRect.setOutlineColor(sf::Color::Red);
 		brushRect.setOutlineThickness(1.0f);
 		// top-left in pixels
 		brushRect.setPosition(
-			sf::Vector2f(
-				static_cast<float>((mouse_wx - half) * scale),
-				static_cast<float>((mouse_wy - half) * scale)
-			)
+			sf::Vector2f((mouse_wx - half) * scale, (mouse_wy - half) * scale)
 		);
 		window.draw(brushRect);
 		window.display();
 
 		++frame;
+
+		if (level.isCompleted()) {
+			std::puts("Level completed! Congratulations!");
+			window.close();
+			background_music.stop();
+			break;
+		}
+
+		if (level.isFailed()) {
+			std::puts("You lost the duck! Level failed.");
+			window.close();
+			background_music.stop();
+			break;
+		}
 	}
 
 	return 0;

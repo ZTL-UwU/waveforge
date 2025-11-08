@@ -2,6 +2,8 @@
 #define WFORGE_ASSETS_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <cstdint>
 #include <map>
 #include <string>
@@ -37,8 +39,8 @@ public:
 	static void loadAllAssets();
 
 	template<typename T>
-	T *getAsset(const std::string &id) noexcept {
-		return static_cast<T *>(getAssetRaw(id));
+	T &getAsset(const std::string &id) noexcept {
+		return *static_cast<T *>(getAssetRaw(id));
 	}
 
 	template<typename T>
@@ -53,6 +55,20 @@ private:
 	void cacheAssetRaw(const std::string &id, void *asset) noexcept;
 
 	std::map<std::string, void *> _asset_cache;
+};
+
+struct GoalSprite {
+	GoalSprite(sf::Image &goal_1, sf::Image &goal_2);
+
+	int width() const noexcept;
+	int height() const noexcept;
+
+	void render(
+		sf::RenderTarget &target, int x, int y, int progress, int scale
+	) const noexcept;
+
+private:
+	sf::Texture _goal_1, _goal_2;
 };
 
 } // namespace wf

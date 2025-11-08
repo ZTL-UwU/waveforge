@@ -27,7 +27,7 @@ struct RelatedPixel {
 } // namespace
 
 DuckEntity::DuckEntity(sf::Vector2f pos) noexcept
-	: shape(*AssetsManager::instance().getAsset<PixelShape>("duck/shape"))
+	: shape(AssetsManager::instance().getAsset<PixelShape>("duck/shape"))
 	, position(pos)
 	, velocity(0.0f, 0.0f) {}
 
