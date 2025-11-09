@@ -71,7 +71,7 @@ public:
 		return _height;
 	}
 
-	unsigned int rand() noexcept;
+	unsigned int rand() const noexcept;
 
 	PixelTag tagOf(int x, int y) const noexcept;
 	PixelTag &tagOf(int x, int y) noexcept;

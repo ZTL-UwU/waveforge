@@ -239,7 +239,8 @@ void DuckEntity::step(const Level &level) noexcept {
 
 	int to_x = cur_x, to_y = cur_y;
 
-	bool collision_allowed = currentlyColliding(level);
+	bool cur_colliding = currentlyColliding(level);
+	bool collision_allowed = cur_colliding;
 	bool forced_stop = false;
 	for (auto [tx, ty] : tilesOnSegment({cur_x, cur_y}, {target_x, target_y})) {
 		if (tx == cur_x && ty == cur_y) {
@@ -248,8 +249,6 @@ void DuckEntity::step(const Level &level) noexcept {
 
 		bool collision = willCollideAt(level, tx, ty);
 		if (collision && !collision_allowed) {
-			velocity.x = 0.0f;
-			velocity.y = 0.0f;
 			forced_stop = true;
 			break;
 		}
@@ -262,10 +261,7 @@ void DuckEntity::step(const Level &level) noexcept {
 		to_y = ty;
 	}
 
-	if (forced_stop) {
-		position.x = to_x;
-		position.y = to_y;
-	} else {
+	if (!forced_stop) {
 		int target_fed_x = velocity.x > 0
 			? std::ceil(position.x + velocity.x)
 			: std::floor(position.x + velocity.x);
@@ -279,7 +275,24 @@ void DuckEntity::step(const Level &level) noexcept {
 			position.x = target_x;
 			position.y = target_y;
 		}
+		return;
 	}
-}
 
+	if (std::abs(velocity.x) < 0.01f && target_y < to_y && !cur_colliding) {
+		int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+		for (int d : {rand_dir, -rand_dir}) {
+			int side_x = to_x + d;
+			if (!willCollideAt(level, side_x, to_y - 2)) {
+				to_x = side_x;
+				to_y = to_y - 1;
+			}
+		}
+	}
+
+	position.x = to_x;
+	position.y = to_y;
+
+	velocity.x = 0.0f;
+	velocity.y = 0.0f;
+}
 } // namespace wf
