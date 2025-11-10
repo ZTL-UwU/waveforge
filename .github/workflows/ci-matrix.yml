@@ -23,10 +23,6 @@ jobs:
             platform: windows
             executable: waveforge.exe
             package_name: waveforge-windows-x64.zip
-          - os: macos-latest
-            platform: macos
-            executable: waveforge
-            package_name: waveforge-macos-x64.zip
     
     steps:
     - name: Checkout code
@@ -42,21 +38,23 @@ jobs:
           g++-14 \
           cmake \
           ninja-build \
-          libsfml-dev
+          libsfml-dev \
+          libx11-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libudev-dev \
+          libgl1-mesa-dev \
+          libflac-dev \
+          libogg-dev \
+          libvorbis-dev \
+          libvorbisenc2 \
+          libvorbisfile3 \
+          libopenal-dev \
+          libfreetype6-dev
         # Set GCC-13 as default
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
-    
-    - name: Install dependencies (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        # Install LLVM/Clang with C++23 support
-        brew install llvm cmake ninja sfml
-        # Use Homebrew's LLVM
-        echo "CC=$(brew --prefix llvm)/bin/clang" >> $GITHUB_ENV
-        echo "CXX=$(brew --prefix llvm)/bin/clang++" >> $GITHUB_ENV
-        echo "LDFLAGS=-L$(brew --prefix llvm)/lib/c++ -Wl,-rpath,$(brew --prefix llvm)/lib/c++" >> $GITHUB_ENV
-        echo "CPPFLAGS=-I$(brew --prefix llvm)/include" >> $GITHUB_ENV
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
     
     - name: Install dependencies (Windows)
       if: matrix.os == 'windows-latest'
