@@ -56,8 +56,8 @@ void LevelRenderer::_renderFallsand(sf::RenderTarget &target) noexcept {
 
 void LevelRenderer::_renderDuck(sf::RenderTarget &target) noexcept {
 	sf::Vector2f duck_pos(
-		std::round(_level.duck.position.x * scale),
-		std::round(_level.duck.position.y * scale)
+		std::round(_level.duck.position.x) * scale,
+		std::round(_level.duck.position.y) * scale
 	);
 
 	_duck_sprite.setPosition(duck_pos);
