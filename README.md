@@ -21,7 +21,7 @@ Four music tracks are created and added to the repository, but only "Pixelated P
 
 ## Build instructions
 
-You need to have CMake and a C++23 compatible compiler installed.
+You need to have CMake and a C++23 compatible compiler installed (e.g. GCC 14, Clang 20, MSVC latest). Then run the following commands in the project root directory:
 
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo .

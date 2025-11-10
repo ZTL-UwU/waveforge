@@ -8,6 +8,7 @@ import os
 import sys
 import shutil
 import zipfile
+import json
 from pathlib import Path
 
 
@@ -17,11 +18,21 @@ def copy_assets(assets_dir: Path, output_assets_dir: Path):
     """
     output_assets_dir.mkdir(parents=True, exist_ok=True)
     
-    # Copy manifest.json
+    # Copy (minified) manifest.json into package (do not modify original file)
     manifest = assets_dir / "manifest.json"
     if manifest.exists():
-        shutil.copy2(manifest, output_assets_dir / "manifest.json")
-        print(f"Copied: {manifest.name}")
+        try:
+            with manifest.open('r', encoding='utf-8') as rf:
+                data = json.load(rf)
+            # Dump minified JSON (no spaces)
+            minified = json.dumps(data, separators=(',', ':'), ensure_ascii=False)
+            out_path = output_assets_dir / "manifest.json"
+            out_path.write_text(minified, encoding='utf-8')
+            print(f"Added minified manifest: {out_path.name}")
+        except Exception as e:
+            # Fallback: copy original if JSON parsing fails
+            shutil.copy2(manifest, output_assets_dir / "manifest.json")
+            print(f"Warning: failed to minify manifest.json ({e}), copied original instead")
     
     # Copy all .png files
     for png_file in assets_dir.glob("*.png"):

@@ -10,6 +10,7 @@ FetchContent_Declare(SFML
   GIT_SHALLOW ON
   EXCLUDE_FROM_ALL SYSTEM
 )
+option(SFML_USE_SYSTEM_DEPS ON)
 FetchContent_MakeAvailable(SFML)
 
 # msft_proxy
