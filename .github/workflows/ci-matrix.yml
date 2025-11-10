@@ -53,8 +53,8 @@ jobs:
           libopenal-dev \
           libfreetype6-dev
         # Set GCC-13 as default
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
     
     - name: Install dependencies (Windows)
       if: matrix.os == 'windows-latest'
