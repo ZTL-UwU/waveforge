@@ -1,0 +1,89 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            executable: waveforge
+            package_name: waveforge-linux-x64.zip
+          - os: windows-latest
+            platform: windows
+            executable: waveforge.exe
+            package_name: waveforge-windows-x64.zip
+          - os: macos-latest
+            platform: macos
+            executable: waveforge
+            package_name: waveforge-macos-x64.zip
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          ninja-build \
+          libsfml-dev \
+          libx11-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libudev-dev \
+          libgl1-mesa-dev \
+          libflac-dev \
+          libogg-dev \
+          libvorbis-dev \
+          libvorbisenc2 \
+          libvorbisfile3 \
+          libopenal-dev \
+          libfreetype6-dev
+    
+    - name: Install dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install cmake ninja sfml
+    
+    - name: Install dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install cmake ninja -y
+    
+    - name: Configure CMake
+      run: |
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+    
+    - name: Build
+      run: |
+        cmake --build build --config Release
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    
+    - name: Package application
+      run: |
+        python pack.py build/${{ matrix.executable }} assets ${{ matrix.package_name }} ${{ matrix.platform }}
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}-build
+        path: ${{ matrix.package_name }}
+        retention-days: 30
