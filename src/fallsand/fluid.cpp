@@ -30,10 +30,10 @@ bool isAirLike(const PixelTag &tag) noexcept {
 constexpr float surface_adjust_factor = 0.7;
 
 void densityAnalysisStep(PixelWorld &world, AnalysisContext &ctx) noexcept {
-	const int efftective_infinity_of_x = world.width() + 10;
+	const int effective_infinity_of_x = world.width() + 10;
 
 	for (int y = world.height() - 2; y >= 0; --y) {
-		std::vector<std::pair<int, int>> active_ranges; // [l, r]
+		std::vector<std::pair<int, int>> active_intervals; // [l, r]
 
 		for (int l = 0, r = 0; r < world.width(); ++r) {
 			auto tag = world.tagOf(r, y);
@@ -43,29 +43,24 @@ void densityAnalysisStep(PixelWorld &world, AnalysisContext &ctx) noexcept {
 			}
 
 			if (r > l) {
-				active_ranges.emplace_back(
+				active_intervals.emplace_back(
 					l, tag.pclass == PixelClass::Fluid ? r : r - 1
 				);
 			}
 			l = r + 1;
 		}
 
-		for (auto [l, r] : active_ranges) {
+		for (auto [l, r] : active_intervals) {
 			if (l == r) {
 				continue;
 			}
 
 			std::vector<int> fill_pos;
 			PixelType fill_type = PixelType::Air;
-			bool at_least_dual_fluids = false;
 			for (int x = l; x <= r; ++x) {
 				auto tag = world.tagOf(x, y + 1);
 				if (tag.pclass != PixelClass::Fluid) {
 					continue;
-				}
-
-				if (fill_type != PixelType::Air && fill_type != tag.type) {
-					at_least_dual_fluids = true;
 				}
 
 				if (fill_type == PixelType::Air
@@ -80,7 +75,7 @@ void densityAnalysisStep(PixelWorld &world, AnalysisContext &ctx) noexcept {
 			}
 
 			int avail_count = fill_pos.size();
-			if (avail_count == 0 || !at_least_dual_fluids) {
+			if (avail_count == 0) {
 				continue;
 			}
 
@@ -96,13 +91,13 @@ void densityAnalysisStep(PixelWorld &world, AnalysisContext &ctx) noexcept {
 					left_pos.push_back(x);
 				}
 
-				if (world.typeOfIs(x, y, fill_type)) {
+				if (isDenserOrEqual(fill_type, world.tagOf(x, y).type)) {
 					continue;
 				}
 
 				bool has_option = false;
-				int left_dis = efftective_infinity_of_x;
-				int right_dis = efftective_infinity_of_x;
+				int left_dis = effective_infinity_of_x;
+				int right_dis = effective_infinity_of_x;
 				int lp, rp;
 				if (!left_pos.empty()) {
 					has_option = true;

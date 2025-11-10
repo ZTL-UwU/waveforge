@@ -17,6 +17,10 @@ bool isDenser(PixelType a, PixelType b) noexcept {
 	return static_cast<std::uint8_t>(a) > static_cast<std::uint8_t>(b);
 }
 
+bool isDenserOrEqual(PixelType a, PixelType b) noexcept {
+	return static_cast<std::uint8_t>(a) >= static_cast<std::uint8_t>(b);
+}
+
 PixelWorld::PixelWorld() noexcept: _width(0), _height(0) {}
 
 PixelWorld::PixelWorld(int width, int height) noexcept
