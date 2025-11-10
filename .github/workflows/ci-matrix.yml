@@ -56,9 +56,13 @@ jobs:
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
     
+    - name: Setup MSVC environment (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: ilammy/msvc-dev-cmd@v1
+        
     - name: Configure CMake
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
     
     - name: Build
       run: |
