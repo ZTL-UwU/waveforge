@@ -6,6 +6,7 @@
 #include <proxy/proxy.h>
 #include <proxy/v4/proxy.h>
 #include <proxy/v4/proxy_macros.h>
+#include <span>
 
 namespace wf {
 

@@ -21,16 +21,17 @@ Four music tracks are created and added to the repository, but only "Pixelated P
 
 ## Build instructions
 
-You need to have CMake and a C++23 compatible compiler installed (e.g. GCC 14, Clang 20, MSVC latest). Then run the following commands in the project root directory:
+You need to have CMake and a C++23 compatible compiler installed (e.g. GCC 14, Clang 20, MSVC 19.44.35219.0). Then run the following commands in the project root directory:
 
 ```bash
+# Make sure to enter MSVC environment on Windows
 cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo .
 cmake --build build --config RelWithDebInfo
 ```
 
 The direct dependencies will be automatically downloaded and built. Find the executable in `build` directory. The built program can be found at `build/waveforge` (or `build/waveforge.exe` on Windows).
 
-For Linux systems, SFML requires some additional system libraries. The simplest way is to install SFML via your package manager, so that all those internal dependencies are automatically handled. For example:
+For Linux systems, SFML might requires some additional system libraries. The simplest way is to install SFML via your package manager, so that all those internal dependencies are automatically handled. For example:
 
 ```bash
 # Debian/Ubuntu
@@ -41,8 +42,6 @@ sudo pacman -S sfml
 ```
 
 You can also install those dependencies manually if you prefer not to install SFML system-wide. Please refer to SFML's official documentation for more details.
-
-P.S. I haven't tested building on Windows yet, but it should work fine as CMake is cross-platform and SFML only relies on WinAPI there, instead of additional system libraries.
 
 ## Implementation notes
 
