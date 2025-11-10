@@ -32,13 +32,29 @@ struct PixelFacade : pro::facade_builder
 
 using PixelElement = pro::proxy<PixelFacade>;
 
+// Insert new types to correct position! Don't just append at the end!
 enum class PixelType : std::uint8_t {
-	Air,
+	// Gas types (order: lowest to highest density)
+	Air = 0,
+
+	// Particle types
+	FluidParticle,
+
+	// Fluid types (order: lowest to highest density)
+	Oil,
+	Water,
+
+	// Solid types
 	Stone,
 	Sand,
-	Water,
-	WaterParticle,
+
+	// for internal use only, keep at the end
+	_count
 };
+
+static_assert(static_cast<std::uint8_t>(PixelType::_count) <= 64);
+
+bool isDenser(PixelType a, PixelType b) noexcept;
 
 enum class PixelClass : std::uint8_t {
 	Solid = 0,
@@ -51,9 +67,11 @@ struct PixelTag {
 	PixelType type : 6;
 	PixelClass pclass : 2;
 	unsigned int color_index : 8; // 256 colors, see Colorpalette.h
-	bool dirty : 1 = false;       // updated in current step
+	bool dirty : 1 = false;       // updated in current step, for physics
 	bool is_free_falling : 1 = false;
-	signed int fluid_dir : 2; // -1 = left, 0 = none, +1 = right
+	signed int fluid_dir : 2;        // -1 = left, 0 = none, +1 = right
+	signed int heat : 4 = 0;         // -8=freezed, -7=cold, 0=normal, +7=hot
+	unsigned int burn_level : 3 = 0; // 0 = not burning, 7 = fully burnt
 };
 
 class PixelWorld {
@@ -78,7 +96,14 @@ public:
 	PixelElement &elementOf(int x, int y) noexcept;
 
 	void swapPixels(int x1, int y1, int x2, int y2) noexcept;
+
+	// swapPixels without swapping fluid_dir
+	void swapFluids(int x1, int y1, int x2, int y2) noexcept;
+
 	void replacePixel(int x, int y, PixelElement new_pixel) noexcept;
+	void replacePixel(
+		int x, int y, PixelElement new_pixel, PixelTag new_tag
+	) noexcept;
 	void replacePixelWithAir(int x, int y) noexcept;
 
 	bool typeOfIs(int x, int y, PixelType ptype) const noexcept;
@@ -108,13 +133,19 @@ private:
 
 namespace element {
 
+// Common superclass for all elements, no special behavior
 struct EmptySubsElement {
 	void step(PixelWorld &world, int x, int y) noexcept {}
 };
 
+// Common superclass for solid elements
 struct SolidElement : EmptySubsElement {
-	// Common superclass for solid elements
 	// Empty for now
+};
+
+// Common superclass for fluid elements
+struct FluidElement : EmptySubsElement {
+	void step(PixelWorld &world, int x, int y) noexcept;
 };
 
 struct Air : EmptySubsElement {
@@ -136,21 +167,26 @@ protected:
 	float vx = 0, vy = 0;
 };
 
-struct Water : EmptySubsElement {
+struct Water : FluidElement {
 	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
 };
 
-struct WaterParticle : EmptySubsElement {
+struct Oil : FluidElement {
+	std::size_t hash() const noexcept;
+	PixelTag newTag() const noexcept;
+};
+
+struct FluidParticle : EmptySubsElement {
 	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
 
-	WaterParticle() noexcept = default;
-	WaterParticle(float init_vx, float init_vy) noexcept;
+	FluidParticle() noexcept = default;
+	FluidParticle(float init_vx, float init_vy, PixelElement element) noexcept;
 
 protected:
+	PixelElement element;
 	float vx = 0, vy = 0;
 };
 

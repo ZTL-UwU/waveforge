@@ -10,7 +10,7 @@ Waveforge is a 2D platformer where the player needs to manipulate water waves (a
 
 The codebase for now is a prove of concept. The physics simulation is basic but functional, and the wave manipulation is not fully implemented yet. Launching the game you will get a sandbox to play around with the physics simulation.
 
-- `1`/`2`/`3` keys: change to brush to spawn sand, water, and stone wall pixels
+- `1`/`2`/`3`/`4` keys: change to brush to spawn sand, water, oil and stone wall pixels, respectively
 - Left mouse button: use the brush
 - Right mouse button: erase pixels
 - Scroll wheel: change brush size
@@ -42,7 +42,7 @@ sudo pacman -S sfml
 
 You can also install those dependencies manually if you prefer not to install SFML system-wide. Please refer to SFML's official documentation for more details.
 
-P.S. I haven't tested building on Windows yet (I'll try tonight maybe), but it should work fine as CMake is cross-platform and SFML only relies on WinAPI there, instead of additional system libraries.
+P.S. I haven't tested building on Windows yet, but it should work fine as CMake is cross-platform and SFML only relies on WinAPI there, instead of additional system libraries.
 
 ## Implementation notes
 
@@ -63,5 +63,6 @@ The current `main.cpp` (mainly used for testing) is quite messy (partly because 
 
 - Project Management & Programming: [fang_erj](https://github.com/szdytom)
 - Music: stevvven
+- Game Play: zurry
 
 Look for more team members in the future! Contact me with email szdytom[at]qq.com  or discord @fang_erj if you are interested.

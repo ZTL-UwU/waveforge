@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstring>
 #include <random>
+#include <utility>
 #include <vector>
 
 namespace wf {
@@ -26,9 +27,117 @@ bool isAirLike(const PixelTag &tag) noexcept {
 	return tag.pclass == PixelClass::Gas || tag.pclass == PixelClass::Particle;
 }
 
-} // namespace
-
 constexpr float surface_adjust_factor = 0.7;
+
+void densityAnalysisStep(PixelWorld &world, AnalysisContext &ctx) noexcept {
+	const int efftective_infinity_of_x = world.width() + 10;
+
+	for (int y = world.height() - 2; y >= 0; --y) {
+		std::vector<std::pair<int, int>> active_ranges; // [l, r]
+
+		for (int l = 0, r = 0; r < world.width(); ++r) {
+			auto tag = world.tagOf(r, y);
+
+			if (tag.pclass == PixelClass::Fluid && r + 1 < world.width()) {
+				continue;
+			}
+
+			if (r > l) {
+				active_ranges.emplace_back(
+					l, tag.pclass == PixelClass::Fluid ? r : r - 1
+				);
+			}
+			l = r + 1;
+		}
+
+		for (auto [l, r] : active_ranges) {
+			if (l == r) {
+				continue;
+			}
+
+			std::vector<int> fill_pos;
+			PixelType fill_type = PixelType::Air;
+			bool at_least_dual_fluids = false;
+			for (int x = l; x <= r; ++x) {
+				auto tag = world.tagOf(x, y + 1);
+				if (tag.pclass != PixelClass::Fluid) {
+					continue;
+				}
+
+				if (fill_type != PixelType::Air && fill_type != tag.type) {
+					at_least_dual_fluids = true;
+				}
+
+				if (fill_type == PixelType::Air
+				    || isDenser(fill_type, tag.type)) {
+					fill_type = tag.type;
+					fill_pos.clear();
+				}
+
+				if (tag.type == fill_type) {
+					fill_pos.push_back(x);
+				}
+			}
+
+			int avail_count = fill_pos.size();
+			if (avail_count == 0 || !at_least_dual_fluids) {
+				continue;
+			}
+
+			std::vector<int> left_pos;
+			int sp = 0;
+			for (int x = l; x <= r; ++x) {
+				while (sp < fill_pos.size()
+				       && (fill_pos[sp] == -1 || fill_pos[sp] < x)) {
+					sp += 1;
+				}
+
+				if (sp < fill_pos.size() && fill_pos[sp] == x) {
+					left_pos.push_back(x);
+				}
+
+				if (world.typeOfIs(x, y, fill_type)) {
+					continue;
+				}
+
+				bool has_option = false;
+				int left_dis = efftective_infinity_of_x;
+				int right_dis = efftective_infinity_of_x;
+				int lp, rp;
+				if (!left_pos.empty()) {
+					has_option = true;
+					lp = left_pos.back();
+					left_dis = x - lp;
+				}
+
+				if (sp < fill_pos.size()) {
+					has_option = true;
+					rp = fill_pos[sp];
+					right_dis = rp - x;
+				}
+
+				if (!has_option) {
+					continue;
+				}
+
+				avail_count -= 1;
+				if (left_dis < right_dis) {
+					world.swapFluids(x, y, lp, y + 1);
+					left_pos.pop_back();
+				} else {
+					world.swapFluids(x, y, rp, y + 1);
+					fill_pos[sp] = -1;
+				}
+
+				if (avail_count == 0) {
+					break;
+				}
+			}
+		}
+	}
+}
+
+} // namespace
 
 void PixelWorld::fluidAnalysisStep() noexcept {
 	AnalysisContext ctx;
@@ -190,6 +299,8 @@ void PixelWorld::fluidAnalysisStep() noexcept {
 			swapPixels(ax, ay, bx, by - 1);
 		}
 	}
+
+	densityAnalysisStep(*this, ctx);
 }
 
 } // namespace wf

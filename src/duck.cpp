@@ -10,9 +10,9 @@ namespace wf {
 namespace {
 
 constexpr float duck_buoyancy_factor = .02f;
-constexpr float duck_flow_factor = .05f;
+constexpr float duck_flow_factor = .03f;
 constexpr float duck_air_drag = 0.95f;
-constexpr float duck_fluid_drag = 0.8f;
+constexpr float duck_fluid_drag = 0.7f;
 constexpr float duck_ground_friction = 0.7f;
 constexpr float duck_solid_correction_factor = 0.01f;
 constexpr float duck_solid_correction_threshold = 1.5f;

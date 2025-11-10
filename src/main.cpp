@@ -90,6 +90,12 @@ int main(int argc, char **argv) {
 						pro::make_proxy<wf::PixelFacade, wf::element::Water>()
 					);
 					break;
+				case wf::PixelType::Oil:
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Oil>()
+					);
+					break;
 				case wf::PixelType::Stone:
 					world.replacePixel(
 						x, y,
@@ -106,7 +112,7 @@ int main(int argc, char **argv) {
 		}
 	};
 
-	// current brush selection: 1=Sand, 2=Water, 3=Stone
+	// current brush selection: 1=Sand, 2=Water, 3=Oil, 4=Stone
 	wf::PixelType current_brush = wf::PixelType::Sand;
 
 	while (window.isOpen()) {
@@ -187,8 +193,11 @@ int main(int argc, char **argv) {
 						current_brush = wf::PixelType::Water;
 						std::puts("Brush: Water (2)");
 					} else if (k->code == sf::Keyboard::Key::Num3) {
+						current_brush = wf::PixelType::Oil;
+						std::puts("Brush: Oil (3)");
+					} else if (k->code == sf::Keyboard::Key::Num4) {
 						current_brush = wf::PixelType::Stone;
-						std::puts("Brush: Stone (3)");
+						std::puts("Brush: Stone (4)");
 					}
 				}
 			}

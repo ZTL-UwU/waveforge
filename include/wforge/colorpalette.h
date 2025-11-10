@@ -30,6 +30,10 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(64, 164, 223, 200),
 	},
 	{
+		.name = "Oil",
+		.color = sf::Color(85, 107, 47, 200),
+	},
+	{
 		.name = "DebugRed",
 		.color = sf::Color(255, 0, 0, 255),
 	}

@@ -13,6 +13,10 @@
 
 namespace wf {
 
+bool isDenser(PixelType a, PixelType b) noexcept {
+	return static_cast<std::uint8_t>(a) > static_cast<std::uint8_t>(b);
+}
+
 PixelWorld::PixelWorld() noexcept: _width(0), _height(0) {}
 
 PixelWorld::PixelWorld(int width, int height) noexcept
@@ -75,14 +79,33 @@ PixelElement &PixelWorld::elementOf(int x, int y) noexcept {
 }
 
 void PixelWorld::swapPixels(int x1, int y1, int x2, int y2) noexcept {
-	// ADL two steps
-	using std::swap;
+	using std::swap; // ADL two steps
 	swap(tagOf(x1, y1), tagOf(x2, y2));
+	swap(elementOf(x1, y1), elementOf(x2, y2));
+}
+
+void PixelWorld::swapFluids(int x1, int y1, int x2, int y2) noexcept {
+	// std::swap doesn't work for bitfields
+	auto &tag1 = tagOf(x1, y1);
+	auto &tag2 = tagOf(x2, y2);
+	int t = tag1.fluid_dir;
+	tag1.fluid_dir = tag2.fluid_dir;
+	tag2.fluid_dir = t;
+
+	using std::swap; // ADL two steps
+	swap(tag1, tag2);
 	swap(elementOf(x1, y1), elementOf(x2, y2));
 }
 
 void PixelWorld::replacePixel(int x, int y, PixelElement new_pixel) noexcept {
 	tagOf(x, y) = new_pixel->newTag();
+	elementOf(x, y) = std::move(new_pixel);
+}
+
+void PixelWorld::replacePixel(
+	int x, int y, PixelElement new_pixel, PixelTag new_tag
+) noexcept {
+	tagOf(x, y) = new_tag;
 	elementOf(x, y) = std::move(new_pixel);
 }
 

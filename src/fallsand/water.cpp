@@ -3,6 +3,8 @@
 #include "wforge/fallsand.h"
 #include <cmath>
 #include <cstddef>
+#include <proxy/v4/proxy.h>
+#include <utility>
 
 namespace wf {
 namespace element {
@@ -20,7 +22,20 @@ PixelTag Water::newTag() const noexcept {
 	};
 }
 
-void Water::step(PixelWorld &world, int x, int y) noexcept {
+std::size_t Oil::hash() const noexcept {
+	const std::size_t magic = ('O' << 24) | ('I' << 16) | ('L' << 8) | ' ';
+	return magic;
+}
+
+PixelTag Oil::newTag() const noexcept {
+	return PixelTag{
+		.type = PixelType::Oil,
+		.pclass = PixelClass::Fluid,
+		.color_index = colorIndexOf("Oil"),
+	};
+}
+
+void FluidElement::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
 		world.replacePixelWithAir(x, y);
 		return;
@@ -29,15 +44,22 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 	auto &my_tag = world.tagOf(x, y);
 
 	auto below_tag = world.tagOf(x, y + 1);
+	if (below_tag.pclass == PixelClass::Fluid
+	    && isDenser(my_tag.type, below_tag.type)) {
+		world.swapFluids(x, y, x, y + 1);
+		return;
+	}
+
 	if (below_tag.pclass == PixelClass::Gas) {
 		if (my_tag.is_free_falling) {
 			// Falling too fast, become particle
-			world.replacePixel(
-				x, y,
-				pro::make_proxy<wf::PixelFacade, wf::element::WaterParticle>(
-					0.0f, 1.5f
-				)
+			auto particle = pro::make_proxy<
+				wf::PixelFacade, wf::element::FluidParticle>(
+				0.0f, 1.5f, std::move(world.elementOf(x, y))
 			);
+			auto particle_tag = particle->newTag();
+			particle_tag.color_index = my_tag.color_index;
+			world.replacePixel(x, y, std::move(particle), particle_tag);
 		} else {
 			my_tag.is_free_falling = true;
 		}
@@ -59,7 +81,9 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 		}
 
 		auto diag_tag = world.tagOf(new_x, y + 1);
-		if (diag_tag.pclass == PixelClass::Gas) {
+		if (diag_tag.pclass == PixelClass::Gas
+		    || (diag_tag.pclass == PixelClass::Fluid
+		        && isDenser(my_tag.type, diag_tag.type))) {
 			my_tag.fluid_dir = d;
 			my_tag.is_free_falling = true;
 			world.swapPixels(x, y, new_x, y + 1);
@@ -82,20 +106,21 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 	my_tag.fluid_dir = 0;
 }
 
-WaterParticle::WaterParticle(float init_vx, float init_vy) noexcept
-	: vx(init_vx), vy(init_vy) {}
+FluidParticle::FluidParticle(
+	float init_vx, float init_vy, PixelElement element
+) noexcept
+	: vx(init_vx), vy(init_vy), element(std::move(element)) {}
 
-std::size_t WaterParticle::hash() const noexcept {
+std::size_t FluidParticle::hash() const noexcept {
 	const std::size_t magic = ('W' << 24) | ('P' << 16) | ('A' << 8) | 'R';
 	std::hash<float> float_hasher;
 	return float_hasher(vx) ^ (float_hasher(vy) << 1) ^ magic;
 }
 
-PixelTag WaterParticle::newTag() const noexcept {
+PixelTag FluidParticle::newTag() const noexcept {
 	return PixelTag{
-		.type = PixelType::WaterParticle,
+		.type = PixelType::FluidParticle,
 		.pclass = PixelClass::Particle,
-		.color_index = colorIndexOf("Water"),
 	};
 }
 
@@ -103,7 +128,7 @@ constexpr float air_drag = 0.95f;
 constexpr float bounce_back_y2x_factor = 0.2f;
 constexpr float bounce_back_decay = 0.6f;
 
-void WaterParticle::step(PixelWorld &world, int x, int y) noexcept {
+void FluidParticle::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
 		world.replacePixelWithAir(x, y);
 		return;
@@ -210,9 +235,7 @@ void WaterParticle::step(PixelWorld &world, int x, int y) noexcept {
 		} else {
 			dir = 1;
 		}
-		world.replacePixel(
-			x, y, pro::make_proxy<wf::PixelFacade, wf::element::Water>()
-		);
+		world.replacePixel(x, y, std::move(element));
 		world.tagOf(x, y).fluid_dir = dir;
 	}
 }
