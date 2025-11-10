@@ -44,10 +44,10 @@ add_executable(waveforge
   src/main.cpp
   src/fallsand/world.cpp
   src/fallsand/air.cpp
-  src/fallsand/fluid.cpp
+  src/fallsand/fluidflow.cpp
   src/fallsand/stone.cpp
   src/fallsand/sand.cpp
-  src/fallsand/water.cpp
+  src/fallsand/fluids.cpp
   src/level.cpp
   src/duck.cpp
   src/assets.cpp
