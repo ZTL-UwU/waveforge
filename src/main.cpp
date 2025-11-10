@@ -213,7 +213,7 @@ int main(int argc, char **argv) {
 		int mouse_wx = mpos.x / scale;
 		int mouse_wy = mpos.y / scale;
 		int half = brush_size / 2;
-		float brush_outline_size = brush_size * scale;
+		float brush_outline_size = (brush_size + 1 - brush_size % 2) * scale;
 		sf::RectangleShape brushRect({brush_outline_size, brush_outline_size});
 		brushRect.setFillColor(sf::Color::Transparent);
 		brushRect.setOutlineColor(sf::Color::Red);
