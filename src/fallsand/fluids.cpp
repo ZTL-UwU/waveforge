@@ -9,22 +9,12 @@
 namespace wf {
 namespace element {
 
-std::size_t Water::hash() const noexcept {
-	const std::size_t magic = ('W' << 24) | ('A' << 16) | ('T' << 8) | 'R';
-	return magic;
-}
-
 PixelTag Water::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Water,
 		.pclass = PixelClass::Fluid,
 		.color_index = colorIndexOf("Water"),
 	};
-}
-
-std::size_t Oil::hash() const noexcept {
-	const std::size_t magic = ('O' << 24) | ('I' << 16) | ('L' << 8) | ' ';
-	return magic;
 }
 
 PixelTag Oil::newTag() const noexcept {
@@ -115,12 +105,6 @@ FluidParticle::FluidParticle(
 	float init_vx, float init_vy, PixelElement element
 ) noexcept
 	: vx(init_vx), vy(init_vy), element(std::move(element)) {}
-
-std::size_t FluidParticle::hash() const noexcept {
-	const std::size_t magic = ('W' << 24) | ('P' << 16) | ('A' << 8) | 'R';
-	std::hash<float> float_hasher;
-	return float_hasher(vx) ^ (float_hasher(vy) << 1) ^ magic;
-}
 
 PixelTag FluidParticle::newTag() const noexcept {
 	return PixelTag{

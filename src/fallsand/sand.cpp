@@ -6,13 +6,6 @@
 namespace wf {
 namespace element {
 
-std::size_t Sand::hash() const noexcept {
-	// Some arbitrary hash value for sand
-	const std::size_t magic = ('S' << 24) | ('A' << 16) | ('N' << 8) | 'D';
-	std::hash<float> float_hasher;
-	return float_hasher(vx) ^ (float_hasher(vy) << 1) ^ magic;
-}
-
 PixelTag Sand::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Sand,

@@ -13,7 +13,6 @@ namespace wf {
 namespace _dispatch {
 
 // See microsoft/proxy library for the semantics of dispatch conventions
-PRO_DEF_MEM_DISPATCH(MemHash, hash);
 PRO_DEF_MEM_DISPATCH(MemNewTag, newTag);
 PRO_DEF_MEM_DISPATCH(MemStep, step);
 
@@ -25,7 +24,6 @@ class PixelWorld;
 /* clang-format off */
 // See microsoft/proxy library for the semantics of proxy and facade
 struct PixelFacade : pro::facade_builder
-	::add_convention<_dispatch::MemHash, std::size_t() const noexcept>
 	::add_convention<_dispatch::MemNewTag, PixelTag() const noexcept>
 	::add_convention<_dispatch::MemStep, void(PixelWorld &world, int x, int y) noexcept>
 	::build {};
@@ -151,17 +149,14 @@ struct FluidElement : EmptySubsElement {
 };
 
 struct Air : EmptySubsElement {
-	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 };
 
 struct Stone : SolidElement {
-	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 };
 
 struct Sand : SolidElement {
-	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
 
@@ -170,17 +165,14 @@ protected:
 };
 
 struct Water : FluidElement {
-	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 };
 
 struct Oil : FluidElement {
-	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 };
 
 struct FluidParticle : EmptySubsElement {
-	std::size_t hash() const noexcept;
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
 

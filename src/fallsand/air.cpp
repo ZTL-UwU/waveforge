@@ -4,11 +4,6 @@
 namespace wf {
 namespace element {
 
-std::size_t Air::hash() const noexcept {
-	// Some magic number for air since air is stateless
-	return ('A' << 16) | ('I' << 8) | 'R';
-}
-
 PixelTag Air::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Air,
