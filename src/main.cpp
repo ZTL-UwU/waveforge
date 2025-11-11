@@ -14,9 +14,11 @@ int main(int argc, char **argv) {
 		wf::_executable_path = std::filesystem::current_path();
 	}
 
-	constexpr int width = 320;
-	constexpr int height = 240;
-	constexpr int scale = 6; // screen pixels per world pixel
+	// constexpr int width = 320;
+	// constexpr int height = 240;
+	constexpr int width = 180;
+	constexpr int height = 120;
+	constexpr int scale = 8; // screen pixels per world pixel
 
 	wf::AssetsManager::loadAllAssets();
 	wf::Level level(width, height);
@@ -65,6 +67,11 @@ int main(int argc, char **argv) {
 
 	bool left_down = false;
 	bool right_down = false;
+
+	// pause / single-step controls: Space toggles pause, when paused 'n' steps
+	// once
+	bool paused = false;
+	bool step_once = false;
 
 	auto paint_at = [&](int world_x, int world_y, wf::PixelType ptype) {
 		int half = brush_size / 2;
@@ -186,7 +193,21 @@ int main(int argc, char **argv) {
 			if (ev->is<sf::Event::KeyPressed>()) {
 				const auto *k = ev->getIf<sf::Event::KeyPressed>();
 				if (k) {
-					if (k->code == sf::Keyboard::Key::Num1) {
+					// Space: toggle pause. When paused, pressing 'N' steps one
+					// frame.
+					if (k->code == sf::Keyboard::Key::Space) {
+						paused = !paused;
+						if (paused) {
+							std::puts("Simulation paused (Space)");
+						} else {
+							std::puts("Simulation resumed (Space)");
+						}
+					} else if (k->code == sf::Keyboard::Key::N) {
+						if (paused) {
+							step_once = true;
+							std::puts("Stepped 1 frame (N)");
+						}
+					} else if (k->code == sf::Keyboard::Key::Num1) {
 						current_brush = wf::PixelType::Sand;
 						std::puts("Brush: Sand (1)");
 					} else if (k->code == sf::Keyboard::Key::Num2) {
@@ -202,7 +223,11 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-		level.step();
+		if (!paused || step_once) {
+			level.step();
+			// clear single-step flag after stepping once
+			step_once = false;
+		}
 
 		// clear to black background
 		window.clear(sf::Color::White);

@@ -1,5 +1,6 @@
 #include "wforge/colorpalette.h"
 #include "wforge/fallsand.h"
+#include "wforge/xoroshiro.h"
 #include <memory>
 #include <proxy/proxy.h>
 #include <random>
@@ -27,8 +28,7 @@ PixelWorld::PixelWorld(int width, int height) noexcept
 	: _width(width)
 	, _height(height)
 	, _tags(std::make_unique<PixelTag[]>(width * height))
-	, _elements(std::make_unique<PixelElement[]>(width * height))
-	, _fluid_cid(std::make_unique<int[]>(width * height)) {
+	, _elements(std::make_unique<PixelElement[]>(width * height)) {
 	PixelTag airTag = element::Air().newTag();
 	for (int i = 0; i < width * height; ++i) {
 		_tags[i] = airTag;
@@ -125,12 +125,6 @@ bool PixelWorld::classOfIs(int x, int y, PixelClass pclass) const noexcept {
 	return tagOf(x, y).pclass == pclass;
 }
 
-unsigned int PixelWorld::rand() const noexcept {
-	// TODO: Replace with better RNG
-	static std::mt19937 rng(998244353);
-	return rng();
-}
-
 void PixelWorld::resetDirtyFlags() noexcept {
 	for (int i = 0; i < _width * _height; ++i) {
 		_tags[i].dirty = false;
@@ -139,8 +133,9 @@ void PixelWorld::resetDirtyFlags() noexcept {
 
 void PixelWorld::step() noexcept {
 	fluidAnalysisStep();
+	auto &rng = Xoroshiro128PP::globalInstance();
 	for (int y = _height - 1; y >= 0; --y) {
-		bool reverse_x = this->rand() % 2 == 0;
+		bool reverse_x = (rng.next() % 2 == 0);
 		for (int ix = 0; ix < _width; ++ix) {
 			int x = reverse_x ? (_width - 1 - ix) : ix;
 			while (!tagOf(x, y).dirty) {

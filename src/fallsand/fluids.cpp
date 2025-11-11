@@ -1,6 +1,7 @@
 #include "wforge/2d.h"
 #include "wforge/colorpalette.h"
 #include "wforge/fallsand.h"
+#include "wforge/xoroshiro.h"
 #include <cmath>
 #include <cstddef>
 #include <proxy/v4/proxy.h>
@@ -59,7 +60,9 @@ void FluidElement::step(PixelWorld &world, int x, int y) noexcept {
 	my_tag.is_free_falling = false;
 
 	if (my_tag.fluid_dir == 0) {
-		my_tag.fluid_dir = (world.rand() % 2 == 0) ? 1 : -1;
+		my_tag.fluid_dir = (Xoroshiro128PP::globalInstance().next() % 2 == 0)
+			? -1
+			: 1;
 	}
 
 	bool tiny_water_flow = below_tag.pclass == PixelClass::Solid;
@@ -78,12 +81,12 @@ void FluidElement::step(PixelWorld &world, int x, int y) noexcept {
 			return;
 		}
 
-		if (diag_tag.pclass == PixelClass::Fluid
+		/*if (diag_tag.pclass == PixelClass::Fluid
 		    && isDenser(my_tag.type, diag_tag.type)) {
-			my_tag.fluid_dir = d;
-			world.swapFluids(x, y, new_x, y + 1);
-			return;
-		}
+		    my_tag.fluid_dir = d;
+		    world.swapFluids(x, y, new_x, y + 1);
+		    return;
+		}*/
 
 		auto side_tag = world.tagOf(new_x, y);
 		if (side_tag.pclass == PixelClass::Gas) {
@@ -180,7 +183,9 @@ void FluidParticle::step(PixelWorld &world, int x, int y) noexcept {
 
 		vx *= bounce_back_decay;
 		if (std::abs(vx) < 0.01f) {
-			int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+			int rand_dir = (Xoroshiro128PP::globalInstance().next() % 2 == 0)
+				? -1
+				: 1;
 			for (int d : {rand_dir, -rand_dir}) {
 				if (free_dir[(d + 1) / 2]) {
 					vx = d * std::abs(vy) * bounce_back_y2x_factor;

@@ -89,8 +89,6 @@ public:
 		return _height;
 	}
 
-	unsigned int rand() const noexcept;
-
 	PixelTag tagOf(int x, int y) const noexcept;
 	PixelTag &tagOf(int x, int y) noexcept;
 	PixelElement &elementOf(int x, int y) noexcept;
@@ -125,10 +123,6 @@ private:
 
 	std::unique_ptr<PixelTag[]> _tags;
 	std::unique_ptr<PixelElement[]> _elements;
-
-	// used internally for fluidAnalysisStep
-	// Connected component ID for fluid pixels
-	std::unique_ptr<int[]> _fluid_cid;
 };
 
 namespace element {

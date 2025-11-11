@@ -1,7 +1,9 @@
 #include "wforge/2d.h"
 #include "wforge/colorpalette.h"
 #include "wforge/fallsand.h"
+#include "wforge/xoroshiro.h"
 #include <cmath>
+#include <random>
 
 namespace wf {
 namespace element {
@@ -15,6 +17,8 @@ PixelTag Sand::newTag() const noexcept {
 	};
 }
 
+namespace {
+
 bool isSwappaleTag(PixelTag tag) noexcept {
 	return tag.type == PixelType::Air || tag.pclass == PixelClass::Fluid
 		|| tag.pclass == PixelClass::Particle;
@@ -27,6 +31,8 @@ constexpr float bounceBackYFactor = 0.3f;
 constexpr float bounceBackXFactor = 0.4f;
 constexpr int inertialResistance = 10;
 constexpr float sand_mass = 3.0f;
+
+} // namespace
 
 void Sand::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
@@ -54,6 +60,8 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 		my_tag.is_free_falling = true;
 	}
 
+	auto rng = Xoroshiro128PP::globalInstance();
+
 	int target_x = x + std::round(vx);
 	int target_y = y + std::round(vy);
 	if (target_x == x && target_y == y && my_tag.is_free_falling) {
@@ -61,7 +69,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 		if (below_tag.pclass != PixelClass::Solid) {
 			return;
 		}
-		int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+		int rand_dir = (rng.next() % 2 == 0) ? -1 : 1;
 		for (int d : {rand_dir, -rand_dir}) {
 			int new_x = x + d;
 			if (new_x < 0 || new_x >= world.width()) {
@@ -82,6 +90,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 	auto to_x = x, to_y = y;
 	bool forced_stop = false;
 	const std::array<int, 2> world_dim = {world.width(), world.height()};
+	std::uniform_int_distribution<int> inertial_dist(0, inertialResistance - 1);
 	for (auto [tx, ty] : tilesOnSegment({x, y}, {target_x, target_y})) {
 		if (tx < 0 || tx >= world.width() || ty < 0 || ty >= world.height()) {
 			// Out of bounds
@@ -100,7 +109,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 		to_y = ty;
 		if (my_tag.is_free_falling) {
 			for (auto [nx, ny] : neighborsOf({tx, ty}, world_dim)) {
-				if (world.rand() % inertialResistance == 0) {
+				if (inertial_dist(rng) == 0) {
 					continue;
 				}
 				world.tagOf(nx, ny).is_free_falling = true;
@@ -135,7 +144,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 		}
 
 		if (std::abs(vx) < 0.01f) {
-			int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+			int rand_dir = (rng.next() % 2 == 0) ? -1 : 1;
 			for (int d : {rand_dir, -rand_dir}) {
 				if (freeDir[(d + 1) / 2]) {
 					vx = d * std::abs(vy) * bounceBackXFactor;

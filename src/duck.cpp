@@ -2,6 +2,7 @@
 #include "wforge/assets.h"
 #include "wforge/fallsand.h"
 #include "wforge/level.h"
+#include "wforge/xoroshiro.h"
 #include <SFML/Window/Joystick.hpp>
 #include <cmath>
 
@@ -279,7 +280,9 @@ void DuckEntity::step(const Level &level) noexcept {
 	}
 
 	if (std::abs(velocity.x) < 0.01f && target_y < to_y && !cur_colliding) {
-		int rand_dir = (world.rand() % 2) * 2 - 1; // -1 or +1
+		int rand_dir = (Xoroshiro128PP::globalInstance().next() % 2 == 0)
+			? -1
+			: 1;
 		for (int d : {rand_dir, -rand_dir}) {
 			int side_x = to_x + d;
 			if (!willCollideAt(level, side_x, to_y - 2)) {

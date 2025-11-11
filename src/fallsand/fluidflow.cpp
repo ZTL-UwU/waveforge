@@ -1,11 +1,20 @@
 #include "wforge/2d.h"
 #include "wforge/fallsand.h"
+#include "wforge/xoroshiro.h"
 #include <algorithm>
 #include <cassert>
-#include <cstring>
-#include <random>
+#include <ctime>
+#include <iterator>
+#include <limits>
+#include <map>
+#include <queue>
 #include <utility>
 #include <vector>
+
+#ifndef NDEBUG
+#include <cpptrace/cpptrace.hpp>
+#include <iostream>
+#endif
 
 namespace wf {
 
@@ -13,23 +22,103 @@ namespace {
 
 using Coord = std::array<int, 2>;
 
+template<typename T>
+using FrameVector = std::vector<T>;
+
+template<typename K, typename V>
+using FrameMap = std::map<K, V>;
+
+template<typename T>
+using FrameQueue = std::queue<T>;
+
+// For flow network
+struct Edge {
+	int y;
+	int rev_index;
+	int capacity = 0, flow = 0;
+	FrameVector<Coord> y_surface;
+};
+
+struct CachedPixel {
+	PixelType type : 8;
+	unsigned int color_index : 8;
+	PixelElement element;
+};
+
+struct Vertex {
+	int id, belonged_component = -1;
+	int dep, cur_edge; // for Dinic
+	int indeg = 0;
+	PixelType type;
+	FrameVector<Edge> edges;
+	FrameVector<Coord> air_surface;
+	FrameVector<CachedPixel> cache;
+};
+
 struct ConnectedComponent {
-	int id;
-	std::vector<Coord> surface_pixels;
+	FrameVector<int> vertices;
 };
 
 struct AnalysisContext {
-	std::vector<ConnectedComponent> components;
-	std::vector<Coord> fluid_pixels;
-};
+	FrameVector<Vertex> vertices;
+	FrameMap<std::pair<int, int>, int> edge_idx_map;
+	FrameVector<int> pixel_vid;
+	FrameVector<ConnectedComponent> components;
 
-bool isAirLike(const PixelTag &tag) noexcept {
-	return tag.pclass == PixelClass::Gas || tag.pclass == PixelClass::Particle;
-}
+	AnalysisContext(int width, int height) noexcept
+		: pixel_vid(width * height, -1) {}
+
+	int touchEdge(int u, int v) {
+		auto it = edge_idx_map.find({u, v});
+		if (it != edge_idx_map.end()) {
+			return it->second;
+		}
+
+		int ue_id = vertices[u].edges.size();
+		int ve_id = vertices[v].edges.size();
+		vertices[u].edges.push_back({
+			.y = v,
+			.rev_index = ve_id,
+		});
+
+		vertices[v].edges.push_back({
+			.y = u,
+			.rev_index = ue_id,
+		});
+
+		edge_idx_map[{u, v}] = ue_id;
+		edge_idx_map[{v, u}] = ve_id;
+		return ue_id;
+	}
+
+	// u must be above v
+	void incFlow(int u, int v, int x, int y) {
+		auto it = edge_idx_map.find({u, v});
+		if (it == edge_idx_map.end()) {
+#ifndef NDEBUG
+			std::cerr << "No edge from " << u << " to " << v << "\n";
+			cpptrace::generate_trace().print();
+			std::abort();
+#endif
+			std::unreachable();
+		}
+
+		auto &e = vertices[u].edges[it->second];
+		e.capacity += 1;
+		e.y_surface.push_back({x, y + 1});
+
+		auto &re = vertices[v].edges[e.rev_index];
+		re.capacity += 1;
+		re.y_surface.push_back({x, y});
+	}
+};
 
 constexpr float surface_adjust_factor = 0.7;
 
-void densityAnalysisStep(PixelWorld &world, AnalysisContext &ctx) noexcept {
+constexpr int source_vid = 0;
+constexpr int sink_vid = 1;
+
+void densityAnalysisStep(PixelWorld &world) noexcept {
 	const int effective_infinity_of_x = world.width() + 10;
 
 	for (int y = world.height() - 2; y >= 0; --y) {
@@ -132,170 +221,375 @@ void densityAnalysisStep(PixelWorld &world, AnalysisContext &ctx) noexcept {
 	}
 }
 
-} // namespace
+void searchConnected(
+	PixelWorld &world, AnalysisContext &ctx, int vid, int sx, int sy,
+	PixelType ptype
+) noexcept {
+	Coord world_size = {world.width(), world.height()};
+	auto &vtx = ctx.vertices[vid];
 
-void PixelWorld::fluidAnalysisStep() noexcept {
-	AnalysisContext ctx;
+	FrameVector<Coord> stack;
+	stack.push_back({sx, sy});
+	while (!stack.empty()) {
+		auto [x, y] = stack.back();
+		stack.pop_back();
 
-	std::memset(_fluid_cid.get(), -1, sizeof(int) * _width * _height);
-
-	// Step 1: Identify fluid connected components
-	Coord world_dim = {_width, _height};
-	for (int x = 0; x < _width; ++x) {
-		for (int y = 0; y < _height; ++y) {
-			if (!classOfIs(x, y, PixelClass::Fluid)) {
-				continue;
-			}
-
-			if (tagOf(x, y).dirty) {
-				continue;
-			}
-
-			// New component found
-			ConnectedComponent comp = {
-				.id = static_cast<int>(ctx.components.size()),
-			};
-
-			// Flood fill
-			std::vector<Coord> stack;
-			stack.push_back({x, y});
-			while (!stack.empty()) {
-				auto [cx, cy] = stack.back();
-				stack.pop_back();
-
-				tagOf(cx, cy).dirty = true;
-				_fluid_cid[cy * _width + cx] = comp.id;
-				ctx.fluid_pixels.push_back({cx, cy});
-
-				// Check neighbors
-				for (auto [nx, ny] : neighborsOf({cx, cy}, world_dim)) {
-					if (!classOfIs(nx, ny, PixelClass::Fluid)) {
-						continue;
-					}
-					if (tagOf(nx, ny).dirty) {
-						continue;
-					}
-					stack.push_back({nx, ny});
-				}
-			}
-			ctx.components.push_back(std::move(comp));
-		}
-	}
-	resetDirtyFlags();
-
-	// Step 2: Analyze horizontally flowing fluids
-	for (int y = 0; y < _height; ++y) {
-		int last_comp_id = -1;
-		int dircnt[3] = {0, 0, 0}; // -1, 0, +1
-		std::vector<int> loc;
-
-		auto handle = [&]() {
-			if (last_comp_id == -1) {
-				return;
-			}
-
-			for (int p : loc) {
-				auto &tag = tagOf(p, y);
-				if (dircnt[0] > 0) {
-					tag.fluid_dir = -1;
-					dircnt[0] -= 1;
-				} else if (dircnt[1] > 0) {
-					tag.fluid_dir = 0;
-					dircnt[1] -= 1;
-				} else {
-					assert(dircnt[2] > 0);
-					tag.fluid_dir = 1;
-				}
-			}
-
-			loc.clear();
-			last_comp_id = -1;
-			dircnt[0] = dircnt[1] = dircnt[2] = 0;
-		};
-
-		for (int x = 0; x < _width; ++x) {
-			auto tag = tagOf(x, y);
-			if (tag.pclass == PixelClass::Solid) {
-				handle();
-				continue;
-			}
-
-			if (tag.pclass != PixelClass::Fluid) {
-				continue;
-			}
-			dircnt[tag.fluid_dir + 1] += 1;
-			loc.push_back(x);
-
-			auto cid = _fluid_cid[y * _width + x];
-			if (last_comp_id != cid) {
-				handle();
-				last_comp_id = cid;
-			}
-		}
-		handle();
-	}
-
-	// Step 3: Analyze surface pixels
-	for (auto coord : ctx.fluid_pixels) {
-		auto [x, y] = coord;
-		auto &comp = ctx.components[_fluid_cid[y * _width + x]];
-		if (y == 0
-		    || isAirLike(tagOf(x, y - 1)) && !tagOf(x, y).is_free_falling) {
-			comp.surface_pixels.push_back({x, y});
-		}
-	}
-
-	for (auto &comp : ctx.components) {
-		int n = comp.surface_pixels.size();
-		if (n < 2) {
+		auto &tag = world.tagOf(x, y);
+		if (tag.dirty) {
 			continue;
 		}
 
-		// Sort by y ascending, then x ascending
-		std::sort(
-			comp.surface_pixels.begin(), comp.surface_pixels.end(),
-			[](const Coord &a, const Coord &b) {
-			if (a[1] != b[1]) {
-				return a[1] < b[1];
+		tag.dirty = true;
+		ctx.pixel_vid[y * world_size[0] + x] = vid;
+
+		for (auto [nx, ny] : neighborsOf({x, y}, world_size)) {
+			auto ntag = world.tagOf(nx, ny);
+			if (ntag.type != ptype || ntag.dirty) {
+				continue;
 			}
-			return a[0] < b[0];
-		}
-		);
 
-		std::mt19937 rng(rand());
-		// shuffle pixels with the same y to avoid artifacts
-		auto l = comp.surface_pixels.begin();
-		for (auto r = comp.surface_pixels.begin();
-		     r != comp.surface_pixels.end(); ++r) {
-			if (r->at(1) != l->at(1)) {
-				std::shuffle(l, r, rng);
-				l = r;
+			stack.push_back({nx, ny});
+		}
+	}
+}
+
+void buildNetwork(PixelWorld &world, AnalysisContext &ctx) noexcept {
+	// Reserve 2 vertices for source and sink
+	ctx.vertices.push_back({
+		.id = 0,
+		.type = PixelType::Air,
+	});
+
+	ctx.vertices.push_back({
+		.id = 1,
+		.type = PixelType::Air,
+	});
+
+	for (int y = 0; y < world.height(); ++y) {
+		for (int x = 0; x < world.width(); ++x) {
+			auto tag = world.tagOf(x, y);
+			if (tag.pclass != PixelClass::Fluid || tag.dirty) {
+				continue;
 			}
-		}
-		if (l != comp.surface_pixels.end()) {
-			std::shuffle(l, comp.surface_pixels.end(), rng);
-		}
 
-		int p = 0;
-		int cur_remove_y = comp.surface_pixels[0][1];
-		while (p < n && comp.surface_pixels[p][1] == cur_remove_y) {
-			p += 1;
-		}
+			int vid = ctx.vertices.size();
+			ctx.vertices.push_back({
+				.id = vid,
+				.type = tag.type,
+			});
 
-		int max_delta_y = comp.surface_pixels.back()[1] - cur_remove_y;
-		p = std::min<int>(p, std::round(max_delta_y * surface_adjust_factor));
-
-		for (int i = 0; i <= p && p + i + 1 < n; ++i) {
-			auto [ax, ay] = comp.surface_pixels[i];
-			auto [bx, by] = comp.surface_pixels[n - 1 - i];
-			if (by - 1 <= ay) {
-				break;
-			}
-			swapPixels(ax, ay, bx, by - 1);
+			searchConnected(world, ctx, vid, x, y, tag.type);
 		}
 	}
 
-	densityAnalysisStep(*this, ctx);
+	for (int y = 0; y < world.height() - 1; ++y) {
+		for (int x = 0; x < world.width(); ++x) {
+			int u = ctx.pixel_vid[y * world.width() + x];
+			int v = ctx.pixel_vid[(y + 1) * world.width() + x];
+			if (u == -1 || v == -1 || u == v) {
+				continue;
+			}
+
+			ctx.touchEdge(u, v);
+			ctx.incFlow(u, v, x, y);
+		}
+	}
+
+	// Compute air surfaces
+	for (int y = 0; y < world.height(); ++y) {
+		for (int x = 0; x < world.width(); ++x) {
+			int vid = ctx.pixel_vid[y * world.width() + x];
+			if (vid == -1) {
+				continue;
+			}
+
+			if (y == 0 || world.typeOfIs(x, y - 1, PixelType::Air)) {
+				ctx.vertices[vid].air_surface.push_back({x, y});
+			}
+		}
+	}
+}
+
+void calculateGraphConnectedComponents(AnalysisContext &ctx) noexcept {
+	for (auto &start_v : ctx.vertices) {
+		if (start_v.id == source_vid || start_v.id == sink_vid) {
+			continue;
+		}
+
+		if (start_v.belonged_component != -1) {
+			continue;
+		}
+
+		int cid = ctx.components.size();
+		ctx.components.push_back({});
+		FrameVector<int> stack;
+		stack.push_back(start_v.id);
+		while (!stack.empty()) {
+			int u = stack.back();
+			stack.pop_back();
+
+			auto &v = ctx.vertices[u];
+			if (v.belonged_component != -1) {
+				continue;
+			}
+
+			v.belonged_component = cid;
+			ctx.components[cid].vertices.push_back(u);
+
+			for (auto &e : v.edges) {
+				auto &to_v = ctx.vertices[e.y];
+				if (to_v.belonged_component == -1) {
+					stack.push_back(e.y);
+				}
+			}
+		}
+	}
+}
+
+bool prepareFlowNetworkOfComponent(
+	const PixelWorld &world, AnalysisContext &ctx, int cid
+) noexcept {
+	int width = world.width(), height = world.height();
+	FrameVector<Coord> merged_air_surface;
+	for (int vid : ctx.components[cid].vertices) {
+		auto &v = ctx.vertices[vid];
+		merged_air_surface.insert(
+			merged_air_surface.end(), v.air_surface.begin(), v.air_surface.end()
+		);
+	}
+
+	if (merged_air_surface.size() < 2) {
+		return false;
+	}
+
+	// sort y from top to bottom (small to large), x undefined
+	std::sort(
+		merged_air_surface.begin(), merged_air_surface.end(),
+		[](const Coord &a, const Coord &b) {
+		return a[1] < b[1];
+	}
+	);
+
+	// shuffle x within same y to avoid bias
+	auto &rng = Xoroshiro128PP::globalInstance();
+	for (auto it = merged_air_surface.begin(), jt = it;
+	     it != merged_air_surface.end(); ++it) {
+		if ((*jt)[1] != (*it)[1]) {
+			std::shuffle(jt, it, rng);
+			jt = it;
+		} else if (std::next(it) == merged_air_surface.end()) {
+			std::shuffle(jt, merged_air_surface.end(), rng);
+		}
+	}
+
+	int source_cnt = 1;
+	int high_y = merged_air_surface[0][1];
+	int low_y = merged_air_surface.back()[1];
+	if (low_y <= high_y + 1) {
+		return false;
+	}
+
+	int n = merged_air_surface.size();
+
+	while (source_cnt < n && merged_air_surface[source_cnt][1] == high_y) {
+		source_cnt += 1;
+	}
+
+	source_cnt = std::min(source_cnt, n - source_cnt);
+
+	source_cnt = std::min<int>(
+		source_cnt, (low_y - high_y) * surface_adjust_factor
+	);
+
+	while (source_cnt > 0
+	       && merged_air_surface[n - source_cnt][1] == high_y + 1) {
+		source_cnt -= 1;
+	}
+
+	if (source_cnt == 0) {
+		return false;
+	}
+
+	// Connect source
+	for (int i = 0; i < source_cnt; ++i) {
+		auto [sx, sy] = merged_air_surface[i];
+		auto v = ctx.pixel_vid[sy * width + sx];
+
+		// not using incFlow(), since we need one side connected to source
+		int eid = ctx.touchEdge(source_vid, v);
+		auto &e = ctx.vertices[source_vid].edges[eid];
+		e.capacity += 1;
+		e.y_surface.push_back({sx, sy});
+	}
+
+	// Connect sink
+	for (int i = n - source_cnt; i < n; ++i) {
+		auto [sx, sy] = merged_air_surface[i];
+		auto v = ctx.pixel_vid[sy * width + sx];
+
+		// not using incFlow(), since we need one side connected to sink
+		int eid = ctx.touchEdge(v, sink_vid);
+		auto &e = ctx.vertices[v].edges[eid];
+		e.capacity += 1;
+		e.y_surface.push_back({sx, sy - 1});
+	}
+
+	ctx.components[cid].vertices.push_back(source_vid);
+	ctx.components[cid].vertices.push_back(sink_vid);
+
+	return true;
+}
+
+bool dinicBFS(AnalysisContext &ctx, int cid) noexcept {
+	FrameQueue<int> q;
+	for (int vid : ctx.components[cid].vertices) {
+		ctx.vertices[vid].dep = 0;
+		ctx.vertices[vid].cur_edge = 0;
+	}
+
+	ctx.vertices[source_vid].dep = 1;
+	q.push(source_vid);
+	while (!q.empty()) {
+		int u = q.front();
+		q.pop();
+
+		for (auto &e : ctx.vertices[u].edges) {
+			auto &to_v = ctx.vertices[e.y];
+			if (to_v.dep == 0 && e.flow < e.capacity) {
+				to_v.dep = ctx.vertices[u].dep + 1;
+				q.push(e.y);
+			}
+		}
+	}
+
+	return ctx.vertices[sink_vid].dep != 0;
+}
+
+// Maybe use emulated stack to do recursive DFS?
+// For now, keep it simple, do real recursion
+int dinicDFS(AnalysisContext &ctx, int u, int flow) noexcept {
+	if (u == sink_vid) {
+		return flow;
+	}
+
+	auto &v = ctx.vertices[u];
+	int ret = 0;
+	for (; v.cur_edge < v.edges.size(); ++v.cur_edge) {
+		auto &e = v.edges[v.cur_edge];
+		auto &to_v = ctx.vertices[e.y];
+		if (to_v.dep == v.dep + 1 && e.flow < e.capacity) {
+			int curr_flow = dinicDFS(
+				ctx, e.y, std::min(flow - ret, e.capacity - e.flow)
+			);
+			ret += curr_flow;
+			e.flow += curr_flow;
+			ctx.vertices[e.y].edges[e.rev_index].flow -= curr_flow;
+			if (ret == flow) {
+				v.dep = 0;
+				return ret;
+			}
+		}
+	}
+	return ret;
+}
+
+int maxFlow(const PixelWorld &world, AnalysisContext &ctx, int cid) noexcept {
+	int maxflow = 0;
+	while (dinicBFS(ctx, cid)) {
+		maxflow += dinicDFS(ctx, source_vid, std::numeric_limits<int>::max());
+	}
+	return maxflow;
+}
+
+void applyFlowResults(
+	PixelWorld &world, AnalysisContext &ctx, int cid
+) noexcept {
+	for (int vid : ctx.components[cid].vertices) {
+		auto &v = ctx.vertices[vid];
+		for (auto &e : v.edges) {
+			if (e.flow > 0) {
+				ctx.vertices[e.y].indeg += 1;
+			}
+		}
+	}
+
+	// Topsort
+	FrameQueue<int> q;
+	q.push(source_vid);
+	auto rng = Xoroshiro128PP::globalInstance();
+	while (!q.empty()) {
+		int u = q.front();
+		q.pop();
+
+		auto &v = ctx.vertices[u];
+		if (u != source_vid) {
+			std::shuffle(v.cache.begin(), v.cache.end(), rng);
+		}
+
+		for (auto &e : v.edges) {
+			auto &to_v = ctx.vertices[e.y];
+			if (e.flow <= 0) {
+				continue;
+			}
+
+			// TODO: partial shuffle (Knuth shuffle)
+			std::shuffle(e.y_surface.begin(), e.y_surface.end(), rng);
+			for (int f = 0; f < e.flow; ++f) {
+				auto [x, y] = e.y_surface[f];
+				auto &tag = world.tagOf(x, y);
+				to_v.cache.push_back({
+					.type = tag.type,
+					.color_index = tag.color_index,
+					.element = std::move(world.elementOf(x, y)),
+				});
+
+				if (u == source_vid) {
+					world.replacePixelWithAir(x, y);
+				} else {
+					auto &cp = v.cache.back();
+					tag.type = cp.type;
+					tag.pclass = PixelClass::Fluid;
+					tag.color_index = cp.color_index;
+					world.elementOf(x, y) = std::move(cp.element);
+					v.cache.pop_back();
+				}
+			}
+
+			to_v.indeg -= 1;
+			e.flow = 0;
+			if (e.y != sink_vid && to_v.indeg == 0) {
+				q.push(e.y);
+			}
+		}
+	}
+}
+
+void analysisFlow(PixelWorld &world, AnalysisContext &ctx) noexcept {
+	for (int i = 0; i < ctx.components.size(); ++i) {
+		if (prepareFlowNetworkOfComponent(world, ctx, i)) {
+			int flow = maxFlow(world, ctx, i);
+			applyFlowResults(world, ctx, i);
+		}
+
+		// Reset S, T connections
+		ctx.vertices[source_vid].edges.clear();
+		ctx.vertices[sink_vid].edges.clear();
+		ctx.vertices[source_vid].indeg = 0;
+		ctx.vertices[sink_vid].indeg = 0;
+	}
+}
+
+} // namespace
+
+void PixelWorld::fluidAnalysisStep() noexcept {
+	AnalysisContext ctx(_width, _height);
+	densityAnalysisStep(*this);
+
+	buildNetwork(*this, ctx);
+	resetDirtyFlags();
+
+	calculateGraphConnectedComponents(ctx);
+	analysisFlow(*this, ctx);
 }
 
 } // namespace wf

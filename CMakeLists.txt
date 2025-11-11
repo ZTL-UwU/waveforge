@@ -53,6 +53,7 @@ add_executable(waveforge
   src/assets.cpp
   src/goal.cpp
   src/2d.cpp
+  src/xoroshiro.cpp
 )
 
 target_compile_features(waveforge PRIVATE cxx_std_23)
