@@ -81,12 +81,12 @@ void FluidElement::step(PixelWorld &world, int x, int y) noexcept {
 			return;
 		}
 
-		/*if (diag_tag.pclass == PixelClass::Fluid
+		if (diag_tag.pclass == PixelClass::Fluid
 		    && isDenser(my_tag.type, diag_tag.type)) {
-		    my_tag.fluid_dir = d;
-		    world.swapFluids(x, y, new_x, y + 1);
-		    return;
-		}*/
+			my_tag.fluid_dir = d;
+			world.swapFluids(x, y, new_x, y + 1);
+			return;
+		}
 
 		auto side_tag = world.tagOf(new_x, y);
 		if (side_tag.pclass == PixelClass::Gas) {

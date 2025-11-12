@@ -2,6 +2,7 @@
 #include "wforge/level.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window/WindowEnums.hpp>
 #include <algorithm>
 #include <proxy/proxy.h>
 
@@ -14,11 +15,9 @@ int main(int argc, char **argv) {
 		wf::_executable_path = std::filesystem::current_path();
 	}
 
-	// constexpr int width = 320;
-	// constexpr int height = 240;
-	constexpr int width = 180;
-	constexpr int height = 120;
-	constexpr int scale = 8; // screen pixels per world pixel
+	constexpr int width = 280;
+	constexpr int height = 210;
+	constexpr int scale = 6; // screen pixels per world pixel
 
 	wf::AssetsManager::loadAllAssets();
 	wf::Level level(width, height);
@@ -48,8 +47,9 @@ int main(int argc, char **argv) {
 
 	sf::RenderWindow window(
 		sf::VideoMode(sf::Vector2u(width * scale, height * scale)),
-		"Waveforge Demo"
+		"Waveforge Demo Sandbox", sf::Style::Titlebar | sf::Style::Close
 	);
+
 	window.setFramerateLimit(24);
 
 	auto &background_music = wf::AssetsManager::instance().getAsset<sf::Music>(
