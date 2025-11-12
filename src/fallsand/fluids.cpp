@@ -126,6 +126,8 @@ void FluidParticle::step(PixelWorld &world, int x, int y) noexcept {
 		return;
 	}
 
+	auto &my_tag = world.tagOf(x, y);
+
 	vy += PixelWorld::gAcceleration;
 	vx *= air_drag;
 	vy *= air_drag;
@@ -167,6 +169,11 @@ void FluidParticle::step(PixelWorld &world, int x, int y) noexcept {
 	}
 
 	if (forced_stop) {
+		if (to_y + 1 >= world.height()) {
+			world.replacePixelWithAir(x, y);
+			return;
+		}
+
 		bool free_dir[2] = {false, false};
 		for (int d : {-1, 1}) {
 			int side_x = to_x + d;
@@ -213,6 +220,21 @@ void FluidParticle::step(PixelWorld &world, int x, int y) noexcept {
 		}
 
 		vy *= -bounce_back_y2x_factor;
+
+		if (std::abs(vy) > 1.0f && std::abs(vx) > 0.01f) {
+			auto &below_tag = world.tagOf(to_x, to_y + 1);
+			if (below_tag.pclass == PixelClass::Fluid
+			    && !below_tag.is_free_falling) {
+				my_tag.color_index = below_tag.color_index;
+				int kept_fdir = below_tag.fluid_dir;
+				PixelElement new_fluid = std::move(
+					world.elementOf(to_x, to_y + 1)
+				);
+				world.replacePixel(to_x, to_y + 1, std::move(element));
+				below_tag.fluid_dir = kept_fdir;
+				element = std::move(new_fluid);
+			}
+		}
 	}
 
 	if (to_x != x || to_y != y) {
