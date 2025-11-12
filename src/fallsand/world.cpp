@@ -3,7 +3,6 @@
 #include "wforge/xoroshiro.h"
 #include <memory>
 #include <proxy/proxy.h>
-#include <random>
 #include <utility>
 
 #ifndef NDEBUG

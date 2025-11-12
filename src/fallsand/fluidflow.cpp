@@ -3,7 +3,6 @@
 #include "wforge/xoroshiro.h"
 #include <algorithm>
 #include <cassert>
-#include <ctime>
 #include <iterator>
 #include <limits>
 #include <map>
