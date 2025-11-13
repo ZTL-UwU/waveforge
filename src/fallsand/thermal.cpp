@@ -33,7 +33,10 @@ void PixelWorld::thermalAnalysisStep() noexcept {
 			int transfer_amount = 0;
 
 			int total_thermal_conductivity = std::round(
-				tag.heat * tag.thermal_conductivity / heat_transfer_factor
+				tag.heat
+				* (PixelTag::thermal_conductivity_max
+			       - tag.thermal_conductivity)
+				/ heat_transfer_factor
 			);
 			for (auto [nx, ny] : neighborsOf({x, y}, world_dim)) {
 				auto &ntag = tagOf(nx, ny);

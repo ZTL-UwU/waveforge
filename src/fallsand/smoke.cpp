@@ -16,5 +16,17 @@ PixelTag Smoke::newTag() const noexcept {
 	};
 }
 
+void Smoke::step(PixelWorld &world, int x, int y) noexcept {
+	constexpr int smoke_disappear_heat_threshold = 12;
+	auto &my_tag = world.tagOf(x, y);
+	if (my_tag.heat <= smoke_disappear_heat_threshold) {
+		int old_heat = my_tag.heat;
+		world.replacePixelWithAir(x, y);
+		my_tag.heat = old_heat;
+		return;
+	}
+	GasElement::step(world, x, y);
+}
+
 } // namespace element
 } // namespace wf

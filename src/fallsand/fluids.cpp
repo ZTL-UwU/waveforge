@@ -32,6 +32,8 @@ void FluidElement::step(PixelWorld &world, int x, int y) noexcept {
 			);
 			auto particle_tag = particle->newTag();
 			particle_tag.color_index = my_tag.color_index;
+			particle_tag.heat = my_tag.heat;
+			particle_tag.thermal_conductivity = my_tag.thermal_conductivity;
 			world.replacePixel(x, y, std::move(particle), particle_tag);
 		} else {
 			my_tag.is_free_falling = true;
@@ -233,8 +235,11 @@ void FluidParticle::step(PixelWorld &world, int x, int y) noexcept {
 		} else {
 			dir = 1;
 		}
+		int old_heat = my_tag.heat;
 		world.replacePixel(x, y, std::move(element));
 		world.tagOf(x, y).fluid_dir = dir;
+		world.tagOf(x, y).heat = old_heat;
+		return;
 	}
 }
 

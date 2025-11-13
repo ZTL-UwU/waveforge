@@ -67,6 +67,7 @@ enum class PixelClass : std::uint8_t {
 
 struct PixelTag {
 	static constexpr unsigned int heat_max = 127;
+	static constexpr unsigned int thermal_conductivity_max = 63;
 
 	PixelType type : 6;
 	PixelClass pclass : 2;
@@ -162,6 +163,7 @@ struct Steam : GasElement {
 
 struct Smoke : GasElement {
 	PixelTag newTag() const noexcept;
+	void step(PixelWorld &world, int x, int y) noexcept;
 };
 
 struct Air : EmptySubsElement {

@@ -12,7 +12,7 @@ PixelTag Steam::newTag() const noexcept {
 		.pclass = PixelClass::Gas,
 		.color_index = rng ? colorIndexOf("Steam1") : colorIndexOf("Steam2"),
 		.is_free_falling = true,
-		.thermal_conductivity = 4,
+		.thermal_conductivity = 2,
 	};
 }
 
