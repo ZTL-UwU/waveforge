@@ -34,7 +34,8 @@ using PixelElement = pro::proxy<PixelFacade>;
 // Insert new types to correct position! Don't just append at the end!
 enum class PixelType : std::uint8_t {
 	// Gas types (order: lowest to highest density)
-	Air = 0,
+	Smoke,
+	Air,
 
 	// Particle types
 	FluidParticle,
@@ -146,6 +147,15 @@ struct SolidElement : EmptySubsElement {
 // Common superclass for fluid elements
 struct FluidElement : EmptySubsElement {
 	void step(PixelWorld &world, int x, int y) noexcept;
+};
+
+// Common superclass for gas elements (except air)
+struct GasElement : EmptySubsElement {
+	void step(PixelWorld &world, int x, int y) noexcept;
+};
+
+struct SmokeElement : GasElement {
+	PixelTag newTag() const noexcept;
 };
 
 struct Air : EmptySubsElement {

@@ -9,10 +9,12 @@ namespace wf {
 namespace element {
 
 PixelTag Sand::newTag() const noexcept {
+	auto color_type = Xoroshiro128PP::globalInstance().next() % 3;
 	return PixelTag{
 		.type = PixelType::Sand,
 		.pclass = PixelClass::Solid,
-		.color_index = colorIndexOf("Sand"),
+		.color_index = color_type ? colorIndexOf("Sand1")
+								  : colorIndexOf("Sand2"),
 		.is_free_falling = true,
 		.thermal_conductivity = 2,
 	};

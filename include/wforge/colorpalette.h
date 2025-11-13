@@ -22,8 +22,12 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(128, 128, 128, 255),
 	},
 	{
-		.name = "Sand",
+		.name = "Sand1",
 		.color = sf::Color(194, 178, 128, 255),
+	},
+	{
+		.name = "Sand2", // darker
+		.color = sf::Color(160, 140, 100, 255),
 	},
 	{
 		.name = "Water",
@@ -44,6 +48,14 @@ constexpr ColorPaletteEntry _colors[] = {
 	{
 		.name = "Fire3", // red orange
 		.color = sf::Color(255, 140, 0, 255),
+	},
+	{
+		.name = "Smoke1", // light gray
+		.color = sf::Color(200, 200, 200, 180),
+	},
+	{
+		.name = "Smoke2", // dark gray
+		.color = sf::Color(100, 100, 100, 180),
 	},
 	{
 		.name = "DebugRed",
