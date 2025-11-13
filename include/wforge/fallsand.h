@@ -47,6 +47,7 @@ enum class PixelType : std::uint8_t {
 
 	// Solid types
 	Stone,
+	Wood,
 	Sand,
 
 	// for internal use only, keep at the end
@@ -172,6 +173,14 @@ struct Air : EmptySubsElement {
 
 struct Stone : SolidElement {
 	PixelTag newTag() const noexcept;
+};
+
+struct Wood : SolidElement {
+	PixelTag newTag() const noexcept;
+	void step(PixelWorld &world, int x, int y) noexcept;
+
+private:
+	int burn_time = 0;
 };
 
 struct Sand : SolidElement {

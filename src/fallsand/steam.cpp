@@ -17,7 +17,7 @@ PixelTag Steam::newTag() const noexcept {
 }
 
 void Steam::step(PixelWorld &world, int x, int y) noexcept {
-	constexpr int steam_condensation_heat_threshold = 10;
+	constexpr unsigned int steam_condensation_heat_threshold = 10;
 
 	auto &my_tag = world.tagOf(x, y);
 	if (my_tag.heat <= steam_condensation_heat_threshold) {

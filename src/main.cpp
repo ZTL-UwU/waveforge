@@ -1,4 +1,5 @@
 #include "wforge/assets.h"
+#include "wforge/fallsand.h"
 #include "wforge/level.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -91,31 +92,43 @@ int main(int argc, char **argv) {
 						pro::make_proxy<wf::PixelFacade, wf::element::Sand>()
 					);
 					break;
+
 				case 2: // Water
 					world.replacePixel(
 						x, y,
 						pro::make_proxy<wf::PixelFacade, wf::element::Water>()
 					);
 					break;
+
 				case 3: // Oil
 					world.replacePixel(
 						x, y,
 						pro::make_proxy<wf::PixelFacade, wf::element::Oil>()
 					);
 					break;
+
 				case 4: // Stone
 					world.replacePixel(
 						x, y,
 						pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
 					);
 					break;
-				case 0: // Air / erase
-					world.replacePixelWithAir(x, y);
+
+				case 5: // Wood
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Wood>()
+					);
 					break;
-				case 5: { // Heat brush: don't change pixel, increase heat
+
+				case 6: // Heat brush: don't change pixel, increase heat
 					world.tagOf(x, y).heat = wf::PixelTag::heat_max;
 					break;
-				}
+
+				case 0: // Erase (Air)
+					world.replacePixelWithAir(x, y);
+					break;
+
 				default:
 					break;
 				}
@@ -225,7 +238,10 @@ int main(int argc, char **argv) {
 						std::puts("Brush: Stone (4)");
 					} else if (k->code == sf::Keyboard::Key::Num5) {
 						current_brush = 5; // Heat brush
-						std::puts("Brush: Heat (5)");
+						std::puts("Brush: Wood (5)");
+					} else if (k->code == sf::Keyboard::Key::Num6) {
+						current_brush = 6; // Heat brush
+						std::puts("Brush: Heat (6)");
 					}
 				}
 			}
