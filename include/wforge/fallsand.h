@@ -64,14 +64,17 @@ enum class PixelClass : std::uint8_t {
 };
 
 struct PixelTag {
+	static constexpr unsigned int heat_max = 63;
+
 	PixelType type : 6;
 	PixelClass pclass : 2;
 	unsigned int color_index : 8; // 256 colors, see Colorpalette.h
 	bool dirty : 1 = false;       // updated in current step, for physics
 	bool is_free_falling : 1 = false;
-	signed int fluid_dir : 2;        // -1 = left, 0 = none, +1 = right
-	signed int heat : 4 = 0;         // -8=freezed, -7=cold, 0=normal, +7=hot
-	unsigned int burn_level : 3 = 0; // 0 = not burning, 7 = fully burnt
+	signed int fluid_dir : 2; // -1 = left, 0 = none, +1 = right
+	unsigned int heat : 6 = 0;
+	bool ignited : 1 = false; // on fire
+	unsigned int thermal_conductivity : 3 = 0;
 };
 
 class PixelWorld {
@@ -116,6 +119,9 @@ protected:
 
 	// Global fluid analysis, custom heuristics
 	void fluidAnalysisStep() noexcept;
+
+	// Global thermal analysis
+	void thermalAnalysisStep() noexcept;
 
 private:
 	int _width;
@@ -164,6 +170,10 @@ struct Water : FluidElement {
 
 struct Oil : FluidElement {
 	PixelTag newTag() const noexcept;
+	void step(PixelWorld &world, int x, int y) noexcept;
+
+private:
+	int burn_time = 0;
 };
 
 struct FluidParticle : EmptySubsElement {

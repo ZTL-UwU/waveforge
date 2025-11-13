@@ -3,7 +3,6 @@
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 #include <cmath>
-#include <cstddef>
 #include <proxy/v4/proxy.h>
 #include <utility>
 
@@ -15,6 +14,7 @@ PixelTag Water::newTag() const noexcept {
 		.type = PixelType::Water,
 		.pclass = PixelClass::Fluid,
 		.color_index = colorIndexOf("Water"),
+		.thermal_conductivity = 3,
 	};
 }
 
@@ -23,7 +23,36 @@ PixelTag Oil::newTag() const noexcept {
 		.type = PixelType::Oil,
 		.pclass = PixelClass::Fluid,
 		.color_index = colorIndexOf("Oil"),
+		.thermal_conductivity = 3,
 	};
+}
+
+void Oil::step(PixelWorld &world, int x, int y) noexcept {
+	constexpr unsigned int oil_ignite_heat_threshold = 20;
+	constexpr unsigned int produced_fire_heat = 25;
+
+	auto &my_tag = world.tagOf(x, y);
+	if (my_tag.heat >= oil_ignite_heat_threshold) {
+		my_tag.ignited = true;
+	}
+
+	if (my_tag.ignited && my_tag.heat < oil_ignite_heat_threshold) {
+		my_tag.ignited = false;
+	}
+
+	if (my_tag.ignited) {
+		burn_time += 1;
+		int next_heat = std::min(
+			PixelTag::heat_max, my_tag.heat + produced_fire_heat
+		);
+		if (burn_time >= 48) {
+			world.replacePixelWithAir(x, y);
+			my_tag.heat = next_heat;
+			return;
+		}
+		my_tag.heat = next_heat;
+	}
+	FluidElement::step(world, x, y);
 }
 
 void FluidElement::step(PixelWorld &world, int x, int y) noexcept {

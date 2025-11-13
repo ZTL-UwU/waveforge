@@ -41,6 +41,7 @@ struct Edge {
 struct CachedPixel {
 	PixelType type : 8;
 	unsigned int color_index : 8;
+	bool ignited : 1;
 	PixelElement element;
 };
 
@@ -539,6 +540,7 @@ void applyFlowResults(
 				to_v.cache.push_back({
 					.type = tag.type,
 					.color_index = tag.color_index,
+					.ignited = tag.ignited,
 					.element = std::move(world.elementOf(x, y)),
 				});
 
@@ -546,9 +548,10 @@ void applyFlowResults(
 					world.replacePixelWithAir(x, y);
 				} else {
 					auto &cp = v.cache.back();
-					tag.type = cp.type;
 					tag.pclass = PixelClass::Fluid;
+					tag.type = cp.type;
 					tag.color_index = cp.color_index;
+					tag.ignited = cp.ignited;
 					world.elementOf(x, y) = std::move(cp.element);
 					v.cache.pop_back();
 				}

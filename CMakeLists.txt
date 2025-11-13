@@ -54,6 +54,7 @@ add_executable(waveforge
   src/goal.cpp
   src/2d.cpp
   src/xoroshiro.cpp
+  src/fallsand/thermal.cpp
 )
 
 target_compile_features(waveforge PRIVATE cxx_std_23)

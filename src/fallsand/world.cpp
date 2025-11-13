@@ -3,6 +3,7 @@
 #include "wforge/xoroshiro.h"
 #include <memory>
 #include <proxy/proxy.h>
+#include <random>
 #include <utility>
 
 #ifndef NDEBUG
@@ -132,6 +133,8 @@ void PixelWorld::resetDirtyFlags() noexcept {
 
 void PixelWorld::step() noexcept {
 	fluidAnalysisStep();
+	thermalAnalysisStep();
+
 	auto &rng = Xoroshiro128PP::globalInstance();
 	for (int y = _height - 1; y >= 0; --y) {
 		bool reverse_x = (rng.next() % 2 == 0);
@@ -161,7 +164,21 @@ void PixelWorld::renderToBuffer(std::span<std::uint8_t> buf) const noexcept {
 	}
 #endif
 
+	auto &rng = Xoroshiro128PP::globalInstance();
+	constexpr std::array<std::uint8_t, 3> fire_color_idx = {
+		colorIndexOf("Fire1"), colorIndexOf("Fire2"), colorIndexOf("Fire3")
+	};
+	std::uniform_int_distribution<int> dist(0, fire_color_idx.size() - 1);
 	for (int i = 0; i < _width * _height; ++i) {
+		if (_tags[i].ignited) {
+			auto color = colorOfIndex(fire_color_idx[dist(rng)]);
+			buf[i * 4 + 0] = color.r;
+			buf[i * 4 + 1] = color.g;
+			buf[i * 4 + 2] = color.b;
+			buf[i * 4 + 3] = color.a;
+			continue;
+		}
+
 		auto color = colorOfIndex(_tags[i].color_index);
 		buf[i * 4 + 0] = color.r;
 		buf[i * 4 + 1] = color.g;

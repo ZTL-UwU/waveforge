@@ -34,6 +34,18 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(85, 107, 47, 200),
 	},
 	{
+		.name = "Fire1", // orange
+		.color = sf::Color(255, 69, 0, 255),
+	},
+	{
+		.name = "Fire2", // yellow
+		.color = sf::Color(255, 215, 0, 255),
+	},
+	{
+		.name = "Fire3", // red orange
+		.color = sf::Color(255, 140, 0, 255),
+	},
+	{
 		.name = "DebugRed",
 		.color = sf::Color(255, 0, 0, 255),
 	}

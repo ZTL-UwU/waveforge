@@ -14,6 +14,7 @@ PixelTag Sand::newTag() const noexcept {
 		.pclass = PixelClass::Solid,
 		.color_index = colorIndexOf("Sand"),
 		.is_free_falling = true,
+		.thermal_conductivity = 2,
 	};
 }
 

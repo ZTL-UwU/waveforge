@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 	bool paused = false;
 	bool step_once = false;
 
-	auto paint_at = [&](int world_x, int world_y, wf::PixelType ptype) {
+	auto paint_at = [&](int world_x, int world_y, int brush_id) {
 		int half = brush_size / 2;
 		for (int dy = -half; dy <= half; ++dy) {
 			for (int dx = -half; dx <= half; ++dx) {
@@ -84,34 +84,38 @@ int main(int argc, char **argv) {
 					continue;
 				}
 
-				switch (ptype) {
-				case wf::PixelType::Sand:
+				switch (brush_id) {
+				case 1: // Sand
 					world.replacePixel(
 						x, y,
 						pro::make_proxy<wf::PixelFacade, wf::element::Sand>()
 					);
 					break;
-				case wf::PixelType::Water:
+				case 2: // Water
 					world.replacePixel(
 						x, y,
 						pro::make_proxy<wf::PixelFacade, wf::element::Water>()
 					);
 					break;
-				case wf::PixelType::Oil:
+				case 3: // Oil
 					world.replacePixel(
 						x, y,
 						pro::make_proxy<wf::PixelFacade, wf::element::Oil>()
 					);
 					break;
-				case wf::PixelType::Stone:
+				case 4: // Stone
 					world.replacePixel(
 						x, y,
 						pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
 					);
 					break;
-				case wf::PixelType::Air:
+				case 0: // Air / erase
 					world.replacePixelWithAir(x, y);
 					break;
+				case 5: { // Heat brush: don't change pixel, increase heat
+					world.tagOf(x, y).heat = wf::PixelTag::heat_max;
+					break;
+				}
 				default:
 					break;
 				}
@@ -119,8 +123,8 @@ int main(int argc, char **argv) {
 		}
 	};
 
-	// current brush selection: 1=Sand, 2=Water, 3=Oil, 4=Stone
-	wf::PixelType current_brush = wf::PixelType::Sand;
+	// current brush selection: 1=Sand, 2=Water, 3=Oil, 4=Stone, 5=Heat
+	int current_brush = 1; // default to Sand
 
 	while (window.isOpen()) {
 		// SFML variant in this tree returns std::optional<Event>
@@ -144,8 +148,8 @@ int main(int argc, char **argv) {
 						paint_at(wx, wy, current_brush);
 					} else if (mb->button == sf::Mouse::Button::Right) {
 						right_down = true;
-						// right button erases
-						paint_at(wx, wy, wf::PixelType::Air);
+						// right button erases (brush id 0)
+						paint_at(wx, wy, 0);
 					}
 				}
 			}
@@ -173,7 +177,7 @@ int main(int argc, char **argv) {
 						paint_at(wx, wy, current_brush);
 					}
 					if (right_down) {
-						paint_at(wx, wy, wf::PixelType::Air);
+						paint_at(wx, wy, 0);
 					}
 				}
 			}
@@ -208,17 +212,20 @@ int main(int argc, char **argv) {
 							std::puts("Stepped 1 frame (N)");
 						}
 					} else if (k->code == sf::Keyboard::Key::Num1) {
-						current_brush = wf::PixelType::Sand;
+						current_brush = 1; // Sand
 						std::puts("Brush: Sand (1)");
 					} else if (k->code == sf::Keyboard::Key::Num2) {
-						current_brush = wf::PixelType::Water;
+						current_brush = 2; // Water
 						std::puts("Brush: Water (2)");
 					} else if (k->code == sf::Keyboard::Key::Num3) {
-						current_brush = wf::PixelType::Oil;
+						current_brush = 3; // Oil
 						std::puts("Brush: Oil (3)");
 					} else if (k->code == sf::Keyboard::Key::Num4) {
-						current_brush = wf::PixelType::Stone;
+						current_brush = 4; // Stone
 						std::puts("Brush: Stone (4)");
+					} else if (k->code == sf::Keyboard::Key::Num5) {
+						current_brush = 5; // Heat brush
+						std::puts("Brush: Heat (5)");
 					}
 				}
 			}
