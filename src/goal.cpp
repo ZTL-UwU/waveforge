@@ -57,7 +57,7 @@ void GoalArea::render(sf::RenderTarget &target, int scale) const noexcept {
 }
 
 bool GoalArea::_isDuckInside(const Level &level) const noexcept {
-	// check if every pixel of duck shape is inside goal area
+	// check if any pixel of duck shape is inside goal area
 
 	const auto &duck = level.duck;
 	int duck_x = std::round(duck.position.x);
@@ -82,12 +82,12 @@ bool GoalArea::_isDuckInside(const Level &level) const noexcept {
 			int wx = duck_x + dx;
 			int wy = duck_y + dy;
 
-			if (wx < x || wx >= x + _width || wy < y || wy >= y + _height) {
-				return false;
+			if (wx >= x && wx < x + _width && wy >= y && wy < y + _height) {
+				return true;
 			}
 		}
 	}
-	return true;
+	return false;
 }
 
 GoalSprite::GoalSprite(sf::Image &goal_1, sf::Image &goal_2) {
