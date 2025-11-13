@@ -49,6 +49,7 @@ add_executable(waveforge
   src/fallsand/oil.cpp
   src/fallsand/sand.cpp
   src/fallsand/smoke.cpp
+  src/fallsand/steam.cpp
   src/fallsand/stone.cpp
   src/fallsand/thermal.cpp
   src/fallsand/water.cpp

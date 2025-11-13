@@ -35,6 +35,7 @@ using PixelElement = pro::proxy<PixelFacade>;
 enum class PixelType : std::uint8_t {
 	// Gas types (order: lowest to highest density)
 	Smoke,
+	Steam,
 	Air,
 
 	// Particle types
@@ -65,7 +66,7 @@ enum class PixelClass : std::uint8_t {
 };
 
 struct PixelTag {
-	static constexpr unsigned int heat_max = 63;
+	static constexpr unsigned int heat_max = 127;
 
 	PixelType type : 6;
 	PixelClass pclass : 2;
@@ -73,9 +74,9 @@ struct PixelTag {
 	bool dirty : 1 = false;       // updated in current step, for physics
 	bool is_free_falling : 1 = false;
 	signed int fluid_dir : 2; // -1 = left, 0 = none, +1 = right
-	unsigned int heat : 6 = 0;
+	unsigned int heat : 7 = 0;
 	bool ignited : 1 = false; // on fire
-	unsigned int thermal_conductivity : 3 = 0;
+	unsigned int thermal_conductivity : 6 = 0;
 };
 
 class PixelWorld {
@@ -154,7 +155,12 @@ struct GasElement : EmptySubsElement {
 	void step(PixelWorld &world, int x, int y) noexcept;
 };
 
-struct SmokeElement : GasElement {
+struct Steam : GasElement {
+	PixelTag newTag() const noexcept;
+	void step(PixelWorld &world, int x, int y) noexcept;
+};
+
+struct Smoke : GasElement {
 	PixelTag newTag() const noexcept;
 };
 
@@ -176,6 +182,7 @@ protected:
 
 struct Water : FluidElement {
 	PixelTag newTag() const noexcept;
+	void step(PixelWorld &world, int x, int y) noexcept;
 };
 
 struct Oil : FluidElement {

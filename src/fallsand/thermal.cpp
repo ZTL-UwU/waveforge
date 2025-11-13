@@ -10,7 +10,7 @@ namespace wf {
 namespace {
 
 constexpr float heat_transfer_factor = 0.15f;
-constexpr float heat_decay_factor = 0.2f;
+constexpr float heat_decay_factor = 0.005f;
 
 } // namespace
 
@@ -30,23 +30,16 @@ void PixelWorld::thermalAnalysisStep() noexcept {
 				continue;
 			}
 
-			int transfer_amount = std::round(tag.heat * heat_transfer_factor);
-			next_heat[y * _width + x] += tag.heat - transfer_amount;
+			int transfer_amount = 0;
 
-			if (transfer_amount == 0) {
-				continue;
-			}
-
-			int total_thermal_conductivity = 0;
+			int total_thermal_conductivity = std::round(
+				tag.heat * tag.thermal_conductivity / heat_transfer_factor
+			);
 			for (auto [nx, ny] : neighborsOf({x, y}, world_dim)) {
 				auto &ntag = tagOf(nx, ny);
 				total_thermal_conductivity += std::max(0, tag.heat - ntag.heat)
 					* std::min(tag.thermal_conductivity,
 				               ntag.thermal_conductivity);
-			}
-
-			if (total_thermal_conductivity == 0) {
-				continue;
 			}
 
 			for (auto [nx, ny] : neighborsOf({x, y}, world_dim)) {
@@ -56,11 +49,12 @@ void PixelWorld::thermalAnalysisStep() noexcept {
 				               ntag.thermal_conductivity);
 
 				int received_heat = std::round(
-					1.f * transfer_amount * conductivity
-					/ total_thermal_conductivity
+					1.f * tag.heat * conductivity / total_thermal_conductivity
 				);
+				transfer_amount += received_heat;
 				next_heat[ny * _width + nx] += received_heat;
 			}
+			next_heat[y * _width + x] += tag.heat - transfer_amount;
 		}
 	}
 

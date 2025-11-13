@@ -58,12 +58,21 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(100, 100, 100, 180),
 	},
 	{
+		.name = "Steam1", // very light blue
+		.color = sf::Color(220, 240, 255, 150),
+	},
+	{
+		.name = "Steam2", // light blue
+		.color = sf::Color(180, 220, 255, 150),
+	},
+	{
 		.name = "DebugRed",
 		.color = sf::Color(255, 0, 0, 255),
 	}
 };
 
 constexpr int _color_palette_size = sizeof(_colors) / sizeof(ColorPaletteEntry);
+static_assert(_color_palette_size <= 255, "Too many colors in palette");
 
 // Returns color index for name, or -1 if not found
 // HINT: define color index variables as small ints (like 8/16 bits)

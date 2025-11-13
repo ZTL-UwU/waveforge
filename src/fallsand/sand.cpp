@@ -16,7 +16,7 @@ PixelTag Sand::newTag() const noexcept {
 		.color_index = color_type ? colorIndexOf("Sand1")
 								  : colorIndexOf("Sand2"),
 		.is_free_falling = true,
-		.thermal_conductivity = 2,
+		.thermal_conductivity = 16,
 	};
 }
 

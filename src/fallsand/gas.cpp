@@ -54,13 +54,18 @@ void GasElement::step(PixelWorld &world, int x, int y) noexcept {
 		}
 
 		auto diag_tag = world.tagOf(x + dx, y - 1);
+		auto side_tag = world.tagOf(x + dx, y);
+
+		if (side_tag.pclass == PixelClass::Solid) {
+			break;
+		}
+
 		if (canSwapTag(diag_tag, my_tag)) {
 			to_x = x + dx;
 			to_y = y - 1;
 			break;
 		}
 
-		auto side_tag = world.tagOf(x + dx, y);
 		if (canSwapTag(side_tag, my_tag)) {
 			to_x = x + dx;
 			to_y = y;

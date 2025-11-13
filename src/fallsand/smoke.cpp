@@ -5,7 +5,7 @@
 namespace wf {
 namespace element {
 
-PixelTag SmokeElement::newTag() const noexcept {
+PixelTag Smoke::newTag() const noexcept {
 	auto rand = Xoroshiro128PP::globalInstance().next() % 3;
 	return PixelTag{
 		.type = PixelType::Smoke,
