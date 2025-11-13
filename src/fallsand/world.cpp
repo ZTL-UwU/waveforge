@@ -165,13 +165,19 @@ void PixelWorld::renderToBuffer(std::span<std::uint8_t> buf) const noexcept {
 #endif
 
 	auto &rng = Xoroshiro128PP::globalInstance();
-	constexpr std::array<std::uint8_t, 3> fire_color_idx = {
-		colorIndexOf("Fire1"), colorIndexOf("Fire2"), colorIndexOf("Fire3")
-	};
-	std::uniform_int_distribution<int> dist(0, fire_color_idx.size() - 1);
+	std::uniform_int_distribution<int> dist(0, 5);
 	for (int i = 0; i < _width * _height; ++i) {
 		if (_tags[i].ignited) {
-			auto color = colorOfIndex(fire_color_idx[dist(rng)]);
+			int color_idx;
+			int rd = dist(rng);
+			if (rd == 0) {
+				color_idx = colorIndexOf("Fire1");
+			} else if (rd <= 4) {
+				color_idx = colorIndexOf("Fire2");
+			} else {
+				color_idx = colorIndexOf("Fire3");
+			}
+			auto color = colorOfIndex(color_idx);
 			buf[i * 4 + 0] = color.r;
 			buf[i * 4 + 1] = color.g;
 			buf[i * 4 + 2] = color.b;
