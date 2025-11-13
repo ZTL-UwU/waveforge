@@ -11,6 +11,7 @@ Waveforge is a 2D platformer where the player needs to manipulate water waves (a
 The codebase for now is a prove of concept. The physics simulation is imcomplete but functional, and the wave manipulation is not fully implemented yet. Launching the game you will get a sandbox to play around with the physics simulation.
 
 - `1`/`2`/`3`/`4` keys: change to brush to spawn sand, water, oil and stone wall pixels, respectively
+- `5` key: change to heat brush to heat up pixels
 - Left mouse button: use the brush
 - Right mouse button: erase pixels
 - Scroll wheel: change brush size
@@ -59,6 +60,8 @@ The physics simulation is written from scratch. We use SFML for graphics renderi
 The physics simulation is inspired by Noita's falling everything engine (but we are doing somewhat better at fluid simulation here), which is basically a cellular automaton with some rules for different pixel classes. Performance is not optimal yet, but it's acceptable for now (in Release mode).
 
 The fluid simulation process is devided into two phases: the global update phase and the local update phase. In the global update phase, we abstract the fluid pixels into fluid blocks and build a graph structure representing the connectivity between those blocks. Then the network flow algorithm (Dinic implementation) is used to calculate the fluid distribution among those blocks. In the local update phase, some classic cellular automaton rules are applied to each fluid pixel to simulate local interactions (e.g. water flowing downwards due to gravity). The global update phase is implemented in `fluidflow.cpp` and the local update phase is implemented in `fluids.cpp`.
+
+A thermal simulation system is also implemented, allowing pixels to exchange heat with adjacent pixels and change state when certain temperature thresholds are reached (e.g. oil igniting when heated enough). The heat exchange process is simple (linearly averaging respesting to thermal conductivity as weight), but it works fine for our purpose. The thermal simulation is implemented in `thermal.cpp`.
 
 The current `main.cpp` (mainly used for testing) is quite messy (partly because it's mostly written by Github Copilot). Instead of drawing bunches of rectangles for each pixel, the rendering system dynamically create a texture representing the pixel world and render it all at once for better performance.
 
