@@ -26,6 +26,10 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(139, 69, 19, 255),
 	},
 	{
+		.name = "Copper",
+		.color = sf::Color(184, 115, 51, 255),
+	},
+	{
 		.name = "Sand1",
 		.color = sf::Color(194, 178, 128, 255),
 	},

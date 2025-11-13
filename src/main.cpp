@@ -121,7 +121,14 @@ int main(int argc, char **argv) {
 					);
 					break;
 
-				case 6: // Heat brush: don't change pixel, increase heat
+				case 6: // Copper
+					world.replacePixel(
+						x, y,
+						pro::make_proxy<wf::PixelFacade, wf::element::Copper>()
+					);
+					break;
+
+				case 7: // Heat brush: don't change pixel, increase heat
 					world.tagOf(x, y).heat = wf::PixelTag::heat_max;
 					break;
 
@@ -237,11 +244,14 @@ int main(int argc, char **argv) {
 						current_brush = 4; // Stone
 						std::puts("Brush: Stone (4)");
 					} else if (k->code == sf::Keyboard::Key::Num5) {
-						current_brush = 5; // Heat brush
+						current_brush = 5; // Wood brush
 						std::puts("Brush: Wood (5)");
 					} else if (k->code == sf::Keyboard::Key::Num6) {
-						current_brush = 6; // Heat brush
-						std::puts("Brush: Heat (6)");
+						current_brush = 6; // Copper brush
+						std::puts("Brush: Copper (6)");
+					} else if (k->code == sf::Keyboard::Key::Num7) {
+						current_brush = 7; // Heat brush
+						std::puts("Brush: Heat (7)");
 					}
 				}
 			}

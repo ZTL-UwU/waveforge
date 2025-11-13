@@ -43,6 +43,7 @@ FetchContent_MakeAvailable(json)
 add_executable(waveforge
   src/main.cpp
   src/fallsand/air.cpp
+  src/fallsand/copper.cpp
   src/fallsand/fluidflow.cpp
   src/fallsand/fluids.cpp
   src/fallsand/gas.cpp
