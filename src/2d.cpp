@@ -1,5 +1,6 @@
 #include "wforge/2d.h"
 #include <cmath>
+#include <generator>
 
 namespace wf {
 
@@ -41,12 +42,26 @@ std::generator<std::array<int, 2>> tilesOnSegment(
 	}
 }
 
-std::generator<std::array<int, 2>> neighborsOf(
+std::generator<std::array<int, 2>> neighbors4(
 	std::array<int, 2> center, std::array<int, 2> size
 ) noexcept {
 	const int dx[] = {-1, 1, 0, 0};
 	const int dy[] = {0, 0, -1, 1};
 	for (int i = 0; i < 4; ++i) {
+		int nx = center[0] + dx[i];
+		int ny = center[1] + dy[i];
+		if (nx >= 0 && nx < size[0] && ny >= 0 && ny < size[1]) {
+			co_yield {nx, ny};
+		}
+	}
+}
+
+std::generator<std::array<int, 2>> neighbors8(
+	std::array<int, 2> center, std::array<int, 2> size
+) noexcept {
+	const int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+	const int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+	for (int i = 0; i < 8; ++i) {
 		int nx = center[0] + dx[i];
 		int ny = center[1] + dy[i];
 		if (nx >= 0 && nx < size[0] && ny >= 0 && ny < size[1]) {

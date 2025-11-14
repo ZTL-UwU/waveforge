@@ -1,5 +1,7 @@
 #include "wforge/colorpalette.h"
+#include "wforge/elements.h"
 #include "wforge/fallsand.h"
+#include <proxy/v4/proxy.h>
 
 namespace wf {
 namespace element {
@@ -11,6 +13,10 @@ PixelTag Stone::newTag() const noexcept {
 		.color_index = colorIndexOf("Stone1"),
 		.thermal_conductivity = 30,
 	};
+}
+
+PixelElement Stone::create() noexcept {
+	return pro::make_proxy_inplace<PixelFacade, Stone>();
 }
 
 } // namespace element

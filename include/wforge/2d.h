@@ -6,13 +6,51 @@
 
 namespace wf {
 
+enum class FacingDirection : std::uint8_t {
+	North = 0,
+	East = 1,
+	South = 2,
+	West = 3,
+};
+
+inline int xDeltaOf(FacingDirection dir) noexcept {
+	switch (dir) {
+	case FacingDirection::North:
+	case FacingDirection::South:
+		return 0;
+	case FacingDirection::East:
+		return 1;
+	case FacingDirection::West:
+		return -1;
+	}
+	return 0;
+}
+
+inline int yDeltaOf(FacingDirection dir) noexcept {
+	switch (dir) {
+	case FacingDirection::East:
+	case FacingDirection::West:
+		return 0;
+	case FacingDirection::North:
+		return -1;
+	case FacingDirection::South:
+		return 1;
+	}
+	return 0;
+}
+
 // All tiles from start to end inclusively
 std::generator<std::array<int, 2>> tilesOnSegment(
 	std::array<int, 2> start, std::array<int, 2> end
 ) noexcept;
 
 // All 4-neighbors of center within size bounds
-std::generator<std::array<int, 2>> neighborsOf(
+std::generator<std::array<int, 2>> neighbors4(
+	std::array<int, 2> center, std::array<int, 2> size
+) noexcept;
+
+// All 8-neighbors of center within size bounds
+std::generator<std::array<int, 2>> neighbors8(
 	std::array<int, 2> center, std::array<int, 2> size
 ) noexcept;
 

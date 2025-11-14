@@ -1,6 +1,8 @@
 #include "wforge/assets.h"
+#include "wforge/colorpalette.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <array>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
@@ -25,11 +27,17 @@ PixelShape::PixelShape(const sf::Image &img) noexcept
 	, _height(img.getSize().y)
 	, _data(img.getPixelsPtr()) {}
 
+PixelShape::PixelShape() noexcept: _width(0), _height(0), _data(nullptr) {}
+
 bool PixelShape::hasPixel(int x, int y) const noexcept {
+	return colorOf(x, y).a != 0;
+}
+
+sf::Color PixelShape::colorOf(int x, int y) const noexcept {
 #ifndef NDEBUG
 	if (x < 0 || x >= _width || y < 0 || y >= _height) {
 		std::cerr << std::format(
-			"PixelMap::hasPixel: index out of bounds: x = {}, y = {}, width = "
+			"PixelMap::colorOf: index out of bounds: x = {}, y = {}, width = "
 			"{}, height = {}\n",
 			x, y, _width, _height
 		);
@@ -38,8 +46,41 @@ bool PixelShape::hasPixel(int x, int y) const noexcept {
 	}
 #endif
 	// Data: size is _width * _height * 4, each pixel is 4 bytes (RGBA)
-	// We only check if the alpha channel is not fully transparent
-	return _data[(y * _width + x) * 4 + 3] != 0;
+	std::uint8_t r = _data[(y * _width + x) * 4 + 0];
+	std::uint8_t g = _data[(y * _width + x) * 4 + 1];
+	std::uint8_t b = _data[(y * _width + x) * 4 + 2];
+	std::uint8_t a = _data[(y * _width + x) * 4 + 3];
+	return sf::Color(r, g, b, a);
+}
+
+bool PixelShape::isPOIPixel(int x, int y) const noexcept {
+	// Almost transparent red indicates POI
+	return colorOf(x, y) == colorOfName("POIMarker");
+}
+
+PixelType PixelShape::pixelTypeOf(int x, int y) const noexcept {
+	auto color = colorOf(x, y).toInteger();
+	switch (color) {
+	case packColorByName("Air"):
+	case packColorByName("POIMarker"):
+		return PixelType::Air;
+
+	case packColorByName("Stone1"):
+		return PixelType::Stone;
+
+	case packColorByName("Wood"):
+		return PixelType::Wood;
+
+	case packColorByName("Copper"):
+		return PixelType::Copper;
+
+	case packColorByName("Sand1"):
+	case packColorByName("Sand2"):
+		return PixelType::Sand;
+
+	default:
+		return PixelType::Decoration;
+	}
 }
 
 sf::Image trimImage(const sf::Image &img) noexcept {
@@ -84,6 +125,51 @@ sf::Image trimImage(const sf::Image &img) noexcept {
 		std::unreachable();
 	}
 	return trimmed;
+}
+
+sf::Image rotateImageTo(const sf::Image &img, FacingDirection dir) noexcept {
+	auto width = img.getSize().x;
+	auto height = img.getSize().y;
+
+	unsigned int rotated_width, rotated_height;
+	if (dir == FacingDirection::North || dir == FacingDirection::South) {
+		rotated_width = width;
+		rotated_height = height;
+	} else { // East or West
+		rotated_width = height;
+		rotated_height = width;
+	}
+
+	sf::Image rotated({rotated_width, rotated_height}, sf::Color(0, 0, 0, 0));
+	for (unsigned int y = 0; y < height; ++y) {
+		for (unsigned int x = 0; x < width; ++x) {
+			sf::Color color = img.getPixel({x, y});
+			unsigned int rx, ry;
+			switch (dir) {
+			case FacingDirection::North:
+				rx = x;
+				ry = y;
+				break;
+			case FacingDirection::East:
+				rx = height - 1 - y;
+				ry = x;
+				break;
+
+			case FacingDirection::South:
+				rx = width - 1 - x;
+				ry = height - 1 - y;
+				break;
+
+			case FacingDirection::West:
+				rx = y;
+				ry = width - 1 - x;
+				break;
+			}
+
+			rotated.setPixel({rx, ry}, color);
+		}
+	}
+	return rotated;
 }
 
 AssetsManager &AssetsManager::instance() noexcept {
@@ -244,6 +330,23 @@ void fTrimImage(
 	mgr.cacheAsset(id, trimmed);
 }
 
+void fImageAllRotated(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &input_id = entry.at("input");
+	auto &img = mgr.getAsset<sf::Image>(input_id);
+	const std::string &id = entry.at("id");
+
+	auto imgs = new std::array<sf::Image, 4>;
+	for (int i = 0; i < 4; ++i) {
+		imgs->at(i) = rotateImageTo(
+			img, static_cast<FacingDirection>(static_cast<std::uint8_t>(i))
+		);
+	}
+
+	mgr.cacheAsset(id, imgs);
+}
+
 void fPixelShape(
 	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
 ) {
@@ -252,6 +355,21 @@ void fPixelShape(
 	const std::string &id = entry.at("id");
 	auto shape = new PixelShape(img);
 	mgr.cacheAsset(id, shape);
+}
+
+void fPixelShapeAllRotated(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &input_id = entry.at("input");
+	auto &img = mgr.getAsset<std::array<sf::Image, 4>>(input_id);
+	const std::string &id = entry.at("id");
+
+	auto shapes = new PixelShape[4];
+	for (int i = 0; i < 4; ++i) {
+		shapes[i] = PixelShape(img[i]);
+	}
+
+	mgr.cacheAsset(id, shapes);
 }
 
 void fGoalSprite(
@@ -281,7 +399,9 @@ void AssetsManager::loadAllAssets() {
 		{"create-texture", fTexture},
 		{"music", fMusic},
 		{"trim-image", fTrimImage},
+		{"create-image-of-all-facings", fImageAllRotated},
 		{"calculate-shape", fPixelShape},
+		{"create-pixel-shape-of-all-facings", fPixelShapeAllRotated},
 		{"create-goal-sprite", fGoalSprite},
 	};
 

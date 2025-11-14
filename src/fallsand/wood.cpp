@@ -1,4 +1,5 @@
 #include "wforge/colorpalette.h"
+#include "wforge/elements.h"
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 
@@ -12,6 +13,10 @@ PixelTag Wood::newTag() const noexcept {
 		.color_index = colorIndexOf("Wood"),
 		.thermal_conductivity = 20,
 	};
+}
+
+PixelElement Wood::create() noexcept {
+	return pro::make_proxy_inplace<PixelFacade, Wood>();
 }
 
 void Wood::step(PixelWorld &world, int x, int y) noexcept {

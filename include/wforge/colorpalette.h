@@ -46,18 +46,6 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(85, 107, 47, 200),
 	},
 	{
-		.name = "Fire1", // orange
-		.color = sf::Color(255, 69, 0, 255),
-	},
-	{
-		.name = "Fire2", // yellow
-		.color = sf::Color(255, 215, 0, 255),
-	},
-	{
-		.name = "Fire3", // red orange
-		.color = sf::Color(255, 140, 0, 255),
-	},
-	{
 		.name = "Smoke1", // light gray
 		.color = sf::Color(200, 200, 200, 180),
 	},
@@ -72,6 +60,34 @@ constexpr ColorPaletteEntry _colors[] = {
 	{
 		.name = "Steam2", // light blue
 		.color = sf::Color(180, 220, 255, 150),
+	},
+	{
+		.name = "Fire1", // orange
+		.color = sf::Color(255, 69, 0, 255),
+	},
+	{
+		.name = "Fire2", // yellow
+		.color = sf::Color(255, 215, 0, 255),
+	},
+	{
+		.name = "Fire3", // red orange
+		.color = sf::Color(255, 140, 0, 255),
+	},
+	{
+		.name = "Electric",
+		.color = sf::Color(0, 242, 255, 255),
+	},
+	{
+		.name = "Laser",
+		.color = sf::Color(51, 255, 184, 200),
+	},
+	{
+		.name = "POIMarker",
+		.color = sf::Color(255, 0, 0, 40),
+	},
+	{
+		.name = "Ruin",
+		.color = sf::Color(128, 128, 128, 255),
 	},
 	{
 		.name = "DebugRed",
@@ -103,6 +119,14 @@ inline consteval unsigned int colorIndexOf(const char *name) {
 
 inline constexpr sf::Color colorOfIndex(unsigned int index) {
 	return _colors[index].color;
+}
+
+inline consteval sf::Color colorOfName(const char *name) {
+	return colorOfIndex(colorIndexOf(name));
+}
+
+inline consteval unsigned int packColorByName(const char *name) {
+	return colorOfName(name).toInteger();
 }
 
 } // namespace wf

@@ -1,4 +1,5 @@
 #include "wforge/colorpalette.h"
+#include "wforge/elements.h"
 #include "wforge/fallsand.h"
 
 namespace wf {

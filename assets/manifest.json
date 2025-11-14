@@ -77,6 +77,72 @@
 			"collections": [
 				"background/level-music"
 			]
+		},
+		{
+			"id": "laser-emitter/raw",
+			"type": "image",
+			"file": "laser-emitter.png",
+			"description": "Loading laser emitter PNG"
+		},
+		{
+			"id": "laser-emitter/trimmed",
+			"type": "trim-image",
+			"input": "laser-emitter/raw",
+			"description": "Trimming laser emitter image"
+		},
+		{
+			"id": "laser-emitter/images",
+			"type": "create-image-of-all-facings",
+			"input": "laser-emitter/trimmed",
+			"description": "Creating laser emitter images for all facings"
+		},
+		{
+			"id": "laser-emitter/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "laser-emitter/images",
+			"description": "Creating laser emitter pixel shapes for all facings"
+		},
+		{
+			"id": "laser-receiver/raw",
+			"type": "image",
+			"file": "laser-receiver.png",
+			"description": "Loading laser receiver PNG"
+		},
+		{
+			"id": "laser-receiver/trimmed",
+			"type": "trim-image",
+			"input": "laser-receiver/raw",
+			"description": "Trimming laser receiver image"
+		},
+		{
+			"id": "laser-receiver/images",
+			"type": "create-image-of-all-facings",
+			"input": "laser-receiver/trimmed",
+			"description": "Creating laser receiver images for all facings"
+		},
+		{
+			"id": "laser-receiver/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "laser-receiver/images",
+			"description": "Creating laser receiver pixel shapes for all facings"
+		},
+		{
+			"id": "pressure-plate/raw",
+			"type": "image",
+			"file": "pressure-plate.png",
+			"description": "Loading pressure plate PNG"
+		},
+		{
+			"id": "pressure-plate/trimmed",
+			"type": "trim-image",
+			"input": "pressure-plate/raw",
+			"description": "Trimming pressure plate image"
+		},
+		{
+			"id": "pressure-plate/shape",
+			"type": "calculate-shape",
+			"input": "pressure-plate/trimmed",
+			"description": "Calculating pressure plate shape"
 		}
 	]
 }

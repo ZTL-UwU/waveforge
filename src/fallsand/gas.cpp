@@ -1,3 +1,4 @@
+#include "wforge/elements.h"
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 

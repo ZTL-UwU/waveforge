@@ -1,11 +1,14 @@
 #include "wforge/assets.h"
+#include "wforge/elements.h"
 #include "wforge/fallsand.h"
 #include "wforge/level.h"
+#include "wforge/structures.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/WindowEnums.hpp>
 #include <algorithm>
 #include <proxy/proxy.h>
+#include <proxy/v4/proxy.h>
 
 std::filesystem::path wf::_executable_path;
 int main(int argc, char **argv) {
@@ -43,6 +46,19 @@ int main(int argc, char **argv) {
 			pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
 		);
 	}
+
+	// Create a laser emitter and a pressure plate for testing
+	auto laser_emitter = pro::make_proxy<
+		wf::StructureEntityFacade, wf::structure::LaserEmitter>(
+		20, platform_y - 30, wf::FacingDirection::East
+	);
+	world.addStructure(std::move(laser_emitter));
+
+	auto pressure_plate = pro::make_proxy<
+		wf::StructureEntityFacade, wf::structure::PressurePlate>(
+		width - 45, platform_y - 30
+	);
+	world.addStructure(std::move(pressure_plate));
 
 	wf::LevelRenderer renderer(level, scale);
 
@@ -143,11 +159,9 @@ int main(int argc, char **argv) {
 		}
 	};
 
-	// current brush selection: 1=Sand, 2=Water, 3=Oil, 4=Stone, 5=Heat
 	int current_brush = 1; // default to Sand
 
 	while (window.isOpen()) {
-		// SFML variant in this tree returns std::optional<Event>
 		while (auto ev = window.pollEvent()) {
 			// window closed
 			if (ev->is<sf::Event::Closed>()) {

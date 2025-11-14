@@ -1,4 +1,5 @@
 #include "wforge/2d.h"
+#include "wforge/elements.h"
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 #include <cmath>

@@ -242,7 +242,7 @@ void searchConnected(
 		tag.dirty = true;
 		ctx.pixel_vid[y * world_size[0] + x] = vid;
 
-		for (auto [nx, ny] : neighborsOf({x, y}, world_size)) {
+		for (auto [nx, ny] : neighbors4({x, y}, world_size)) {
 			auto ntag = world.tagOf(nx, ny);
 			if (ntag.type != ptype || ntag.dirty) {
 				continue;

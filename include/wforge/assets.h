@@ -1,7 +1,10 @@
 #ifndef WFORGE_ASSETS_H
 #define WFORGE_ASSETS_H
 
+#include "wforge/2d.h"
+#include "wforge/fallsand.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <cstdint>
@@ -13,6 +16,7 @@ namespace wf {
 // Bitmap shape of a pixel-based entity
 struct PixelShape {
 	PixelShape(const sf::Image &img) noexcept;
+	PixelShape() noexcept;
 
 	int width() const noexcept {
 		return _width;
@@ -24,8 +28,12 @@ struct PixelShape {
 
 	// not fully transparent at (x, y)
 	bool hasPixel(int x, int y) const noexcept;
+	sf::Color colorOf(int x, int y) const noexcept;
 
-private:
+	bool isPOIPixel(int x, int y) const noexcept;
+	PixelType pixelTypeOf(int x, int y) const noexcept;
+
+protected:
 	int _width;
 	int _height;
 	const std::uint8_t *_data; // no ownership, ~static
@@ -33,6 +41,9 @@ private:
 
 // Trim fully-transparent borders from an image
 sf::Image trimImage(const sf::Image &img) noexcept;
+
+// Assumes the input image is facing North
+sf::Image rotateImageTo(const sf::Image &img, FacingDirection dir) noexcept;
 
 // Cache of loaded assets, singleton
 class AssetsManager {

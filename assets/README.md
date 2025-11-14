@@ -62,6 +62,22 @@ Remove fully transparent borders from an image.
 }
 ```
 
+#### `create-image-of-all-facings`
+Create rotated versions of an image for all four facing directions (up, right, down, left).
+
+**Additional fields:**
+- **`input`** (string, required): ID of the source image asset.
+
+**Example:**
+```json
+{
+  "id": "duck/image_4facings",
+  "type": "create-image-of-all-facings",
+  "input": "duck/image",
+  "description": "Creating duck images for all facings"
+}
+```
+
 #### `calculate-shape`
 Generate a `PixelShape` from an image, which provides efficient collision detection based on non-transparent pixels.
 
@@ -75,6 +91,22 @@ Generate a `PixelShape` from an image, which provides efficient collision detect
   "type": "calculate-shape",
   "input": "duck/image",
   "description": "Calculating duck shape"
+}
+```
+
+#### `create-pixel-shape-of-all-facings`
+Generate `PixelShape` instances for all four facing directions from a source image.
+
+**Additional fields:**
+- **`input`** (string, required): ID of the source image asset.
+
+**Example:**
+```json
+{
+  "id": "duck/shape_4facings",
+  "type": "create-pixel-shape-of-all-facings",
+  "input": "duck/image",
+  "description": "Creating duck shapes for all facings"
 }
 ```
 

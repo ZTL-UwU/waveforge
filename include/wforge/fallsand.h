@@ -7,6 +7,7 @@
 #include <proxy/v4/proxy.h>
 #include <proxy/v4/proxy_macros.h>
 #include <span>
+#include <vector>
 
 namespace wf {
 
@@ -15,6 +16,11 @@ namespace _dispatch {
 // See microsoft/proxy library for the semantics of dispatch conventions
 PRO_DEF_MEM_DISPATCH(MemNewTag, newTag);
 PRO_DEF_MEM_DISPATCH(MemStep, step);
+PRO_DEF_MEM_DISPATCH(MemOnCharge, onCharge);
+
+PRO_DEF_MEM_DISPATCH(MemSetup, setup);
+PRO_DEF_MEM_DISPATCH(MemCustomRender, customRender);
+PRO_DEF_MEM_DISPATCH(MemPriority, priority);
 
 } // namespace _dispatch
 
@@ -26,10 +32,19 @@ class PixelWorld;
 struct PixelFacade : pro::facade_builder
 	::add_convention<_dispatch::MemNewTag, PixelTag() const noexcept>
 	::add_convention<_dispatch::MemStep, void(PixelWorld &world, int x, int y) noexcept>
+	::add_convention<_dispatch::MemOnCharge, void(PixelWorld &world, int x, int y) noexcept>
+	::build {};
+
+struct StructureEntityFacade : pro::facade_builder
+	::add_convention<_dispatch::MemSetup, void(PixelWorld &world) noexcept>
+	::add_convention<_dispatch::MemCustomRender, void(std::span<std::uint8_t> buf, const PixelWorld &world) const noexcept>
+	::add_convention<_dispatch::MemStep, bool(PixelWorld &world) noexcept>
+	::add_convention<_dispatch::MemPriority, int() const noexcept> // lower value means higher priority
 	::build {};
 /* clang-format on */
 
 using PixelElement = pro::proxy<PixelFacade>;
+using StructureEntity = pro::proxy<StructureEntityFacade>;
 
 // Insert new types to correct position! Don't just append at the end!
 enum class PixelType : std::uint8_t {
@@ -46,6 +61,7 @@ enum class PixelType : std::uint8_t {
 	Water,
 
 	// Solid types
+	Decoration,
 	Stone,
 	Wood,
 	Copper,
@@ -70,6 +86,7 @@ enum class PixelClass : std::uint8_t {
 struct PixelTag {
 	static constexpr unsigned int heat_max = 127;
 	static constexpr unsigned int thermal_conductivity_max = 63;
+	static constexpr unsigned int electric_power_max = 15;
 
 	PixelType type : 6;
 	PixelClass pclass : 2;
@@ -80,6 +97,11 @@ struct PixelTag {
 	unsigned int heat : 7 = 0;
 	bool ignited : 1 = false; // on fire
 	unsigned int thermal_conductivity : 6 = 0;
+	unsigned int electric_power : 4 = 0;
+};
+
+struct StaticPixelTag {
+	bool laser_active : 1 = false;
 };
 
 class PixelWorld {
@@ -101,6 +123,9 @@ public:
 	PixelTag &tagOf(int x, int y) noexcept;
 	PixelElement &elementOf(int x, int y) noexcept;
 
+	StaticPixelTag staticTagOf(int x, int y) const noexcept;
+	StaticPixelTag &staticTagOf(int x, int y) noexcept;
+
 	void swapPixels(int x1, int y1, int x2, int y2) noexcept;
 
 	// swapPixels without swapping fluid_dir
@@ -112,12 +137,16 @@ public:
 	) noexcept;
 	void replacePixelWithAir(int x, int y) noexcept;
 
+	void chargeElement(int x, int y) noexcept;
+
 	bool typeOfIs(int x, int y, PixelType ptype) const noexcept;
 	bool classOfIs(int x, int y, PixelClass pclass) const noexcept;
 
 	void step() noexcept;
 
 	void renderToBuffer(std::span<std::uint8_t> buf) const noexcept;
+
+	void addStructure(StructureEntity structure) noexcept;
 
 protected:
 	void resetDirtyFlags() noexcept;
@@ -134,95 +163,9 @@ private:
 
 	std::unique_ptr<PixelTag[]> _tags;
 	std::unique_ptr<PixelElement[]> _elements;
+	std::unique_ptr<StaticPixelTag[]> _static_tags;
+	std::vector<StructureEntity> _structures;
 };
-
-namespace element {
-
-// Common superclass for all elements, no special behavior
-struct EmptySubsElement {
-	void step(PixelWorld &world, int x, int y) noexcept {}
-};
-
-// Common superclass for solid elements
-struct SolidElement : EmptySubsElement {
-	// Empty for now
-};
-
-// Common superclass for fluid elements
-struct FluidElement : EmptySubsElement {
-	void step(PixelWorld &world, int x, int y) noexcept;
-};
-
-// Common superclass for gas elements (except air)
-struct GasElement : EmptySubsElement {
-	void step(PixelWorld &world, int x, int y) noexcept;
-};
-
-struct Steam : GasElement {
-	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
-};
-
-struct Smoke : GasElement {
-	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
-};
-
-struct Air : EmptySubsElement {
-	PixelTag newTag() const noexcept;
-};
-
-struct Stone : SolidElement {
-	PixelTag newTag() const noexcept;
-};
-
-struct Wood : SolidElement {
-	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
-
-private:
-	int burn_time = 0;
-};
-
-struct Copper : SolidElement {
-	PixelTag newTag() const noexcept;
-};
-
-struct Sand : SolidElement {
-	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
-
-protected:
-	float vx = 0, vy = 0;
-};
-
-struct Water : FluidElement {
-	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
-};
-
-struct Oil : FluidElement {
-	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
-
-private:
-	int burn_time = 0;
-};
-
-struct FluidParticle : EmptySubsElement {
-	PixelTag newTag() const noexcept;
-	void step(PixelWorld &world, int x, int y) noexcept;
-
-	FluidParticle() noexcept = default;
-	FluidParticle(float init_vx, float init_vy, PixelElement element) noexcept;
-
-protected:
-	PixelElement element;
-	float vx = 0, vy = 0;
-};
-
-} // namespace element
-
 } // namespace wf
 
 #endif // WFORGE_FALLSAND_H

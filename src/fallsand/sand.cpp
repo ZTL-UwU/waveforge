@@ -1,5 +1,6 @@
 #include "wforge/2d.h"
 #include "wforge/colorpalette.h"
+#include "wforge/elements.h"
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 #include <cmath>
@@ -111,7 +112,7 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 		to_x = tx;
 		to_y = ty;
 		if (my_tag.is_free_falling) {
-			for (auto [nx, ny] : neighborsOf({tx, ty}, world_dim)) {
+			for (auto [nx, ny] : neighbors4({tx, ty}, world_dim)) {
 				if (inertial_dist(rng) == 0) {
 					continue;
 				}
@@ -178,7 +179,14 @@ void Sand::step(PixelWorld &world, int x, int y) noexcept {
 
 	if (to_x != x || to_y != y) {
 		world.swapPixels(x, y, to_x, to_y);
+		return;
 	}
+
+	SolidElement::step(world, x, y);
+}
+
+PixelElement Sand::create() noexcept {
+	return pro::make_proxy<PixelFacade, Sand>();
 }
 
 } // namespace element
