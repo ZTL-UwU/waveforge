@@ -1,6 +1,7 @@
 #include "wforge/2d.h"
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
+#include <algorithm>
 #include <cmath>
 #include <type_traits>
 #include <vector>
