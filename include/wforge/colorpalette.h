@@ -22,8 +22,12 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(128, 128, 128, 255),
 	},
 	{
-		.name = "Wood",
-		.color = sf::Color(139, 69, 19, 255),
+		.name = "Wood1",
+		.color = sf::Color(116, 90, 54, 255),
+	},
+	{
+		.name = "Wood2",
+		.color = sf::Color(76, 61, 38, 255),
 	},
 	{
 		.name = "Copper",
@@ -31,11 +35,11 @@ constexpr ColorPaletteEntry _colors[] = {
 	},
 	{
 		.name = "Sand1",
-		.color = sf::Color(194, 178, 128, 255),
+		.color = sf::Color(218, 207, 163, 255),
 	},
 	{
 		.name = "Sand2", // darker
-		.color = sf::Color(160, 140, 100, 255),
+		.color = sf::Color(198, 174, 113, 255),
 	},
 	{
 		.name = "Water",

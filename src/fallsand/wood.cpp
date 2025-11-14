@@ -7,10 +7,11 @@ namespace wf {
 namespace element {
 
 PixelTag Wood::newTag() const noexcept {
+	auto color_rd = Xoroshiro128PP::globalInstance().next() % 3;
 	return PixelTag{
 		.type = PixelType::Wood,
 		.pclass = PixelClass::Solid,
-		.color_index = colorIndexOf("Wood"),
+		.color_index = color_rd ? colorIndexOf("Wood1") : colorIndexOf("Wood2"),
 		.thermal_conductivity = 20,
 	};
 }

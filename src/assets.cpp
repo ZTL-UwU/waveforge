@@ -68,7 +68,8 @@ PixelType PixelShape::pixelTypeOf(int x, int y) const noexcept {
 	case packColorByName("Stone1"):
 		return PixelType::Stone;
 
-	case packColorByName("Wood"):
+	case packColorByName("Wood1"):
+	case packColorByName("Wood2"):
 		return PixelType::Wood;
 
 	case packColorByName("Copper"):
