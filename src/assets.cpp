@@ -373,14 +373,14 @@ void fPixelShapeAllRotated(
 	mgr.cacheAsset(id, shapes);
 }
 
-void fGoalSprite(
+void fCheckpointSprite(
 	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
 ) {
-	auto &img1 = mgr.getAsset<sf::Image>("goal/image_1");
-	auto &img2 = mgr.getAsset<sf::Image>("goal/image_2");
+	auto &img1 = mgr.getAsset<sf::Image>("checkpoint/image_1");
+	auto &img2 = mgr.getAsset<sf::Image>("checkpoint/image_2");
 	const std::string &id = entry.at("id");
-	auto goal_sprite = new GoalSprite(img1, img2);
-	mgr.cacheAsset(id, goal_sprite);
+	auto checkpoint_sprite = new CheckpointSprite(img1, img2);
+	mgr.cacheAsset(id, checkpoint_sprite);
 }
 
 } // namespace
@@ -403,7 +403,7 @@ void AssetsManager::loadAllAssets() {
 		{"create-image-of-all-facings", fImageAllRotated},
 		{"calculate-shape", fPixelShape},
 		{"create-pixel-shape-of-all-facings", fPixelShapeAllRotated},
-		{"create-goal-sprite", fGoalSprite},
+		{"create-checkpoint-sprite", fCheckpointSprite},
 	};
 
 #ifndef NDEBUG

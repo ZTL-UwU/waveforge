@@ -26,21 +26,21 @@
 			"description": "Creating duck texture"
 		},
 		{
-			"id": "goal/image_1",
+			"id": "checkpoint/image_1",
 			"type": "image",
-			"file": "goal1.png",
-			"description": "Loading goal image 1"
+			"file": "checkpoint1.png",
+			"description": "Loading checkpoint image 1"
 		},
 		{
-			"id": "goal/image_2",
+			"id": "checkpoint/image_2",
 			"type": "image",
-			"file": "goal2.png",
-			"description": "Loading goal image 2"
+			"file": "checkpoint2.png",
+			"description": "Loading checkpoint image 2"
 		},
 		{
-			"id": "goal/sprite",
-			"type": "create-goal-sprite",
-			"description": "Creating goal sprite"
+			"id": "checkpoint/sprite",
+			"type": "create-checkpoint-sprite",
+			"description": "Creating checkpoint sprite"
 		},
 		{
 			"id": "music/Pixelated Paradise-X",

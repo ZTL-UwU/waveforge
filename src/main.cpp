@@ -37,12 +37,12 @@ int main(int argc, char **argv) {
 	}
 	level.duck.position = sf::Vector2f(width / 2., platform_y - 50);
 
-	level.goal.x = width - level.goal.width();
-	level.goal.y = 20;
-	int goal_platform_y = level.goal.y + level.goal.height();
-	for (int x = level.goal.x - 5; x < width; ++x) {
+	level.checkpoint.x = width - level.checkpoint.width();
+	level.checkpoint.y = 20;
+	int checkpoint_platform_y = level.checkpoint.y + level.checkpoint.height();
+	for (int x = level.checkpoint.x - 5; x < width; ++x) {
 		world.replacePixel(
-			x, goal_platform_y,
+			x, checkpoint_platform_y,
 			pro::make_proxy<wf::PixelFacade, wf::element::Stone>()
 		);
 	}

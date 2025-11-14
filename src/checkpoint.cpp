@@ -21,18 +21,22 @@ constexpr int _ticks_per_progress = 3;
 
 }
 
-GoalArea::GoalArea(): GoalArea(0, 0) {}
+CheckpointArea::CheckpointArea(): CheckpointArea(0, 0) {}
 
-GoalArea::GoalArea(int x, int y)
+CheckpointArea::CheckpointArea(int x, int y)
 	: x(x)
 	, y(y)
 	, _progress(0)
-	, _sprite(AssetsManager::instance().getAsset<GoalSprite>("goal/sprite")) {
+	, _sprite(
+		  AssetsManager::instance().getAsset<CheckpointSprite>(
+			  "checkpoint/sprite"
+		  )
+	  ) {
 	_width = _sprite.width();
 	_height = _sprite.height();
 }
 
-void GoalArea::step(const Level &level) noexcept {
+void CheckpointArea::step(const Level &level) noexcept {
 	if (_isDuckInside(level)) {
 		_progress = std::min(_progress + 1, _height * _ticks_per_progress);
 	} else {
@@ -40,24 +44,26 @@ void GoalArea::step(const Level &level) noexcept {
 	}
 }
 
-void GoalArea::resetProgress() noexcept {
+void CheckpointArea::resetProgress() noexcept {
 	_progress = 0;
 }
 
-int GoalArea::progress() const noexcept {
+int CheckpointArea::progress() const noexcept {
 	return _progress / _ticks_per_progress;
 }
 
-bool GoalArea::isCompleted() const noexcept {
+bool CheckpointArea::isCompleted() const noexcept {
 	return _progress >= _height * _ticks_per_progress;
 }
 
-void GoalArea::render(sf::RenderTarget &target, int scale) const noexcept {
+void CheckpointArea::render(
+	sf::RenderTarget &target, int scale
+) const noexcept {
 	_sprite.render(target, x, y, progress(), scale);
 }
 
-bool GoalArea::_isDuckInside(const Level &level) const noexcept {
-	// check if any pixel of duck shape is inside goal area
+bool CheckpointArea::_isDuckInside(const Level &level) const noexcept {
+	// check if any pixel of duck shape is inside checkpoint area
 
 	const auto &duck = level.duck;
 	int duck_x = std::round(duck.position.x);
@@ -90,60 +96,62 @@ bool GoalArea::_isDuckInside(const Level &level) const noexcept {
 	return false;
 }
 
-GoalSprite::GoalSprite(sf::Image &goal_1, sf::Image &goal_2) {
+CheckpointSprite::CheckpointSprite(
+	sf::Image &checkpoint_1, sf::Image &checkpoint_2
+) {
 #ifndef NDEBUG
-	if (goal_1.getSize() != goal_2.getSize()) {
+	if (checkpoint_1.getSize() != checkpoint_2.getSize()) {
 		std::cerr << std::format(
-			"wf::GoalSprite: goal_1 and goal_2 have different sizes: ({}, {}) "
+			"{}: checkpoint_1 and checkpoint_2 have different sizes: ({}, {}) "
 			"vs ({}, {})\n",
-			goal_1.getSize().x, goal_1.getSize().y, goal_2.getSize().x,
-			goal_2.getSize().y
+			__FUNCTION__, checkpoint_1.getSize().x, checkpoint_1.getSize().y,
+			checkpoint_2.getSize().x, checkpoint_2.getSize().y
 		);
 		cpptrace::generate_trace().print();
 		std::abort();
 	}
 #endif
 
-	if (!_goal_1.loadFromImage(goal_1)) {
+	if (!_ckeckpoint_1.loadFromImage(checkpoint_1)) {
 #ifndef NDEBUG
-		std::cerr << "wf::GoalSprite: failed to load goal_1 texture\n";
+		std::cerr << "Failed to load checkpoint_1 texture\n";
 		cpptrace::generate_trace().print();
 #endif
 		std::abort();
 	}
 
-	if (!_goal_2.loadFromImage(goal_2)) {
+	if (!_checkpoint_2.loadFromImage(checkpoint_2)) {
 #ifndef NDEBUG
-		std::cerr << "wf::GoalSprite: failed to load goal_2 texture\n";
+		std::cerr << "Failed to load checkpoint_2 texture\n";
 		cpptrace::generate_trace().print();
 #endif
 		std::abort();
 	}
 
-	_goal_1.setSmooth(false);
-	_goal_2.setSmooth(false);
+	_ckeckpoint_1.setSmooth(false);
+	_checkpoint_2.setSmooth(false);
 }
 
-int GoalSprite::width() const noexcept {
-	return _goal_1.getSize().x;
+int CheckpointSprite::width() const noexcept {
+	return _ckeckpoint_1.getSize().x;
 }
 
-int GoalSprite::height() const noexcept {
-	return _goal_1.getSize().y;
+int CheckpointSprite::height() const noexcept {
+	return _ckeckpoint_1.getSize().y;
 }
 
-void GoalSprite::render(
+void CheckpointSprite::render(
 	sf::RenderTarget &target, int x, int y, int progress, int scale
 ) const noexcept {
-	// Top height - progress pixels from goal_1
-	// Bottom progress pixels from goal_2
+	// Top height - progress pixels from checkpoint_1
+	// Bottom progress pixels from checkpoint_2
 	auto height = this->height();
 	auto width = this->width();
 
 #ifndef NDEBUG
 	if (progress > height || progress < 0) {
 		std::cerr << std::format(
-			"wf::GoalSprite::render: progress {} out of bounds [0, {}]\n",
+			"wf::CheckpointSprite::render: progress {} out of bounds [0, {}]\n",
 			progress, height
 		);
 		cpptrace::generate_trace().print();
@@ -153,7 +161,8 @@ void GoalSprite::render(
 
 	if (progress > 0) {
 		sf::Sprite sprite_bottom(
-			_goal_2, sf::IntRect({0, height - progress}, {width, progress})
+			_checkpoint_2,
+			sf::IntRect({0, height - progress}, {width, progress})
 		);
 
 		sprite_bottom.setPosition(
@@ -165,7 +174,7 @@ void GoalSprite::render(
 
 	if (progress < height) {
 		sf::Sprite sprite_top(
-			_goal_1, sf::IntRect({0, 0}, {width, height - progress})
+			_ckeckpoint_1, sf::IntRect({0, 0}, {width, height - progress})
 		);
 
 		sprite_top.setPosition(sf::Vector2f(x * scale, y * scale));

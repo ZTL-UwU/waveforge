@@ -76,9 +76,9 @@ private:
 	std::map<std::string, void *> _asset_cache; // owned pointers
 };
 
-// Goal area sprite, which animates based on progress
-struct GoalSprite {
-	GoalSprite(sf::Image &goal_1, sf::Image &goal_2);
+// Checkpoint area sprite, which animates based on progress
+struct CheckpointSprite {
+	CheckpointSprite(sf::Image &checkpoint_1, sf::Image &checkpoint_2);
 
 	int width() const noexcept;
 	int height() const noexcept;
@@ -88,7 +88,7 @@ struct GoalSprite {
 	) const noexcept;
 
 private:
-	sf::Texture _goal_1, _goal_2;
+	sf::Texture _ckeckpoint_1, _checkpoint_2;
 };
 
 // defined and set at program start, used to locate assets directory

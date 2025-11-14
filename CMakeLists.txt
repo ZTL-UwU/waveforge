@@ -65,7 +65,7 @@ add_executable(waveforge
   src/level.cpp
   src/duck.cpp
   src/assets.cpp
-  src/goal.cpp
+  src/checkpoint.cpp
   src/2d.cpp
   src/xoroshiro.cpp
 )

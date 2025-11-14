@@ -4,7 +4,7 @@ Waveforge is the game I'm developing for [GitHub Game Off 2025](https://itch.io/
 
 ## The concept
 
-Waveforge is a 2D platformer where the player needs to manipulate water waves (and other physical phenomena) to somehow move a rubber duck to the goal in a pixel emulated world with physics simulation (of it's own style, not always realistic though).
+Waveforge is a 2D platformer where the player needs to manipulate water waves (and other physical phenomena) to somehow move a rubber duck to the checkpoint in a pixel emulated world with physics simulation (of it's own style, not always realistic though).
 
 ## Current status
 
@@ -18,7 +18,7 @@ The codebase for now is a prove of concept. The physics simulation is imcomplete
 - Space key: pause/unpause the simulation
 - `n` key: step one frame when paused
 
-The duck is interactable with the physics simulation now, a goal (for testing purpose) is added at the top right corner. Having the duck reach the goal will print a message to the console, stating that you win, while having the duck fall out of the screen will print a message stating that you lose. However, this is not how the final game will be like, as player won't be able to directly spawn pixels in the final game, but use items (with limited supply) to manipulate the environment instead.
+The duck is interactable with the physics simulation now, a checkpoint (for testing purpose) is added at the top right corner. Having the duck reach the checkpoint will print a message to the console, stating that you win, while having the duck fall out of the screen will print a message stating that you lose. However, this is not how the final game will be like, as player won't be able to directly spawn pixels in the final game, but use items (with limited supply) to manipulate the environment instead.
 
 Four music tracks are created and added to the repository, but only "Pixelated Paradise-X" is loaded as background music currently.
 

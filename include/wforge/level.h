@@ -30,13 +30,13 @@ struct DuckEntity {
 	void step(const Level &level) noexcept;
 };
 
-struct GoalArea {
+struct CheckpointArea {
 	// Anchor at top-left
 	int x;
 	int y;
 
-	GoalArea();
-	GoalArea(int x, int y);
+	CheckpointArea();
+	CheckpointArea(int x, int y);
 
 	int width() const noexcept {
 		return _width;
@@ -58,7 +58,7 @@ struct GoalArea {
 private:
 	int _width, _height;
 	int _progress;
-	GoalSprite &_sprite;
+	CheckpointSprite &_sprite;
 
 	bool _isDuckInside(const Level &level) const noexcept;
 };
@@ -68,7 +68,7 @@ struct Level {
 
 	PixelWorld fallsand;
 	DuckEntity duck; // Quack!
-	GoalArea goal;
+	CheckpointArea checkpoint;
 
 	auto width() const noexcept {
 		return fallsand.width();

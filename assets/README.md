@@ -126,17 +126,17 @@ Create a GPU texture from an image for rendering.
 }
 ```
 
-#### `create-goal-sprite`
-Create the special goal sprite animation. This operation has hardcoded dependencies on `goal/image_1` and `goal/image_2` assets.
+#### `create-checkpoint-sprite`
+Create the special checkpoint sprite animation. This operation has hardcoded dependencies on `checkpoint/image_1` and `checkpoint/image_2` assets.
 
 **Additional fields:** None (uses hardcoded asset IDs).
 
 **Example:**
 ```json
 {
-  "id": "goal/sprite",
-  "type": "create-goal-sprite",
-  "description": "Creating goal sprite"
+  "id": "checkpoint/sprite",
+  "type": "create-checkpoint-sprite",
+  "description": "Creating checkpoint sprite"
 }
 ```
 

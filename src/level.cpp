@@ -10,7 +10,7 @@ Level::Level(int width, int height) noexcept: fallsand(width, height) {}
 void Level::step() {
 	fallsand.step();
 	duck.step(*this);
-	goal.step(*this);
+	checkpoint.step(*this);
 }
 
 bool Level::isFailed() const noexcept {
@@ -18,7 +18,7 @@ bool Level::isFailed() const noexcept {
 }
 
 bool Level::isCompleted() const noexcept {
-	return goal.isCompleted();
+	return checkpoint.isCompleted();
 }
 
 LevelRenderer::LevelRenderer(Level &level, int scale)
@@ -67,7 +67,7 @@ void LevelRenderer::_renderDuck(sf::RenderTarget &target) noexcept {
 void LevelRenderer::render(sf::RenderTarget &target) noexcept {
 	_renderFallsand(target);
 	_renderDuck(target);
-	_level.goal.render(target, scale); // goal can render itself
+	_level.checkpoint.render(target, scale); // checkpoint can render itself
 }
 
 } // namespace wf
