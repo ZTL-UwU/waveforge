@@ -6,7 +6,7 @@ namespace wf {
 namespace element {
 
 PixelTag Decoration::newTag() const noexcept {
-	return {
+	return PixelTag{
 		.type = PixelType::Decoration,
 		.pclass = PixelClass::Solid,
 		.color_index = colorIndexOf("Ruin"),
