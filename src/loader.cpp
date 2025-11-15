@@ -22,6 +22,7 @@ constexpr sf::Color checkpoint_marker_color{89, 241, 255, 231};
 constexpr sf::Color laser_emitter_marker_color{51, 255, 184, 231};
 constexpr sf::Color laser_receiver_marker_color{187, 39, 82, 231};
 constexpr sf::Color pressure_plate_marker_color{240, 34, 159, 231};
+constexpr sf::Color power_source_marker_color{148, 168, 58, 231};
 
 std::array<int, 2> convertBottomCenterToTopLeft(
 	int x, int y, int shape_width, int shape_height
@@ -175,6 +176,14 @@ Level Level::loadFromAsset(const std::string &level_id) {
 				structures.push_back(
 					constructStructureWithoutDirection<
 						structure::PressurePlate>(image, x, y)
+				);
+				break;
+
+			case power_source_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithoutDirection<structure::PowerSource>(
+						image, x, y
+					)
 				);
 				break;
 

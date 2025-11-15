@@ -63,6 +63,7 @@ add_executable(waveforge
   src/structures/electric.cpp
   src/structures/laser.cpp
   src/structures/position.cpp
+  src/structures/power_source.cpp
   src/structures/pressure_plate.cpp
   src/structures/shape.cpp
   src/level.cpp

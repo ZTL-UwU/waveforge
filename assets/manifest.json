@@ -145,6 +145,24 @@
 			"description": "Calculating pressure plate shape"
 		},
 		{
+			"id": "power-source/raw",
+			"type": "image",
+			"file": "power-source.png",
+			"description": "Loading power source PNG"
+		},
+		{
+			"id": "power-source/trimmed",
+			"type": "trim-image",
+			"input": "power-source/raw",
+			"description": "Trimming power source image"
+		},
+		{
+			"id": "power-source/shape",
+			"type": "calculate-shape",
+			"input": "power-source/trimmed",
+			"description": "Calculating power source shape"
+		},
+		{
 			"id": "level/simple-intro/map",
 			"type": "image",
 			"file": "levels/simple_intro.png",

@@ -44,7 +44,7 @@ bool PressurePlate::step(PixelWorld &world) noexcept {
 }
 
 int PressurePlate::priority() const noexcept {
-	return 100;
+	return 10;
 }
 
 } // namespace structure
