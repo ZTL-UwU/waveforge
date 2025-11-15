@@ -38,6 +38,10 @@ void PixelShapedStructure::setup(PixelWorld &world) noexcept {
 			int wx = x + sx;
 			int wy = y + sy;
 			auto p = _pixel_types[sy * width() + sx];
+			if (p.type == PixelType::Air) {
+				continue;
+			}
+
 			world.replacePixel(wx, wy, constructElementByType(p.type));
 			if (p.color_index != 255) {
 				world.tagOf(wx, wy).color_index = p.color_index;
