@@ -36,6 +36,11 @@ CheckpointArea::CheckpointArea(int x, int y)
 	_height = _sprite.height();
 }
 
+void CheckpointArea::setPosition(int x, int y) noexcept {
+	this->x = x;
+	this->y = y;
+}
+
 void CheckpointArea::step(const Level &level) noexcept {
 	if (_isDuckInside(level)) {
 		_progress = std::min(_progress + 1, _height * _ticks_per_progress);

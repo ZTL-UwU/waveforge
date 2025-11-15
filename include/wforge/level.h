@@ -13,9 +13,19 @@ class Level;
 struct DuckEntity {
 	DuckEntity(sf::Vector2f pos = {.0f, .0f}) noexcept;
 
+	auto width() const noexcept {
+		return shape.width();
+	}
+
+	auto height() const noexcept {
+		return shape.height();
+	}
+
 	PixelShape shape;
 	sf::Vector2f position; // anchor at top-left
 	sf::Vector2f velocity;
+
+	void setPosition(float x, float y) noexcept;
 
 	bool isOutOfWorld(const Level &level) const noexcept;
 
@@ -46,6 +56,8 @@ struct CheckpointArea {
 		return _height;
 	}
 
+	void setPosition(int x, int y) noexcept;
+
 	void resetProgress() noexcept;
 	int progress() const noexcept;
 	int maxProgress() const noexcept;
@@ -65,6 +77,8 @@ private:
 
 struct Level {
 	Level(int width, int height) noexcept;
+
+	static Level loadFromImage(const sf::Image &image);
 
 	PixelWorld fallsand;
 	DuckEntity duck; // Quack!

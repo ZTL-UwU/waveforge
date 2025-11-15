@@ -45,6 +45,7 @@ add_executable(waveforge
   src/fallsand/air.cpp
   src/fallsand/copper.cpp
   src/fallsand/decoration.cpp
+  src/fallsand/element.cpp
   src/fallsand/fluidflow.cpp
   src/fallsand/fluids.cpp
   src/fallsand/gas.cpp
@@ -63,6 +64,7 @@ add_executable(waveforge
   src/structures/pressure_plate.cpp
   src/structures/shape.cpp
   src/level.cpp
+  src/loader.cpp
   src/duck.cpp
   src/assets.cpp
   src/checkpoint.cpp

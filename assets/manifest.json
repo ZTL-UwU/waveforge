@@ -143,6 +143,12 @@
 			"type": "calculate-shape",
 			"input": "pressure-plate/trimmed",
 			"description": "Calculating pressure plate shape"
+		},
+		{
+			"id": "level/simple-intro",
+			"type": "image",
+			"file": "levels/simple_intro.png",
+			"description": "Loading \"simple intro\" level prototype image"
 		}
 	]
 }

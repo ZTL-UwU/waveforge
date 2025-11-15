@@ -33,6 +33,11 @@ DuckEntity::DuckEntity(sf::Vector2f pos) noexcept
 	, position(pos)
 	, velocity(0.0f, 0.0f) {}
 
+void DuckEntity::setPosition(float x, float y) noexcept {
+	position.x = x;
+	position.y = y;
+}
+
 bool DuckEntity::isOutOfWorld(const Level &level) const noexcept {
 	auto width = level.width();
 	auto height = level.height();

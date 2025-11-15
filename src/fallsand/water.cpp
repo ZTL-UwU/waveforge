@@ -28,5 +28,9 @@ void Water::step(PixelWorld &world, int x, int y) noexcept {
 	FluidElement::step(world, x, y);
 }
 
+PixelElement Water::create() noexcept {
+	return pro::make_proxy<PixelFacade, Water>();
+}
+
 } // namespace element
 } // namespace wf

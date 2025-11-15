@@ -13,6 +13,15 @@
 
 namespace wf {
 
+struct PixelTypeAndColor {
+	PixelType type : 8;
+	unsigned int color_index : 8;
+};
+
+// Determine pixel type and color index from a color
+// Returns {PixelType::Decoration, 255} for not recognized colors
+PixelTypeAndColor pixelTypeFromColor(const sf::Color &color) noexcept;
+
 // Bitmap shape of a pixel-based entity
 struct PixelShape {
 	PixelShape(const sf::Image &img) noexcept;
@@ -31,7 +40,6 @@ struct PixelShape {
 	sf::Color colorOf(int x, int y) const noexcept;
 
 	bool isPOIPixel(int x, int y) const noexcept;
-	PixelType pixelTypeOf(int x, int y) const noexcept;
 
 protected:
 	int _width;

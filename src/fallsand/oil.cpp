@@ -66,5 +66,9 @@ void Oil::step(PixelWorld &world, int x, int y) noexcept {
 	FluidElement::step(world, x, y);
 }
 
+PixelElement Oil::create() noexcept {
+	return pro::make_proxy<PixelFacade, Oil>();
+}
+
 } // namespace element
 } // namespace wf

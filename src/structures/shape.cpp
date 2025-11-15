@@ -1,3 +1,4 @@
+#include "wforge/assets.h"
 #include "wforge/elements.h"
 #include "wforge/structures.h"
 #include <memory>
@@ -17,11 +18,13 @@ PixelShapedStructure::PixelShapedStructure(
 	: PositionedStructure(x, y)
 	, _shape(shape)
 	, _pixel_types(
-		  std::make_unique<PixelType[]>(shape.width() * shape.height())
+		  std::make_unique<PixelTypeAndColor[]>(shape.width() * shape.height())
 	  ) {
 	for (int sy = 0; sy < shape.height(); ++sy) {
 		for (int sx = 0; sx < shape.width(); ++sx) {
-			_pixel_types[sy * shape.width() + sx] = shape.pixelTypeOf(sx, sy);
+			_pixel_types[sy * shape.width() + sx] = pixelTypeFromColor(
+				_shape.colorOf(sx, sy)
+			);
 			if (shape.isPOIPixel(sx, sy)) {
 				poi.push_back({sx, sy});
 			}
@@ -34,31 +37,10 @@ void PixelShapedStructure::setup(PixelWorld &world) noexcept {
 		for (int sx = 0; sx < width(); ++sx) {
 			int wx = x + sx;
 			int wy = y + sy;
-			auto ptype = _pixel_types[sy * width() + sx];
-
-			switch (ptype) {
-			case PixelType::Air:
-				break;
-
-			case PixelType::Stone:
-				world.replacePixel(wx, wy, element::Stone::create());
-				break;
-
-			case PixelType::Wood:
-				world.replacePixel(wx, wy, element::Wood::create());
-				break;
-
-			case PixelType::Copper:
-				world.replacePixel(wx, wy, element::Copper::create());
-				break;
-
-			case PixelType::Sand:
-				world.replacePixel(wx, wy, element::Sand::create());
-				break;
-
-			default:
-				world.replacePixel(wx, wy, element::Decoration::create());
-				break;
+			auto p = _pixel_types[sy * width() + sx];
+			world.replacePixel(wx, wy, constructElementByType(p.type));
+			if (p.color_index != 255) {
+				world.tagOf(wx, wy).color_index = p.color_index;
 			}
 		}
 	}
@@ -78,7 +60,7 @@ PixelType PixelShapedStructure::pixelTypeOf(int px, int py) const noexcept {
 	}
 #endif
 
-	return _pixel_types[py * width() + px];
+	return _pixel_types[py * width() + px].type;
 }
 
 void PixelShapedStructure::customRender(
@@ -88,7 +70,7 @@ void PixelShapedStructure::customRender(
 		for (int sx = 0; sx < width(); ++sx) {
 			int world_x = x + sx;
 			int world_y = y + sy;
-			if (_pixel_types[sy * width() + sx] != PixelType::Decoration) {
+			if (_pixel_types[sy * width() + sx].type != PixelType::Decoration) {
 				continue;
 			}
 
@@ -107,7 +89,7 @@ bool PixelShapedStructure::step(PixelWorld &world) const noexcept {
 		for (int sx = 0; sx < width(); ++sx) {
 			int world_x = x + sx;
 			int world_y = y + sy;
-			PixelType expected_type = _pixel_types[sy * width() + sx];
+			PixelType expected_type = _pixel_types[sy * width() + sx].type;
 			if (expected_type == PixelType::Air) {
 				continue;
 			}

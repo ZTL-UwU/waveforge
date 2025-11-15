@@ -47,7 +47,7 @@ protected:
 	std::vector<std::array<int, 2>> poi;
 
 private:
-	std::unique_ptr<PixelType[]> _pixel_types;
+	std::unique_ptr<PixelTypeAndColor[]> _pixel_types;
 	const PixelShape &_shape;
 };
 

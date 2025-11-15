@@ -22,6 +22,43 @@ namespace fs = std::filesystem;
 
 namespace wf {
 
+PixelTypeAndColor pixelTypeFromColor(const sf::Color &color) noexcept {
+	switch (color.toInteger()) {
+	case packColorByName("Air"):
+	case packColorByName("POIMarker"):
+		return {PixelType::Air, colorIndexOf("Air")};
+
+	case packColorByName("Stone1"):
+		return {PixelType::Stone, colorIndexOf("Stone1")};
+
+	case packColorByName("Wood1"):
+		return {PixelType::Wood, colorIndexOf("Wood1")};
+
+	case packColorByName("Wood2"):
+		return {PixelType::Wood, colorIndexOf("Wood2")};
+
+	case packColorByName("Copper"):
+		return {PixelType::Copper, colorIndexOf("Copper")};
+
+	case packColorByName("Sand1"):
+		return {PixelType::Sand, colorIndexOf("Sand1")};
+
+	case packColorByName("Sand2"):
+		return {PixelType::Sand, colorIndexOf("Sand2")};
+
+	case packColorByName("Water"):
+	case packColorByNameNoAlpha("Water"):
+		return {PixelType::Water, colorIndexOf("Water")};
+
+	case packColorByName("Oil"):
+	case packColorByNameNoAlpha("Oil"):
+		return {PixelType::Oil, colorIndexOf("Oil")};
+
+	default:
+		return {PixelType::Decoration, 255};
+	}
+}
+
 PixelShape::PixelShape(const sf::Image &img) noexcept
 	: _width(img.getSize().x)
 	, _height(img.getSize().y)
@@ -56,32 +93,6 @@ sf::Color PixelShape::colorOf(int x, int y) const noexcept {
 bool PixelShape::isPOIPixel(int x, int y) const noexcept {
 	// Almost transparent red indicates POI
 	return colorOf(x, y) == colorOfName("POIMarker");
-}
-
-PixelType PixelShape::pixelTypeOf(int x, int y) const noexcept {
-	auto color = colorOf(x, y).toInteger();
-	switch (color) {
-	case packColorByName("Air"):
-	case packColorByName("POIMarker"):
-		return PixelType::Air;
-
-	case packColorByName("Stone1"):
-		return PixelType::Stone;
-
-	case packColorByName("Wood1"):
-	case packColorByName("Wood2"):
-		return PixelType::Wood;
-
-	case packColorByName("Copper"):
-		return PixelType::Copper;
-
-	case packColorByName("Sand1"):
-	case packColorByName("Sand2"):
-		return PixelType::Sand;
-
-	default:
-		return PixelType::Decoration;
-	}
 }
 
 sf::Image trimImage(const sf::Image &img) noexcept {

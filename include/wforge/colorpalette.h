@@ -129,6 +129,12 @@ inline consteval sf::Color colorOfName(const char *name) {
 	return colorOfIndex(colorIndexOf(name));
 }
 
+inline consteval unsigned int packColorByNameNoAlpha(const char *name) {
+	auto color = colorOfName(name);
+	color.a = 255;
+	return color.toInteger();
+}
+
 inline consteval unsigned int packColorByName(const char *name) {
 	return colorOfName(name).toInteger();
 }

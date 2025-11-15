@@ -4,6 +4,9 @@
 #include "wforge/fallsand.h"
 
 namespace wf {
+
+PixelElement constructElementByType(PixelType type) noexcept;
+
 namespace element {
 
 // Common superclass for all elements, no special behavior
@@ -86,11 +89,15 @@ protected:
 struct Water : FluidElement {
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
+
+	static PixelElement create() noexcept;
 };
 
 struct Oil : FluidElement {
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
+
+	static PixelElement create() noexcept;
 
 private:
 	int burn_time = 0;
