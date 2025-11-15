@@ -254,20 +254,17 @@ void PixelWorld::renderToBuffer(std::span<std::uint8_t> buf) const noexcept {
 			color_idx = _tags[i].color_index;
 		}
 
-		auto color = colorOfIndex(color_idx);
+		sf::Color color;
+		if (_static_tags[i].laser_active) {
+			color = laserBlendedColorOfIndex(color_idx);
+		} else {
+			color = colorOfIndex(color_idx);
+		}
+
 		buf[i * 4 + 0] = color.r;
 		buf[i * 4 + 1] = color.g;
 		buf[i * 4 + 2] = color.b;
 		buf[i * 4 + 3] = color.a;
-
-		if (_static_tags[i].laser_active) {
-			// TODO: blend laser color instead of overwriting
-			auto laser_color = colorOfName("Laser");
-			buf[i * 4 + 0] = laser_color.r;
-			buf[i * 4 + 1] = laser_color.g;
-			buf[i * 4 + 2] = laser_color.b;
-			buf[i * 4 + 3] = laser_color.a;
-		}
 	}
 
 	for (auto &s : _structures) {

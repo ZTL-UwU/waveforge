@@ -2,6 +2,7 @@
 #define WFORGE_COLORPALETTE_H
 
 #include <SFML/Graphics/Color.hpp>
+#include <array>
 
 namespace wf {
 
@@ -137,6 +138,47 @@ inline consteval unsigned int packColorByNameNoAlpha(const char *name) {
 
 inline consteval unsigned int packColorByName(const char *name) {
 	return colorOfName(name).toInteger();
+}
+
+inline constexpr sf::Color blendColor(
+	const sf::Color overlay, const sf::Color base
+) {
+	const uint32_t alpha_numerator = static_cast<uint32_t>(overlay.a) * 255
+		+ static_cast<uint32_t>(base.a) * (255 - overlay.a);
+	const uint8_t out_a = (alpha_numerator + 127) / 255;
+
+	if (out_a == 0) {
+		return {0, 0, 0, 0};
+	}
+
+	auto compute_channel =
+		[out_a](
+			uint8_t fg_val, uint8_t fg_a, uint8_t bg_val, uint8_t bg_a
+		) constexpr -> uint8_t {
+		const uint32_t numerator = static_cast<uint32_t>(fg_val) * fg_a * 255
+			+ static_cast<uint32_t>(bg_val) * bg_a * (255 - fg_a);
+
+		const uint32_t denominator = static_cast<uint32_t>(out_a) * 255;
+		return static_cast<uint8_t>((numerator + out_a * 127) / denominator);
+	};
+
+	const uint8_t r = compute_channel(overlay.r, overlay.a, base.r, base.a);
+	const uint8_t g = compute_channel(overlay.g, overlay.a, base.g, base.a);
+	const uint8_t b = compute_channel(overlay.b, overlay.a, base.b, base.a);
+
+	return {r, g, b, out_a};
+}
+
+constexpr auto _laser_blended_colors = ([]() constexpr {
+	std::array<sf::Color, _color_palette_size> arr{};
+	for (unsigned int i = 0; i < _color_palette_size; ++i) {
+		arr[i] = blendColor(colorOfName("Laser"), _colors[i].color);
+	}
+	return arr;
+})();
+
+constexpr sf::Color laserBlendedColorOfIndex(unsigned int index) {
+	return _laser_blended_colors[index];
 }
 
 } // namespace wf
