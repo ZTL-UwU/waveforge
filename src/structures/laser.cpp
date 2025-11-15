@@ -50,6 +50,8 @@ LaserEmitter::LaserEmitter(int x, int y, FacingDirection dir) noexcept
 }
 
 bool LaserEmitter::step(PixelWorld &world) noexcept {
+	constexpr int laser_heat_amount = 5;
+
 	if (!PixelShapedStructure::step(world)) {
 		return false;
 	}
@@ -69,11 +71,12 @@ bool LaserEmitter::step(PixelWorld &world) noexcept {
 	for (int cur_x = poi_x, cur_y = poi_y; cur_x >= 0 && cur_x < world.width()
 	     && cur_y >= 0 && cur_y < world.height();
 	     (cur_x += dx), (cur_y += dy)) {
-		auto pixel_tag = world.tagOf(cur_x, cur_y);
+		auto &pixel_tag = world.tagOf(cur_x, cur_y);
 
 		// Solid & smoke can block laser beam
 		if (pixel_tag.pclass == PixelClass::Solid
 		    || pixel_tag.type == PixelType::Smoke) {
+			pixel_tag.heat += laser_heat_amount;
 			break;
 		}
 
