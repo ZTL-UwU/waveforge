@@ -163,16 +163,16 @@
 			"description": "Calculating power source shape"
 		},
 		{
-			"id": "level/simple-intro/map",
+			"id": "level/demo/map",
 			"type": "image",
-			"file": "levels/simple_intro.png",
-			"description": "Loading \"simple intro\" level prototype image"
+			"file": "levels/demo.png",
+			"description": "Loading demo level prototype image"
 		},
 		{
-			"id": "level/simple-intro",
+			"id": "level/demo",
 			"type": "level-metadata",
-			"file": "levels/simple_intro.json",
-			"description": "Loading \"simple intro\" level metadata"
+			"file": "levels/demo.json",
+			"description": "Loading demo level metadata"
 		}
 	]
 }

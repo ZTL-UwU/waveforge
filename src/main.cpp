@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 }
 
 void entry() {
-	auto level = wf::Level::loadFromAsset("level/simple-intro");
+	auto level = wf::Level::loadFromAsset("level/demo");
 	level.selectItem(0);
 
 	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
