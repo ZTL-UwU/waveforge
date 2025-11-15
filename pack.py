@@ -11,38 +11,42 @@ import zipfile
 import json
 from pathlib import Path
 
-
 def copy_assets(assets_dir: Path, output_assets_dir: Path):
     """
-    Copy only the required assets (manifest.json, *.png, *.mp3)
+    Recursively copy required assets (*.png, *.json, *.md, *.mp3)
+    Minify all .json files
     """
     output_assets_dir.mkdir(parents=True, exist_ok=True)
     
-    # Copy (minified) manifest.json into package (do not modify original file)
-    manifest = assets_dir / "manifest.json"
-    if manifest.exists():
-        try:
-            with manifest.open('r', encoding='utf-8') as rf:
-                data = json.load(rf)
-            # Dump minified JSON (no spaces)
-            minified = json.dumps(data, separators=(',', ':'), ensure_ascii=False)
-            out_path = output_assets_dir / "manifest.json"
-            out_path.write_text(minified, encoding='utf-8')
-            print(f"Added minified manifest: {out_path.name}")
-        except Exception as e:
-            # Fallback: copy original if JSON parsing fails
-            shutil.copy2(manifest, output_assets_dir / "manifest.json")
-            print(f"Warning: failed to minify manifest.json ({e}), copied original instead")
+    # Extensions to include
+    included_extensions = {'.png', '.json', '.md', '.mp3'}
     
-    # Copy all .png files
-    for png_file in assets_dir.glob("*.png"):
-        shutil.copy2(png_file, output_assets_dir / png_file.name)
-        print(f"Copied: {png_file.name}")
-    
-    # Copy all .mp3 files
-    for mp3_file in assets_dir.glob("*.mp3"):
-        shutil.copy2(mp3_file, output_assets_dir / mp3_file.name)
-        print(f"Copied: {mp3_file.name}")
+    # Recursively find and copy files
+    for file_path in assets_dir.rglob('*'):
+        if file_path.is_file() and file_path.suffix in included_extensions:
+            # Calculate relative path
+            relative_path = file_path.relative_to(assets_dir)
+            output_path = output_assets_dir / relative_path
+            
+            # Ensure output directory exists
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            if file_path.suffix == '.json':
+                # Minify JSON
+                try:
+                    with file_path.open('r', encoding='utf-8') as rf:
+                        data = json.load(rf)
+                    minified = json.dumps(data, separators=(',', ':'), ensure_ascii=False)
+                    output_path.write_text(minified, encoding='utf-8')
+                    print(f"Added minified JSON: {relative_path}")
+                except Exception as e:
+                    # Fallback: copy original if JSON parsing fails
+                    shutil.copy2(file_path, output_path)
+                    print(f"Warning: failed to minify {relative_path} ({e}), copied original instead")
+            else:
+                # Copy other files directly
+                shutil.copy2(file_path, output_path)
+                print(f"Copied: {relative_path}")
 
 
 def create_package(executable_path: Path, assets_dir: Path, output_zip: Path, platform_name: str):
