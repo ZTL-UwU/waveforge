@@ -83,6 +83,13 @@ private:
 	int power_cap = 0;
 };
 
+struct LaserReceiver : OutputElectricalStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	LaserReceiver(int x, int y, FacingDirection dir) noexcept;
+};
+
 struct PressurePlate : OutputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;

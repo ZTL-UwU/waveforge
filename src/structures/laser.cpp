@@ -87,5 +87,40 @@ int LaserEmitter::priority() const noexcept {
 	return 50;
 }
 
+LaserReceiver::LaserReceiver(int x, int y, FacingDirection dir) noexcept
+	: OutputElectricalStructure(x, y, laserReceiverShape(dir)) {
+	if (poi.size() != 1) {
+		std::cerr << std::format(
+			"LaserReceiver: expected 1 POI, got {} POIs\n", poi.size()
+		);
+#ifndef NDEBUG
+		cpptrace::generate_trace().print();
+#endif
+		std::abort();
+	}
+}
+
+bool LaserReceiver::step(PixelWorld &world) noexcept {
+	if (!PixelShapedStructure::step(world)) {
+		return false;
+	}
+
+	// Check for laser beam at POI
+	int poi_x = x + poi[0][0];
+	int poi_y = y + poi[0][1];
+	auto static_tag = world.staticTagOf(poi_x, poi_y);
+	if (static_tag.laser_active) {
+		if (!OutputElectricalStructure::step(world)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+int LaserReceiver::priority() const noexcept {
+	// Must run after LaserEmitter
+	return 100;
+}
+
 } // namespace structure
 } // namespace wf

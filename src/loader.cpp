@@ -14,10 +14,13 @@ namespace wf {
 
 namespace {
 
+constexpr int structure_marker_alpha = 231;
+
 constexpr sf::Color poi_marker_color = colorOfName("POIMarker");
 constexpr sf::Color duck_marker_color{250, 200, 46, 231};
 constexpr sf::Color checkpoint_marker_color{89, 241, 255, 231};
 constexpr sf::Color laser_emitter_marker_color{51, 255, 184, 231};
+constexpr sf::Color laser_receiver_marker_color{187, 39, 82, 231};
 constexpr sf::Color pressure_plate_marker_color{240, 34, 159, 231};
 
 std::array<int, 2> convertBottomCenterToTopLeft(
@@ -107,8 +110,6 @@ Level Level::loadFromAsset(const std::string &level_id) {
 	Level level(width, height);
 	auto &world = level.fallsand;
 
-	constexpr int structure_marker_alpha = 231;
-
 	std::vector<StructureEntity> structures;
 
 	bool duck_placed = false, checkpoint_placed = false;
@@ -157,6 +158,14 @@ Level Level::loadFromAsset(const std::string &level_id) {
 			case laser_emitter_marker_color.toInteger():
 				structures.push_back(
 					constructStructureWithDirection<structure::LaserEmitter>(
+						image, x, y
+					)
+				);
+				break;
+
+			case laser_receiver_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithDirection<structure::LaserReceiver>(
 						image, x, y
 					)
 				);
