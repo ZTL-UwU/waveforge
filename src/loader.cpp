@@ -169,10 +169,6 @@ Level Level::loadFromAsset(const std::string &level_id) {
 				);
 				break;
 
-			case poi_marker_color.toInteger():
-				// POI marker are for assitances of loading other structures
-				break;
-
 			default:
 				throw std::runtime_error(
 					std::format(

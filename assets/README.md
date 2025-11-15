@@ -158,6 +158,23 @@ Load a music file from disk.
 }
 ```
 
+### `level-metadata`
+
+Load level metadata from a JSON file.
+
+**Additional fields:**
+- **`file`** (string, required): Path to the level metadata JSON file, relative to the assets directory.
+
+**Example:**
+```json
+{
+  "id": "level/simple-intro",
+  "type": "level-metadata",
+  "file": "levels/simple_intro.json",
+  "description": "Loading \"simple intro\" level metadata"
+}
+```
+
 ## Asset Loading Process
 
 1. The assets manager searches for `manifest.json` in the following locations (in order):
