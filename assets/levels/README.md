@@ -39,16 +39,17 @@ Some structures have a facing direction. A pixel of color `#ff000028` (semi-tran
 | South (Down)     | `(x + 1, y + 1)`                      |
 | West (Left)      | `(x, y + 1)`                          |
 
-The following table lists the structure marker colors and their associated structures. All structure marker colors have an alpha value of `e7` (231 decimal), so the alpha channel is omitted in the table below.
+The following table lists the structure marker colors and their associated structures. All structure marker colors have an alpha value of `e7` (231 decimal).
 
 | Color (Hex) | Structure Type  | Facing Required |
 |-------------|-----------------|-----------------|
 | `#33ffb8e7` | Laser Emitter  | Yes             |
+| `#f0229fe7` | Laser Receiver | Yes             |
 | `#f0229fe7` | Pressure Plate | No              |
 
 ### Duck & Checkpoint Markers
 
-The level map must contain exactly one duck marker and exactly one checkpoint marker. These markers are used to define the starting position of the player and the level's checkpoint, respectively. The following table lists the colors for these markers. Both marker colors have an alpha value of `e7` (231 decimal), so the alpha channel is omitted in the table below.
+The level map must contain exactly one duck marker and exactly one checkpoint marker. These markers are used to define the starting position of the player and the level's checkpoint, respectively. The following table lists the colors for these markers. Both marker colors have an alpha value of `e7` (231 decimal).
 
 | Color (Hex) | Marker Type       |
 |-------------|-------------------|
