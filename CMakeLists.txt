@@ -58,6 +58,8 @@ add_executable(waveforge
   src/fallsand/water.cpp
   src/fallsand/wood.cpp
   src/fallsand/world.cpp
+  src/items/brush.cpp
+  src/items/water.cpp
   src/structures/electric.cpp
   src/structures/laser.cpp
   src/structures/position.cpp

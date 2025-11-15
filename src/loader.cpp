@@ -1,6 +1,9 @@
+#include "wforge/assets.h"
 #include "wforge/elements.h"
 #include "wforge/level.h"
 #include <array>
+#include <format>
+#include <iostream>
 
 namespace wf {
 
@@ -23,11 +26,36 @@ void setPositionAtBottomCenter(T &entity, int x, int y) noexcept {
 	entity.setPosition(top_left_x, top_left_y);
 }
 
+Item constructItemByName(const std::string &name) {
+	using constructor_ptr = Item (*)() noexcept;
+	static const std::unordered_map<std::string, constructor_ptr> constructors{
+		{"water_brush", item::WaterBrush::create}
+	};
+
+	auto it = constructors.find(name);
+	if (it == constructors.end()) {
+		throw std::runtime_error(
+			std::format("Failed to load level: unknown item '{}'", name)
+		);
+	}
+
+	return (it->second)();
+}
+
 } // namespace
 
-Level Level::loadFromImage(const sf::Image &image) {
+Level Level::loadFromAsset(const std::string &level_id) {
+	LevelMetadata metadata = AssetsManager::instance().getAsset<LevelMetadata>(
+		level_id
+	);
+
+	const auto &image = AssetsManager::instance().getAsset<sf::Image>(
+		metadata.map_id
+	);
+
 	auto width = image.getSize().x;
 	auto height = image.getSize().y;
+
 	Level level(width, height);
 	auto &world = level.fallsand;
 
@@ -73,6 +101,23 @@ Level Level::loadFromImage(const sf::Image &image) {
 		}
 	}
 
+	if (!duck_placed) {
+		throw std::runtime_error(
+			"Failed to load level map: no duck marker found"
+		);
+	}
+
+	if (!checkpoint_placed) {
+		throw std::runtime_error(
+			"Failed to load level map: no checkpoint marker found"
+		);
+	}
+
+	for (const auto &[item_name, item_count] : metadata.items) {
+		level.items.emplace_back(constructItemByName(item_name), item_count);
+	}
+
+	level.metadata = std::move(metadata);
 	return level;
 }
 

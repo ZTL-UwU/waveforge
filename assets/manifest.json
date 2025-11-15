@@ -145,10 +145,16 @@
 			"description": "Calculating pressure plate shape"
 		},
 		{
-			"id": "level/simple-intro",
+			"id": "level/simple-intro/map",
 			"type": "image",
 			"file": "levels/simple_intro.png",
 			"description": "Loading \"simple intro\" level prototype image"
+		},
+		{
+			"id": "level/simple-intro",
+			"type": "level-metadata",
+			"file": "levels/simple_intro.json",
+			"description": "Loading \"simple intro\" level metadata"
 		}
 	]
 }

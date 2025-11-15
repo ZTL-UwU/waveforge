@@ -13,6 +13,54 @@ void Level::step() {
 	checkpoint.step(*this);
 }
 
+std::optional<std::reference_wrapper<Item>> Level::activeItem() noexcept {
+	if (_active_item_index < 0
+	    || _active_item_index >= static_cast<int>(items.size())) {
+		_active_item_index = -1;
+		return std::nullopt;
+	}
+
+	if (items[_active_item_index].quantity <= 0) {
+		_active_item_index = -1;
+		return std::nullopt;
+	}
+
+	return std::ref(items[_active_item_index].item);
+}
+
+void Level::useActiveItem(int x, int y, int scale) noexcept {
+	if (auto item = activeItem()) {
+		auto &it = item->get();
+		if (it->use(*this, x, y, scale)) {
+			// item used successfully, decrease quantity
+			auto &stack = items[_active_item_index];
+			stack.quantity -= 1;
+			if (stack.quantity <= 0) {
+				_active_item_index = -1; // deactivate item
+			}
+		}
+	}
+}
+
+void Level::changeActiveItemBrushSize(int delta) noexcept {
+	if (auto item = activeItem()) {
+		auto &it = item->get();
+		it->changeBrushSize(delta);
+	}
+}
+
+void Level::selectItem(int index) noexcept {
+	if (index < 0 || index >= static_cast<int>(items.size())) {
+		_active_item_index = -1;
+	} else {
+		if (items[index].quantity > 0) {
+			_active_item_index = index;
+		} else {
+			_active_item_index = -1;
+		}
+	}
+}
+
 bool Level::isFailed() const noexcept {
 	return duck.isOutOfWorld(*this);
 }
@@ -64,10 +112,17 @@ void LevelRenderer::_renderDuck(sf::RenderTarget &target) noexcept {
 	target.draw(_duck_sprite);
 }
 
-void LevelRenderer::render(sf::RenderTarget &target) noexcept {
+void LevelRenderer::render(
+	sf::RenderTarget &target, int mouse_x, int mouse_y
+) noexcept {
 	_renderFallsand(target);
 	_renderDuck(target);
 	_level.checkpoint.render(target, scale); // checkpoint can render itself
+
+	if (auto item = _level.activeItem()) {
+		auto &it = item->get();
+		it->render(target, mouse_x, mouse_y, scale);
+	}
 }
 
 } // namespace wf

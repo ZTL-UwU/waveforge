@@ -4,11 +4,42 @@
 #include "wforge/assets.h"
 #include "wforge/fallsand.h"
 #include <SFML/System/Vector2.hpp>
+#include <cstdint>
+#include <functional>
 #include <memory>
+#include <proxy/proxy.h>
+#include <proxy/v4/proxy_macros.h>
+#include <tuple>
+#include <vector>
 
 namespace wf {
 
 class Level;
+
+namespace _dispatch {
+
+// See microsoft/proxy library for the semantics of dispatch conventions
+PRO_DEF_MEM_DISPATCH(MemUse, use);
+PRO_DEF_MEM_DISPATCH(MemRender, render);
+PRO_DEF_MEM_DISPATCH(MemChangeBrushSize, changeBrushSize);
+
+} // namespace _dispatch
+
+/* clang-format off */
+// See microsoft/proxy library for the semantics of proxy and facade
+struct ItemFacade : pro::facade_builder
+	::add_convention<_dispatch::MemUse, bool(Level &level, int x, int y, int scale) noexcept>
+	::add_convention<_dispatch::MemRender, void(sf::RenderTarget &target, int x, int y, int scale) const noexcept>
+	::add_convention<_dispatch::MemChangeBrushSize, void(int delta) noexcept>
+	::build {};
+/* clang-format on */
+
+using Item = pro::proxy<ItemFacade>;
+
+struct ItemStack {
+	Item item;
+	int quantity;
+};
 
 struct DuckEntity {
 	DuckEntity(sf::Vector2f pos = {.0f, .0f}) noexcept;
@@ -75,14 +106,25 @@ private:
 	bool _isDuckInside(const Level &level) const noexcept;
 };
 
+struct LevelMetadata {
+	std::string name;
+	std::string description;
+	std::string map_id;
+	std::string author;
+	std::vector<std::tuple<std::string, int>> items;
+};
+
 struct Level {
 	Level(int width, int height) noexcept;
 
-	static Level loadFromImage(const sf::Image &image);
+	static Level loadFromAsset(const std::string &level_id);
 
+	LevelMetadata metadata;
 	PixelWorld fallsand;
 	DuckEntity duck; // Quack!
 	CheckpointArea checkpoint;
+
+	std::vector<ItemStack> items;
 
 	auto width() const noexcept {
 		return fallsand.width();
@@ -92,10 +134,18 @@ struct Level {
 		return fallsand.height();
 	}
 
+	std::optional<std::reference_wrapper<Item>> activeItem() noexcept;
+	void useActiveItem(int x, int y, int scale) noexcept;
+	void changeActiveItemBrushSize(int delta) noexcept;
+	void selectItem(int index) noexcept;
+
 	bool isFailed() const noexcept;
 	bool isCompleted() const noexcept;
 
 	void step();
+
+private:
+	int _active_item_index; // -1 means no active item
 };
 
 struct LevelRenderer {
@@ -103,7 +153,7 @@ struct LevelRenderer {
 
 	int scale;
 
-	void render(sf::RenderTarget &target) noexcept;
+	void render(sf::RenderTarget &target, int mouse_x, int mouse_y) noexcept;
 
 private:
 	Level &_level;
@@ -115,6 +165,35 @@ private:
 	void _renderFallsand(sf::RenderTarget &target) noexcept;
 	void _renderDuck(sf::RenderTarget &target) noexcept;
 };
+
+namespace item {
+
+struct BrushSizeChangableItem {
+	BrushSizeChangableItem(int initial_brush_size, int max_brush_size) noexcept;
+
+	void changeBrushSize(int delta) noexcept;
+	void render(
+		sf::RenderTarget &target, int x, int y, int scale
+	) const noexcept;
+
+protected:
+	int brushSize() const noexcept;
+	std::array<int, 2> brushTopLeft(int x, int y, int scale) const noexcept;
+
+private:
+	int _brush_size;
+	int _max_brush_size;
+};
+
+struct WaterBrush : BrushSizeChangableItem {
+	WaterBrush() noexcept;
+
+	bool use(Level &level, int x, int y, int scale) noexcept;
+
+	static Item create() noexcept;
+};
+
+} // namespace item
 
 } // namespace wf
 

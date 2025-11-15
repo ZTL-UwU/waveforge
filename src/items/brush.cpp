@@ -1,0 +1,47 @@
+#include "wforge/level.h"
+#include <algorithm>
+#include <cmath>
+
+namespace wf {
+namespace item {
+BrushSizeChangableItem::BrushSizeChangableItem(
+	int initial_brush_size, int max_brush_size
+) noexcept
+	: _brush_size(initial_brush_size), _max_brush_size(max_brush_size) {}
+
+void BrushSizeChangableItem::changeBrushSize(int delta) noexcept {
+	_brush_size = std::clamp(_brush_size + delta, 1, _max_brush_size);
+}
+
+int BrushSizeChangableItem::brushSize() const noexcept {
+	return _brush_size;
+}
+
+std::array<int, 2> BrushSizeChangableItem::brushTopLeft(
+	int x, int y, int scale
+) const noexcept {
+	// convert screen coords to world coords
+	int world_x = std::round(1.f * x / scale);
+	int world_y = std::round(1.f * y / scale);
+
+	int half_brush = _brush_size / 2;
+	return {world_x - half_brush, world_y - half_brush};
+}
+
+void BrushSizeChangableItem::render(
+	sf::RenderTarget &target, int x, int y, int scale
+) const noexcept {
+	constexpr sf::Color outline_color = sf::Color::Red;
+
+	auto [top_left_x, top_left_y] = brushTopLeft(x, y, scale);
+	sf::RectangleShape rect;
+	rect.setPosition(sf::Vector2f(top_left_x * scale, top_left_y * scale));
+	rect.setSize(sf::Vector2f(_brush_size * scale, _brush_size * scale));
+	rect.setFillColor(sf::Color::Transparent);
+	rect.setOutlineColor(outline_color);
+	rect.setOutlineThickness(1.0f);
+	target.draw(rect);
+}
+
+} // namespace item
+} // namespace wf

@@ -1,21 +1,24 @@
 #include "wforge/assets.h"
 #include "wforge/colorpalette.h"
+#include "wforge/level.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <array>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 #ifndef NDEBUG
 #include <cpptrace/cpptrace.hpp>
 #include <cpptrace/from_current.hpp>
-#include <format>
+#include <cpptrace/from_current_macros.hpp>
 #endif
 
 namespace fs = std::filesystem;
@@ -394,6 +397,62 @@ void fCheckpointSprite(
 	mgr.cacheAsset(id, checkpoint_sprite);
 }
 
+void fLevelMetadata(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	constexpr int current_levelmetadata_format = 1;
+
+	const std::string &file = entry.at("file");
+	auto file_path = assets_root / file;
+	const std::string &id = entry.at("id");
+
+	std::ifstream file_stream(file_path);
+	if (!file_stream.is_open()) {
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: failed to open level metadata file '{}'",
+				file_path.string()
+			)
+		);
+	}
+
+	nlohmann::json json_data = nlohmann::json::parse(file_stream);
+	if (json_data.at("format").get<int>() != current_levelmetadata_format) {
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: unsupported level metadata format: {}, "
+				"expected {}",
+				json_data.at("format").get<int>(), current_levelmetadata_format
+			)
+		);
+	}
+
+	LevelMetadata *metadata = new LevelMetadata();
+
+	metadata->map_id = json_data.at("map");
+	const auto &metadata_json = json_data.at("metadata");
+	metadata->name = metadata_json.at("level_name");
+	if (metadata_json.contains("description")) {
+		metadata->description = metadata_json.at("description");
+	} else {
+		metadata->description = "";
+	}
+
+	if (metadata_json.contains("author")) {
+		metadata->author = metadata_json.at("author");
+	} else {
+		metadata->author = "";
+	}
+
+	for (const auto &item_entry : json_data.at("items")) {
+		const std::string &item_name = item_entry.at("id");
+		int item_count = item_entry.at("amount");
+		metadata->items.emplace_back(item_name, item_count);
+	}
+
+	mgr.cacheAsset(id, metadata);
+}
+
 } // namespace
 
 void AssetsManager::loadAllAssets() {
@@ -406,7 +465,7 @@ void AssetsManager::loadAllAssets() {
 		std::abort();
 	}
 
-	std::map<std::string, operationFunc> operations = {
+	std::unordered_map<std::string, operationFunc> operations = {
 		{"image", fImage},
 		{"create-texture", fTexture},
 		{"music", fMusic},
@@ -415,6 +474,7 @@ void AssetsManager::loadAllAssets() {
 		{"calculate-shape", fPixelShape},
 		{"create-pixel-shape-of-all-facings", fPixelShapeAllRotated},
 		{"create-checkpoint-sprite", fCheckpointSprite},
+		{"level-metadata", fLevelMetadata}
 	};
 
 #ifndef NDEBUG

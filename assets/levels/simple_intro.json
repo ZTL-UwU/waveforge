@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/simple-intro/map",
+	"metadata": {
+		"level_name": "Simple Intro Level",
+		"description": "You can do it!"
+	},
+	"items": [
+		{
+			"id": "water_brush",
+			"amount": 99
+		}
+	]
+}

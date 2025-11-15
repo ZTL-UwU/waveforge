@@ -2,9 +2,18 @@
 #include "wforge/level.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/WindowEnums.hpp>
 #include <iostream>
 #include <proxy/proxy.h>
+
+#ifndef NDEBUG
+#include <cpptrace/cpptrace.hpp>
+#include <cpptrace/from_current.hpp>
+#include <cpptrace/from_current_macros.hpp>
+#endif
+
+void entry();
 
 std::filesystem::path wf::_executable_path;
 int main(int argc, char **argv) {
@@ -22,9 +31,25 @@ int main(int argc, char **argv) {
 	}
 	wf::AssetsManager::loadAllAssets();
 
-	auto level = wf::Level::loadFromImage(
-		wf::AssetsManager::instance().getAsset<sf::Image>("level/simple-intro")
-	);
+#ifndef NDEBUG
+	CPPTRACE_TRY {
+#endif
+		entry();
+#ifndef NDEBUG
+	}
+	CPPTRACE_CATCH(const std::exception &e) {
+		std::cerr << "Unhandled exception: " << e.what() << "\n";
+		cpptrace::from_current_exception().print();
+		return 1;
+	}
+#endif
+
+	return 0;
+}
+
+void entry() {
+	auto level = wf::Level::loadFromAsset("level/simple-intro");
+	level.selectItem(0);
 
 	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
 	const int scale = std::min(
@@ -52,6 +77,7 @@ int main(int argc, char **argv) {
 	int frame = 0;
 
 	while (window.isOpen()) {
+		auto mouse_pos = sf::Mouse::getPosition(window);
 		while (auto ev = window.pollEvent()) {
 			// window closed
 			if (ev->is<sf::Event::Closed>()) {
@@ -59,13 +85,27 @@ int main(int argc, char **argv) {
 				background_music.stop();
 				break;
 			}
+
+			if (auto mw = ev->getIf<sf::Event::MouseWheelScrolled>()) {
+				if (mw->delta > 0) {
+					level.changeActiveItemBrushSize(1);
+				} else if (mw->delta < 0) {
+					level.changeActiveItemBrushSize(-1);
+				}
+			}
+
+			if (auto mb = ev->getIf<sf::Event::MouseButtonPressed>()) {
+				if (mb->button == sf::Mouse::Button::Left) {
+					level.useActiveItem(mouse_pos.x, mouse_pos.y, scale);
+				}
+			}
 		}
 
 		level.step();
 
 		// clear to black background
 		window.clear(sf::Color::White);
-		renderer.render(window);
+		renderer.render(window, mouse_pos.x, mouse_pos.y);
 		window.display();
 
 		++frame;
@@ -84,6 +124,4 @@ int main(int argc, char **argv) {
 			break;
 		}
 	}
-
-	return 0;
 }
