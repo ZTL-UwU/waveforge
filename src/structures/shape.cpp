@@ -1,12 +1,12 @@
 #include "wforge/assets.h"
 #include "wforge/elements.h"
 #include "wforge/structures.h"
+#include <format>
+#include <iostream>
 #include <memory>
 
 #ifndef NDEBUG
 #include <cpptrace/cpptrace.hpp>
-#include <format>
-#include <iostream>
 #endif
 
 namespace wf {

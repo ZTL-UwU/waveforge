@@ -64,7 +64,21 @@ The current `main.cpp` (mainly used for testing) is quite messy (partly because 
 ## Team Members
 
 - Code & Pixel Art: [fang_erj](https://github.com/szdytom)
-- Music & SFX: stevvven
+- Music & SFX: [stevvven](https://github.com/Stevvven777)
 - Game Play: zurry
 
-Look for more team members in the future! Contact me with email szdytom[at]qq.com or discord @fang_erj if you are interested.
+## Acknowledgements
+
+We would like to thank [ZTL-UwU](https://github.com/ZTL-UwU/) for their help with early testing and feedback.
+
+We would also like to thank the following open source projects for making this game possible:
+
+- [microsoft/proxy](https://github.com/microsoft/proxy): A C++ library for "Next Generation Polymorphism"
+
+- [SFML](https://www.sfml-dev.org/): Simple and Fast Multimedia Library for graphics and audio.
+
+- [cpptrace](https://github.com/jeremy-rifkin/cpptrace): A simple & self-contained C++ stack trace library.
+
+- [Aseprite](https://www.aseprite.org/): A pixel art tool used for creating pixel art assets.
+
+Additionally, we would like to acknowledge GitHub and [Lee Reilly](https://leereilly.net/) for organizing the [GitHub Game Off 2025](https://itch.io/jam/game-off-2025) game jam, which provided the inspiration and motivation for this project.
