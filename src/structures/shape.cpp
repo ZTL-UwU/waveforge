@@ -33,6 +33,20 @@ PixelShapedStructure::PixelShapedStructure(
 }
 
 void PixelShapedStructure::setup(PixelWorld &world) noexcept {
+	if (x < 0 || y < 0 || x + width() > world.width()
+	    || y + height() > world.height()) {
+		std::cerr << std::format(
+			"PixelShapedStructure::setup: structure at ({}, {}) with size ({}, "
+			"{}) "
+			"out of world bounds ({}, {})\n",
+			x, y, width(), height(), world.width(), world.height()
+		);
+#ifndef NDEBUG
+		cpptrace::generate_trace().print();
+#endif
+		std::abort();
+	}
+
 	for (int sy = 0; sy < height(); ++sy) {
 		for (int sx = 0; sx < width(); ++sx) {
 			int wx = x + sx;
