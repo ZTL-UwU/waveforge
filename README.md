@@ -63,8 +63,8 @@ The current `main.cpp` (mainly used for testing) is quite messy (partly because 
 
 ## Team Members
 
-- Code: [fang_erj](https://github.com/szdytom)
-- Music: stevvven
+- Code & Pixel Art: [fang_erj](https://github.com/szdytom)
+- Music & SFX: stevvven
 - Game Play: zurry
 
 Look for more team members in the future! Contact me with email szdytom[at]qq.com or discord @fang_erj if you are interested.
