@@ -5,30 +5,30 @@ include(FetchContent)
 
 # SFML
 FetchContent_Declare(SFML
-  GIT_REPOSITORY https://github.com/SFML/SFML.git
-  GIT_TAG 3.0.2
-  GIT_SHALLOW ON
-  EXCLUDE_FROM_ALL SYSTEM
+	GIT_REPOSITORY https://github.com/SFML/SFML.git
+	GIT_TAG 3.0.2
+	GIT_SHALLOW ON
+	EXCLUDE_FROM_ALL SYSTEM
 )
 option(SFML_USE_SYSTEM_DEPS ON)
 FetchContent_MakeAvailable(SFML)
 
 # msft_proxy
 FetchContent_Declare(msft_proxy4
-  GIT_REPOSITORY https://github.com/microsoft/proxy.git
-  GIT_TAG 4.0.1
-  GIT_SHALLOW ON
-  EXCLUDE_FROM_ALL SYSTEM
+	GIT_REPOSITORY https://github.com/microsoft/proxy.git
+	GIT_TAG 4.0.1
+	GIT_SHALLOW ON
+	EXCLUDE_FROM_ALL SYSTEM
 )
 FetchContent_MakeAvailable(msft_proxy4)
 
 # cpptrace
 FetchContent_Declare(
-  cpptrace
-  GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
-  GIT_TAG        v1.0.4
-  GIT_SHALLOW ON
-  EXCLUDE_FROM_ALL SYSTEM
+	cpptrace
+	GIT_REPOSITORY https://github.com/jeremy-rifkin/cpptrace.git
+	GIT_TAG        v1.0.4
+	GIT_SHALLOW ON
+	EXCLUDE_FROM_ALL SYSTEM
 )
 FetchContent_MakeAvailable(cpptrace)
 
@@ -41,52 +41,52 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(json)
 
 add_executable(waveforge
-  src/main.cpp
-  src/fallsand/air.cpp
-  src/fallsand/copper.cpp
-  src/fallsand/decoration.cpp
-  src/fallsand/element.cpp
-  src/fallsand/fluidflow.cpp
-  src/fallsand/fluids.cpp
-  src/fallsand/gas.cpp
-  src/fallsand/oil.cpp
-  src/fallsand/sand.cpp
-  src/fallsand/smoke.cpp
-  src/fallsand/steam.cpp
-  src/fallsand/stone.cpp
-  src/fallsand/thermal.cpp
-  src/fallsand/water.cpp
-  src/fallsand/wood.cpp
-  src/fallsand/world.cpp
-  src/items/brush.cpp
-  src/items/water.cpp
-  src/structures/electric.cpp
-  src/structures/laser.cpp
-  src/structures/position.cpp
-  src/structures/power_source.cpp
-  src/structures/pressure_plate.cpp
-  src/structures/shape.cpp
-  src/level.cpp
-  src/loader.cpp
-  src/duck.cpp
-  src/assets.cpp
-  src/checkpoint.cpp
-  src/2d.cpp
-  src/xoroshiro.cpp
+	src/2d.cpp
+	src/assets.cpp
+	src/checkpoint.cpp
+	src/duck.cpp
+	src/elements/air.cpp
+	src/elements/copper.cpp
+	src/elements/decoration.cpp
+	src/elements/element.cpp
+	src/elements/fluid.cpp
+	src/elements/gas.cpp
+	src/elements/oil.cpp
+	src/elements/sand.cpp
+	src/elements/smoke.cpp
+	src/elements/steam.cpp
+	src/elements/stone.cpp
+	src/elements/water.cpp
+	src/elements/wood.cpp
+	src/fallsand/fluidflow.cpp
+	src/fallsand/thermal.cpp
+	src/fallsand/world.cpp
+	src/items/brush.cpp
+	src/items/water.cpp
+	src/level.cpp
+	src/loader.cpp
+	src/main.cpp
+	src/structures/electric.cpp
+	src/structures/laser.cpp
+	src/structures/position.cpp
+	src/structures/power_source.cpp
+	src/structures/pressure_plate.cpp
+	src/structures/shape.cpp
+	src/xoroshiro.cpp
 )
 
 target_compile_features(waveforge PRIVATE cxx_std_23)
 
 target_include_directories(waveforge PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
+	${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_link_libraries(waveforge PRIVATE
-  SFML::Graphics
-  SFML::Window
-  SFML::System
-  SFML::Audio
-  msft_proxy4::proxy
-  cpptrace::cpptrace
-  nlohmann_json::nlohmann_json
+	SFML::Graphics
+	SFML::Window
+	SFML::System
+	SFML::Audio
+	msft_proxy4::proxy
+	cpptrace::cpptrace
+	nlohmann_json::nlohmann_json
 )
