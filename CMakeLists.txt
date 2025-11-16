@@ -45,6 +45,7 @@ add_executable(waveforge
 	src/assets.cpp
 	src/checkpoint.cpp
 	src/duck.cpp
+	src/font.cpp
 	src/elements/air.cpp
 	src/elements/copper.cpp
 	src/elements/decoration.cpp

@@ -13,29 +13,28 @@ void Level::step() {
 	checkpoint.step(*this);
 }
 
-std::optional<std::reference_wrapper<Item>> Level::activeItem() noexcept {
+ItemStack *Level::activeItemStack() noexcept {
 	if (_active_item_index < 0
 	    || _active_item_index >= static_cast<int>(items.size())) {
 		_active_item_index = -1;
-		return std::nullopt;
+		return nullptr;
 	}
 
-	if (items[_active_item_index].quantity <= 0) {
+	if (items[_active_item_index].amount <= 0) {
 		_active_item_index = -1;
-		return std::nullopt;
+		return nullptr;
 	}
 
-	return std::ref(items[_active_item_index].item);
+	return &items[_active_item_index];
 }
 
 void Level::useActiveItem(int x, int y, int scale) noexcept {
-	if (auto item = activeItem()) {
-		auto &it = item->get();
-		if (it->use(*this, x, y, scale)) {
+	if (auto itemstack = activeItemStack()) {
+		if (itemstack->item->use(*this, x, y, scale)) {
 			// item used successfully, decrease quantity
 			auto &stack = items[_active_item_index];
-			stack.quantity -= 1;
-			if (stack.quantity <= 0) {
+			stack.amount -= 1;
+			if (stack.amount <= 0) {
 				_active_item_index = -1; // deactivate item
 			}
 		}
@@ -43,9 +42,8 @@ void Level::useActiveItem(int x, int y, int scale) noexcept {
 }
 
 void Level::changeActiveItemBrushSize(int delta) noexcept {
-	if (auto item = activeItem()) {
-		auto &it = item->get();
-		it->changeBrushSize(delta);
+	if (auto itemstack = activeItemStack()) {
+		itemstack->item->changeBrushSize(delta);
 	}
 }
 
@@ -53,7 +51,7 @@ void Level::selectItem(int index) noexcept {
 	if (index < 0 || index >= static_cast<int>(items.size())) {
 		_active_item_index = -1;
 	} else {
-		if (items[index].quantity > 0) {
+		if (items[index].amount > 0) {
 			_active_item_index = index;
 		} else {
 			_active_item_index = -1;
@@ -119,9 +117,8 @@ void LevelRenderer::render(
 	_renderDuck(target);
 	_level.checkpoint.render(target, scale); // checkpoint can render itself
 
-	if (auto item = _level.activeItem()) {
-		auto &it = item->get();
-		it->render(target, mouse_x, mouse_y, scale);
+	if (auto itemstack = _level.activeItemStack()) {
+		itemstack->item->render(target, mouse_x, mouse_y, scale);
 	}
 }
 

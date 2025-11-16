@@ -8,8 +8,10 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <cstdint>
+#include <generator>
 #include <map>
 #include <string>
+#include <string_view>
 
 namespace wf {
 
@@ -21,6 +23,48 @@ struct PixelTypeAndColor {
 // Determine pixel type and color index from a color
 // Returns {PixelType::Decoration, 255} for not recognized colors
 PixelTypeAndColor pixelTypeFromColor(const sf::Color &color) noexcept;
+
+struct Font {
+	Font(
+		int char_width, int char_height, std::string_view charset,
+		const sf::Image &img
+	);
+
+	int charWidth() const noexcept {
+		return _char_width;
+	}
+
+	int charHeight() const noexcept {
+		return _char_height;
+	}
+
+	void renderText(
+		sf::RenderTarget &target, std::string_view text, sf::Color color, int x,
+		int y, int scale
+	) const;
+
+	std::generator<std::array<int, 2>> textBitmap(
+		std::string_view text
+	) const noexcept;
+
+	bool hasChar(char c) const noexcept;
+
+private:
+	struct CharInfo {
+		int x = -1;
+		int y = -1;
+
+		bool isValid() const noexcept;
+	};
+
+	CharInfo _getCharInfo(char c) const noexcept;
+
+	int _char_width;
+	int _char_height;
+	const sf::Image &_image;
+	sf::Texture _texture;
+	CharInfo _char_info[128]; // ASCII
+};
 
 // Bitmap shape of a pixel-based entity
 struct PixelShape {

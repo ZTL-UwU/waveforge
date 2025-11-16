@@ -5,7 +5,6 @@
 #include "wforge/fallsand.h"
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
-#include <functional>
 #include <memory>
 #include <proxy/proxy.h>
 #include <proxy/v4/proxy_macros.h>
@@ -22,6 +21,7 @@ namespace _dispatch {
 PRO_DEF_MEM_DISPATCH(MemUse, use);
 PRO_DEF_MEM_DISPATCH(MemRender, render);
 PRO_DEF_MEM_DISPATCH(MemChangeBrushSize, changeBrushSize);
+PRO_DEF_MEM_DISPATCH(MemName, name);
 
 } // namespace _dispatch
 
@@ -31,6 +31,7 @@ struct ItemFacade : pro::facade_builder
 	::add_convention<_dispatch::MemUse, bool(Level &level, int x, int y, int scale) noexcept>
 	::add_convention<_dispatch::MemRender, void(sf::RenderTarget &target, int x, int y, int scale) const noexcept>
 	::add_convention<_dispatch::MemChangeBrushSize, void(int delta) noexcept>
+	::add_convention<_dispatch::MemName, std::string_view() const noexcept>
 	::build {};
 /* clang-format on */
 
@@ -38,7 +39,7 @@ using Item = pro::proxy<ItemFacade>;
 
 struct ItemStack {
 	Item item;
-	int quantity;
+	int amount;
 };
 
 struct DuckEntity {
@@ -134,7 +135,7 @@ struct Level {
 		return fallsand.height();
 	}
 
-	std::optional<std::reference_wrapper<Item>> activeItem() noexcept;
+	ItemStack *activeItemStack() noexcept;
 	void useActiveItem(int x, int y, int scale) noexcept;
 	void changeActiveItemBrushSize(int delta) noexcept;
 	void selectItem(int index) noexcept;
@@ -186,11 +187,16 @@ private:
 };
 
 struct WaterBrush : BrushSizeChangableItem {
-	WaterBrush() noexcept;
+	WaterBrush(bool is_large_brush) noexcept;
 
 	bool use(Level &level, int x, int y, int scale) noexcept;
+	std::string_view name() const noexcept;
 
 	static Item create() noexcept;
+	static Item createLarge() noexcept;
+
+private:
+	bool _is_large;
 };
 
 } // namespace item

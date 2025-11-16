@@ -2,6 +2,23 @@
 	"format": 1,
 	"sequence": [
 		{
+			"id": "font/image",
+			"type": "image",
+			"file": "font.png",
+			"description": "Loading font bitmap image"
+		},
+		{
+			"id": "font",
+			"type": "font",
+			"input": "font/image",
+			"size": {
+				"width": 6,
+				"height": 6
+			},
+			"charset": "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_+-:!.?#\"'()[]{}/\\|=<>, ",
+			"description": "Creating font from bitmap image"
+		},
+		{
 			"id": "duck/raw",
 			"type": "image",
 			"file": "duck.png",

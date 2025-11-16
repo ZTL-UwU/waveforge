@@ -453,6 +453,22 @@ void fLevelMetadata(
 	mgr.cacheAsset(id, metadata);
 }
 
+void fFont(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &input_id = entry.at("input");
+	const auto &img = mgr.getAsset<sf::Image>(input_id);
+	const std::string &id = entry.at("id");
+
+	const auto &font_size = entry.at("size");
+	int char_width = font_size.at("width");
+	int char_height = font_size.at("height");
+	std::string charset = entry.at("charset");
+
+	auto font = new Font(char_width, char_height, std::move(charset), img);
+	mgr.cacheAsset(id, font);
+}
+
 } // namespace
 
 void AssetsManager::loadAllAssets() {
@@ -474,7 +490,8 @@ void AssetsManager::loadAllAssets() {
 		{"calculate-shape", fPixelShape},
 		{"create-pixel-shape-of-all-facings", fPixelShapeAllRotated},
 		{"create-checkpoint-sprite", fCheckpointSprite},
-		{"level-metadata", fLevelMetadata}
+		{"level-metadata", fLevelMetadata},
+		{"font", fFont},
 	};
 
 #ifndef NDEBUG
