@@ -39,9 +39,9 @@ bool WaterBrush::use(Level &level, int x, int y, int scale) noexcept {
 
 std::string_view WaterBrush::name() const noexcept {
 	if (_is_large) {
-		return "Water Brush[L]";
+		return "Water[L]";
 	} else {
-		return "Water Brush";
+		return "Water";
 	}
 }
 

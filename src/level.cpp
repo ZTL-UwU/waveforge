@@ -125,9 +125,6 @@ void LevelRenderer::render(
 		auto display_text = std::format(
 			"{}({})", itemstack->item->name(), itemstack->amount
 		);
-		for (auto &c : display_text) {
-			c = std::toupper(c);
-		}
 		_font.renderText(target, display_text, text_color, 2, 2, scale);
 	}
 }

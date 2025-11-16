@@ -47,6 +47,19 @@ Font::Font(
 		int char_y = (i / chars_per_row) * char_height;
 		_char_info[c] = CharInfo{.x = char_x, .y = char_y};
 	}
+
+	for (int i = 0; i < 26; ++i) {
+		unsigned char upper = 'A' + i;
+		unsigned char lower = 'a' + i;
+
+		// If lower case exists but upper case does not, map upper to lower
+		// Similarly for the reverse
+		if (hasChar(lower) && !hasChar(upper)) {
+			_char_info[upper] = _char_info[lower];
+		} else if (hasChar(upper) && !hasChar(lower)) {
+			_char_info[lower] = _char_info[upper];
+		}
+	}
 }
 
 bool Font::hasChar(char c) const noexcept {

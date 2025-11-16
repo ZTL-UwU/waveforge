@@ -83,6 +83,12 @@ int main(int argc, char **argv) {
 
 void entry(std::string_view level_id, bool screenshot_mode, int forced_scale) {
 	auto level = wf::Level::loadFromAsset(std::format("level/{}", level_id));
+
+	std::cerr << std::format(
+		"Loaded level '{}' of size {}x{}\n", level_id, level.width(),
+		level.height()
+	);
+
 	level.selectItem(0);
 
 	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
