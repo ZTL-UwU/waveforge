@@ -5,7 +5,7 @@ namespace wf {
 namespace item {
 
 WaterBrush::WaterBrush(bool is_large_brush) noexcept
-	: BrushSizeChangableItem(3, is_large_brush ? 24 : 12)
+	: BrushSizeChangableItem(is_large_brush ? 24 : 12)
 	, _is_large(is_large_brush) {}
 
 Item WaterBrush::create() noexcept {
@@ -39,7 +39,7 @@ bool WaterBrush::use(Level &level, int x, int y, int scale) noexcept {
 
 std::string_view WaterBrush::name() const noexcept {
 	if (_is_large) {
-		return "Water Brush [L]";
+		return "Water Brush[L]";
 	} else {
 		return "Water Brush";
 	}

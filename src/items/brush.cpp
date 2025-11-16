@@ -5,9 +5,13 @@
 namespace wf {
 namespace item {
 BrushSizeChangableItem::BrushSizeChangableItem(
-	int initial_brush_size, int max_brush_size
+	int max_brush_size, int initial_brush_size
 ) noexcept
-	: _brush_size(initial_brush_size), _max_brush_size(max_brush_size) {}
+	: _brush_size(std::clamp(initial_brush_size, 1, max_brush_size))
+	, _max_brush_size(max_brush_size) {}
+
+BrushSizeChangableItem::BrushSizeChangableItem(int max_brush_size) noexcept
+	: _brush_size(max_brush_size), _max_brush_size(max_brush_size) {}
 
 void BrushSizeChangableItem::changeBrushSize(int delta) noexcept {
 	_brush_size = std::clamp(_brush_size + delta, 1, _max_brush_size);

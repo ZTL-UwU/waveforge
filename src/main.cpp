@@ -111,14 +111,14 @@ void entry() {
 		renderer.render(window, mouse_pos.x, mouse_pos.y);
 
 		if (auto item_stack = level.activeItemStack()) {
-			constexpr sf::Color text_color{255, 255, 255, 200};
+			constexpr sf::Color text_color{200, 200, 200, 120};
 			auto display_text = std::format(
-				"{} ({})", item_stack->item->name(), item_stack->amount
+				"{}({})", item_stack->item->name(), item_stack->amount
 			);
 			for (auto &c : display_text) {
 				c = std::toupper(c);
 			}
-			font.renderText(window, display_text, text_color, 50, 50, scale);
+			font.renderText(window, display_text, text_color, 2, 2, scale);
 		}
 
 		window.display();

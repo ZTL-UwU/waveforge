@@ -64,7 +64,8 @@ void Font::renderText(
 	sf::RenderTarget &target, std::string_view text, sf::Color color, int x,
 	int y, int scale
 ) const {
-	int orig_x = x;
+	x *= scale;
+	y *= scale;
 	for (char c : text) {
 		CharInfo char_info = _getCharInfo(c);
 		if (!char_info.isValid()) {

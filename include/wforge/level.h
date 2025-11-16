@@ -170,7 +170,8 @@ private:
 namespace item {
 
 struct BrushSizeChangableItem {
-	BrushSizeChangableItem(int initial_brush_size, int max_brush_size) noexcept;
+	BrushSizeChangableItem(int max_brush_size) noexcept;
+	BrushSizeChangableItem(int max_brush_size, int initial_brush_size) noexcept;
 
 	void changeBrushSize(int delta) noexcept;
 	void render(
