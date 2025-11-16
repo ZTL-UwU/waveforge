@@ -40,6 +40,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
+# argparse
+FetchContent_Declare(
+	argparse
+	GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+	GIT_TAG v3.2
+	GIT_SHALLOW ON
+	EXCLUDE_FROM_ALL SYSTEM
+)
+FetchContent_MakeAvailable(argparse)
+
 add_executable(waveforge
 	src/2d.cpp
 	src/assets.cpp
@@ -90,4 +100,5 @@ target_link_libraries(waveforge PRIVATE
 	msft_proxy4::proxy
 	cpptrace::cpptrace
 	nlohmann_json::nlohmann_json
+	argparse::argparse
 )

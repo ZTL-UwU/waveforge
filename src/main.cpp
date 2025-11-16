@@ -2,9 +2,10 @@
 #include "wforge/level.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/WindowEnums.hpp>
-#include <cctype>
+#include <argparse/argparse.hpp>
 #include <iostream>
 #include <proxy/proxy.h>
 
@@ -14,7 +15,10 @@
 #include <cpptrace/from_current_macros.hpp>
 #endif
 
-void entry();
+void entry(
+	std::string_view level_id, bool screenshot_mode = false,
+	int forced_scale = 0
+);
 
 std::filesystem::path wf::_executable_path;
 int main(int argc, char **argv) {
@@ -32,10 +36,39 @@ int main(int argc, char **argv) {
 	}
 	wf::AssetsManager::loadAllAssets();
 
+	argparse::ArgumentParser program(
+		"waveforge", "0.1", argparse::default_arguments::help
+	);
+
+	program.add_argument("level")
+		.help("Level ID to load (without 'level/' prefix)")
+		.default_value(std::string("demo"));
+
+	program.add_argument("--screenshot")
+		.help("Save screenshots of play session to 'screenshots/' directory")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("--scale")
+		.help("Set rendering scale (0 for automatic)")
+		.default_value(0)
+		.scan<'i', int>();
+
+	try {
+		program.parse_args(argc, argv);
+	} catch (const std::exception &e) {
+		std::cerr << e.what() << "\n";
+		std::cerr << program;
+		return 1;
+	}
+
 #ifndef NDEBUG
 	CPPTRACE_TRY {
 #endif
-		entry();
+		entry(
+			program.get<std::string>("level"),
+			program.get<bool>("--screenshot"), program.get<int>("--scale")
+		);
 #ifndef NDEBUG
 	}
 	CPPTRACE_CATCH(const std::exception &e) {
@@ -48,24 +81,27 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void entry() {
-	auto level = wf::Level::loadFromAsset("level/demo");
+void entry(std::string_view level_id, bool screenshot_mode, int forced_scale) {
+	auto level = wf::Level::loadFromAsset(std::format("level/{}", level_id));
 	level.selectItem(0);
 
 	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
-	const int scale = std::min(
-		player_screen_size.x / level.width() - 1,
-		player_screen_size.y / level.height() - 1
-	);
+	const int scale = forced_scale
+		? forced_scale
+		: std::min(
+			  player_screen_size.x / level.width() - 1,
+			  player_screen_size.y / level.height() - 1
+		  );
 
 	wf::LevelRenderer renderer(level, scale);
 
+	sf::Vector2u window_size(level.width() * scale, level.height() * scale);
+
 	sf::RenderWindow window(
-		sf::VideoMode(
-			sf::Vector2u(level.width() * scale, level.height() * scale)
-		),
-		"Waveforge Demo", sf::Style::Titlebar | sf::Style::Close
+		sf::VideoMode(window_size), "Waveforge Demo",
+		sf::Style::Titlebar | sf::Style::Close
 	);
+	sf::RenderTexture render_texture(window_size);
 
 	window.setFramerateLimit(24);
 
@@ -75,9 +111,11 @@ void entry() {
 	background_music.setLooping(true);
 	background_music.play();
 
-	int frame = 0;
+	if (screenshot_mode) {
+		std::filesystem::create_directories("screenshots");
+	}
 
-	const auto &font = wf::AssetsManager::instance().getAsset<wf::Font>("font");
+	int frame = 0;
 
 	while (window.isOpen()) {
 		auto mouse_pos = sf::Mouse::getPosition(window);
@@ -110,15 +148,19 @@ void entry() {
 		window.clear(sf::Color::White);
 		renderer.render(window, mouse_pos.x, mouse_pos.y);
 
-		if (auto item_stack = level.activeItemStack()) {
-			constexpr sf::Color text_color{200, 200, 200, 120};
-			auto display_text = std::format(
-				"{}({})", item_stack->item->name(), item_stack->amount
+		if (screenshot_mode) {
+			render_texture.clear(sf::Color::White);
+			renderer.render(render_texture, mouse_pos.x, mouse_pos.y);
+
+			// save screenshot
+			sf::Image screenshot = render_texture.getTexture().copyToImage();
+			auto screenshot_path = std::format(
+				"screenshots/{}_frame_{:05}.png", level_id, frame
 			);
-			for (auto &c : display_text) {
-				c = std::toupper(c);
+			if (!screenshot.saveToFile(screenshot_path)) {
+				std::cerr << "Warning: failed to save screenshot to "
+						  << screenshot_path << "\n";
 			}
-			font.renderText(window, display_text, text_color, 2, 2, scale);
 		}
 
 		window.display();

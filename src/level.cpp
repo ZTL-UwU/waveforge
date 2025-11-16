@@ -77,7 +77,8 @@ LevelRenderer::LevelRenderer(Level &level, int scale)
 	, _fallsand_sprite(_fallsand_texture)
 	, _duck_sprite(
 		  AssetsManager::instance().getAsset<sf::Texture>("duck/texture")
-	  ) {
+	  )
+	, _font(AssetsManager::instance().getAsset<Font>("font")) {
 	if (!_fallsand_texture.resize(
 			sf::Vector2u(level.width(), level.height())
 		)) {
@@ -119,6 +120,15 @@ void LevelRenderer::render(
 
 	if (auto itemstack = _level.activeItemStack()) {
 		itemstack->item->render(target, mouse_x, mouse_y, scale);
+
+		constexpr sf::Color text_color{200, 200, 200, 120};
+		auto display_text = std::format(
+			"{}({})", itemstack->item->name(), itemstack->amount
+		);
+		for (auto &c : display_text) {
+			c = std::toupper(c);
+		}
+		_font.renderText(target, display_text, text_color, 2, 2, scale);
 	}
 }
 

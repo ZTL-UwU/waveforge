@@ -162,6 +162,7 @@ private:
 	sf::Texture _fallsand_texture;
 	sf::Sprite _fallsand_sprite;
 	sf::Sprite _duck_sprite;
+	Font &_font;
 
 	void _renderFallsand(sf::RenderTarget &target) noexcept;
 	void _renderDuck(sf::RenderTarget &target) noexcept;
