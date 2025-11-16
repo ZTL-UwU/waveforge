@@ -6,14 +6,11 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/WindowEnums.hpp>
 #include <argparse/argparse.hpp>
-#include <iostream>
-#include <proxy/proxy.h>
-
-#ifndef NDEBUG
 #include <cpptrace/cpptrace.hpp>
 #include <cpptrace/from_current.hpp>
 #include <cpptrace/from_current_macros.hpp>
-#endif
+#include <iostream>
+#include <proxy/proxy.h>
 
 void entry(
 	std::string_view level_id, bool screenshot_mode = false,
@@ -34,7 +31,15 @@ int main(int argc, char **argv) {
 		// fallback: current working directory
 		wf::_executable_path = std::filesystem::current_path();
 	}
-	wf::AssetsManager::loadAllAssets();
+
+	CPPTRACE_TRY {
+		wf::AssetsManager::loadAllAssets();
+	}
+	CPPTRACE_CATCH(const std::exception &e) {
+		std::cerr << "Failed to load assets: " << e.what() << "\n";
+		cpptrace::from_current_exception().print();
+		return 1;
+	}
 
 	argparse::ArgumentParser program(
 		"waveforge", "0.1", argparse::default_arguments::help
@@ -62,21 +67,17 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-#ifndef NDEBUG
 	CPPTRACE_TRY {
-#endif
 		entry(
 			program.get<std::string>("level"),
 			program.get<bool>("--screenshot"), program.get<int>("--scale")
 		);
-#ifndef NDEBUG
 	}
 	CPPTRACE_CATCH(const std::exception &e) {
 		std::cerr << "Unhandled exception: " << e.what() << "\n";
 		cpptrace::from_current_exception().print();
 		return 1;
 	}
-#endif
 
 	return 0;
 }

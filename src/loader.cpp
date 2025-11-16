@@ -97,6 +97,9 @@ StructureEntity constructStructureWithDirection(
 } // namespace
 
 Level Level::loadFromAsset(const std::string &level_id) {
+	constexpr int min_dimension = 50;
+	constexpr int max_dimension = 2000;
+
 	LevelMetadata metadata = AssetsManager::instance().getAsset<LevelMetadata>(
 		level_id
 	);
@@ -107,6 +110,26 @@ Level Level::loadFromAsset(const std::string &level_id) {
 
 	auto width = image.getSize().x;
 	auto height = image.getSize().y;
+
+	if (width < min_dimension || height < min_dimension) {
+		throw std::runtime_error(
+			std::format(
+				"Failed to load level map: dimensions too small: {}x{} (min "
+		        "{}x{})",
+				width, height, min_dimension, min_dimension
+			)
+		);
+	}
+
+	if (width > max_dimension || height > max_dimension) {
+		throw std::runtime_error(
+			std::format(
+				"Failed to load level map: dimensions too large: {}x{} (max "
+		        "{}x{})",
+				width, height, max_dimension, max_dimension
+			)
+		);
+	}
 
 	Level level(width, height);
 	auto &world = level.fallsand;

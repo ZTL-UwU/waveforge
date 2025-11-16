@@ -3,11 +3,6 @@
 #include "wforge/fallsand.h"
 #include "wforge/structures.h"
 #include <format>
-#include <iostream>
-
-#ifndef NDEBUG
-#include <cpptrace/cpptrace.hpp>
-#endif
 
 namespace wf {
 namespace structure {
@@ -36,16 +31,14 @@ PixelShape &laserReceiverShape(FacingDirection dir) noexcept {
 
 } // namespace
 
-LaserEmitter::LaserEmitter(int x, int y, FacingDirection dir) noexcept
+LaserEmitter::LaserEmitter(int x, int y, FacingDirection dir)
 	: InputElectricalStructure(x, y, laserEmitterShape(dir)), _dir(dir) {
 	if (poi.size() != 1) {
-		std::cerr << std::format(
-			"LaserEmitter: expected 1 POI, got {} POIs\n", poi.size()
+		throw std::runtime_error(
+			std::format(
+				"LaserEmitter: expected 1 POI, got {} POIs\n", poi.size()
+			)
 		);
-#ifndef NDEBUG
-		cpptrace::generate_trace().print();
-#endif
-		std::abort();
 	}
 }
 
@@ -90,16 +83,14 @@ int LaserEmitter::priority() const noexcept {
 	return 50;
 }
 
-LaserReceiver::LaserReceiver(int x, int y, FacingDirection dir) noexcept
+LaserReceiver::LaserReceiver(int x, int y, FacingDirection dir)
 	: OutputElectricalStructure(x, y, laserReceiverShape(dir)) {
 	if (poi.size() != 1) {
-		std::cerr << std::format(
-			"LaserReceiver: expected 1 POI, got {} POIs\n", poi.size()
+		throw std::runtime_error(
+			std::format(
+				"LaserReceiver: expected 1 POI, got {} POIs\n", poi.size()
+			)
 		);
-#ifndef NDEBUG
-		cpptrace::generate_trace().print();
-#endif
-		std::abort();
 	}
 }
 

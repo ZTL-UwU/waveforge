@@ -34,7 +34,7 @@ std::array<int, 2> BrushSizeChangableItem::brushTopLeft(
 
 void BrushSizeChangableItem::render(
 	sf::RenderTarget &target, int x, int y, int scale
-) const noexcept {
+) const {
 	constexpr sf::Color outline_color = sf::Color::Red;
 
 	auto [top_left_x, top_left_y] = brushTopLeft(x, y, scale);

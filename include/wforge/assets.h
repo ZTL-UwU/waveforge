@@ -92,7 +92,7 @@ protected:
 };
 
 // Trim fully-transparent borders from an image
-sf::Image trimImage(const sf::Image &img) noexcept;
+sf::Image trimImage(const sf::Image &img);
 
 // Assumes the input image is facing North
 sf::Image rotateImageTo(const sf::Image &img, FacingDirection dir) noexcept;
@@ -109,21 +109,21 @@ public:
 	// throws for unrecognized asset ID
 	// WARNING: no check for type correctness, always ensure T is correct!
 	template<typename T>
-	T &getAsset(const std::string &id) noexcept {
+	T &getAsset(const std::string &id) {
 		return *static_cast<T *>(_getAssetRaw(id));
 	}
 
 	// asset ownership is transferred to AssetsManager
 	template<typename T>
-	void cacheAsset(const std::string &id, T *asset) noexcept {
+	void cacheAsset(const std::string &id, T *asset) {
 		_cacheAssetRaw(id, static_cast<void *>(asset));
 	}
 
 private:
 	AssetsManager() = default;
 
-	void *_getAssetRaw(const std::string &id) noexcept;
-	void _cacheAssetRaw(const std::string &id, void *asset) noexcept;
+	void *_getAssetRaw(const std::string &id);
+	void _cacheAssetRaw(const std::string &id, void *asset);
 
 	std::map<std::string, void *> _asset_cache; // owned pointers
 };
@@ -137,7 +137,7 @@ struct CheckpointSprite {
 
 	void render(
 		sf::RenderTarget &target, int x, int y, int progress, int scale
-	) const noexcept;
+	) const;
 
 private:
 	sf::Texture _ckeckpoint_1, _checkpoint_2;

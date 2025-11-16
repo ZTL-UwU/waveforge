@@ -36,7 +36,7 @@ struct PixelFacade : pro::facade_builder
 	::build {};
 
 struct StructureEntityFacade : pro::facade_builder
-	::add_convention<_dispatch::MemSetup, void(PixelWorld &world) noexcept>
+	::add_convention<_dispatch::MemSetup, void(PixelWorld &world)>
 	::add_convention<_dispatch::MemCustomRender, void(std::span<std::uint8_t> buf, const PixelWorld &world) const noexcept>
 	::add_convention<_dispatch::MemStep, bool(PixelWorld &world) noexcept>
 	::add_convention<_dispatch::MemPriority, int() const noexcept> // lower value means higher priority
@@ -146,7 +146,7 @@ public:
 
 	void renderToBuffer(std::span<std::uint8_t> buf) const noexcept;
 
-	void addStructure(StructureEntity structure) noexcept;
+	void addStructure(StructureEntity structure);
 
 protected:
 	void resetDirtyFlags() noexcept;

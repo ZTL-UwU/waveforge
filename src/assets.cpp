@@ -5,20 +5,18 @@
 #include <SFML/Graphics/Image.hpp>
 #include <array>
 #include <cstdlib>
-#include <exception>
 #include <filesystem>
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <utility>
 
 #ifndef NDEBUG
 #include <cpptrace/cpptrace.hpp>
-#include <cpptrace/from_current.hpp>
-#include <cpptrace/from_current_macros.hpp>
 #endif
 
 namespace fs = std::filesystem;
@@ -98,7 +96,7 @@ bool PixelShape::isPOIPixel(int x, int y) const noexcept {
 	return colorOf(x, y) == colorOfName("POIMarker");
 }
 
-sf::Image trimImage(const sf::Image &img) noexcept {
+sf::Image trimImage(const sf::Image &img) {
 	int xmin = img.getSize().x;
 	int xmax = -1;
 	int ymin = img.getSize().y;
@@ -132,12 +130,7 @@ sf::Image trimImage(const sf::Image &img) noexcept {
 			),
 			true
 		)) {
-#ifndef NDEBUG
-		std::cerr << "trimImage: failed to copy trimmed image\n";
-		cpptrace::generate_trace().print();
-		std::abort();
-#endif
-		std::unreachable();
+		throw std::runtime_error("trimImage: failed to copy image data");
 	}
 	return trimmed;
 }
@@ -192,30 +185,22 @@ AssetsManager &AssetsManager::instance() noexcept {
 	return mgr;
 }
 
-void *AssetsManager::_getAssetRaw(const std::string &id) noexcept {
+void *AssetsManager::_getAssetRaw(const std::string &id) {
 	auto it = _asset_cache.find(id);
 	if (it == _asset_cache.end()) {
-		std::cerr << "AssetsManager::getAsset: asset not found: " << id << "\n";
-#ifndef NDEBUG
-		cpptrace::generate_trace().print();
-#endif
-		std::abort();
+		throw std::invalid_argument(
+			std::format("AssetsManager: asset not found: {}", id)
+		);
 	}
 
 	return it->second;
 }
 
-void AssetsManager::_cacheAssetRaw(
-	const std::string &id, void *asset
-) noexcept {
+void AssetsManager::_cacheAssetRaw(const std::string &id, void *asset) {
 	if (_asset_cache.find(id) != _asset_cache.end()) {
-#ifndef NDEBUG
-		std::cerr << "AssetsManager::cacheAsset: asset already cached: " << id
-				  << "\n";
-		cpptrace::generate_trace().print();
-		std::abort();
-#endif
-		std::unreachable();
+		throw std::invalid_argument(
+			std::format("AssetsManager: asset ID '{}' is already cached", id)
+		);
 	}
 	_asset_cache[id] = asset;
 }
@@ -230,15 +215,13 @@ std::filesystem::path findAssetsRoot() {
 			return fs::absolute(res);
 		}
 
-		std::cerr << std::format(
-			"AssetsManager: WAVEFORGE_ASSETS_PATH is set to '{}', but file "
-			"'{}' does not exist.\n",
-			res.string(), manifest_path.string()
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: WAVEFORGE_ASSETS_PATH is set to '{}', but file "
+				"'{}' does not exist.",
+				res.string(), manifest_path.string()
+			)
 		);
-#ifndef NDEBUG
-		cpptrace::generate_trace().print();
-#endif
-		std::abort();
 	}
 
 	auto cur_path = fs::current_path();
@@ -264,10 +247,7 @@ std::filesystem::path findAssetsRoot() {
 	for (const auto &res : possible_pathes) {
 		std::cerr << "  " << res << "\n";
 	}
-#ifndef NDEBUG
-	cpptrace::generate_trace().print();
-#endif
-	std::abort();
+	throw std::runtime_error("AssetsManager: could not find assets root.");
 }
 
 constexpr int current_manifest_format = 1;
@@ -477,8 +457,12 @@ void AssetsManager::loadAllAssets() {
 
 	std::ifstream manifest_file(assets_root / "manifest.json");
 	if (!manifest_file.is_open()) {
-		std::cerr << "AssetsManager: could not open manifest file\n";
-		std::abort();
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: failed to open manifest file at '{}'",
+				(assets_root / "manifest.json").string()
+			)
+		);
 	}
 
 	std::unordered_map<std::string, operationFunc> operations = {
@@ -494,50 +478,32 @@ void AssetsManager::loadAllAssets() {
 		{"font", fFont},
 	};
 
-#ifndef NDEBUG
-	CPPTRACE_TRY {
-#else
-	try {
-#endif
-		nlohmann::json manifest = nlohmann::json::parse(manifest_file);
-		AssetsManager &mgr = AssetsManager::instance();
+	nlohmann::json manifest = nlohmann::json::parse(manifest_file);
+	AssetsManager &mgr = AssetsManager::instance();
 
-		if (manifest.at("format").get<int>() != current_manifest_format) {
+	if (manifest.at("format").get<int>() != current_manifest_format) {
+		throw std::runtime_error(
+			std::format(
+				"Unsupported manifest format: {}, expected {}",
+				manifest.at("format").get<int>(), current_manifest_format
+			)
+		);
+	}
+
+	const auto &entries = manifest.at("sequence");
+	for (const auto &entry : entries) {
+		const std::string &op_name = entry.at("type");
+		const std::string &description = entry.at("description");
+		std::cerr << description << "...\n";
+		auto it = operations.find(op_name);
+		if (it == operations.end()) {
 			throw std::runtime_error(
-				std::format(
-					"Unsupported manifest format: {}, expected {}",
-					manifest.at("format").get<int>(), current_manifest_format
-				)
+				std::format("Unknown asset operation type: '{}'", op_name)
 			);
 		}
 
-		const auto &entries = manifest.at("sequence");
-		for (const auto &entry : entries) {
-			const std::string &op_name = entry.at("type");
-			const std::string &description = entry.at("description");
-			std::cerr << description << "...\n";
-			auto it = operations.find(op_name);
-			if (it == operations.end()) {
-				throw std::runtime_error(
-					std::format("Unknown asset operation type: '{}'", op_name)
-				);
-			}
-
-			auto func = it->second;
-			func(entry, assets_root, mgr);
-		}
-	}
-#ifndef NDEBUG
-	CPPTRACE_CATCH(const std::exception &e) {
-		std::cerr << "AssetsManager: failed to parse manifest file: "
-				  << e.what() << "\n";
-		cpptrace::from_current_exception().print();
-#else
-	catch (const std::exception &e) {
-		std::cerr << "AssetsManager: failed to parse manifest file: "
-				  << e.what() << "\n";
-#endif
-		std::abort();
+		auto func = it->second;
+		func(entry, assets_root, mgr);
 	}
 }
 

@@ -29,7 +29,7 @@ PRO_DEF_MEM_DISPATCH(MemName, name);
 // See microsoft/proxy library for the semantics of proxy and facade
 struct ItemFacade : pro::facade_builder
 	::add_convention<_dispatch::MemUse, bool(Level &level, int x, int y, int scale) noexcept>
-	::add_convention<_dispatch::MemRender, void(sf::RenderTarget &target, int x, int y, int scale) const noexcept>
+	::add_convention<_dispatch::MemRender, void(sf::RenderTarget &target, int x, int y, int scale) const>
 	::add_convention<_dispatch::MemChangeBrushSize, void(int delta) noexcept>
 	::add_convention<_dispatch::MemName, std::string_view() const noexcept>
 	::build {};
@@ -175,9 +175,7 @@ struct BrushSizeChangableItem {
 	BrushSizeChangableItem(int max_brush_size, int initial_brush_size) noexcept;
 
 	void changeBrushSize(int delta) noexcept;
-	void render(
-		sf::RenderTarget &target, int x, int y, int scale
-	) const noexcept;
+	void render(sf::RenderTarget &target, int x, int y, int scale) const;
 
 protected:
 	int brushSize() const noexcept;

@@ -2,11 +2,12 @@
 #include "wforge/elements.h"
 #include "wforge/structures.h"
 #include <format>
-#include <iostream>
 #include <memory>
 
 #ifndef NDEBUG
 #include <cpptrace/cpptrace.hpp>
+#include <format>
+#include <iostream>
 #endif
 
 namespace wf {
@@ -32,19 +33,17 @@ PixelShapedStructure::PixelShapedStructure(
 	}
 }
 
-void PixelShapedStructure::setup(PixelWorld &world) noexcept {
+void PixelShapedStructure::setup(PixelWorld &world) {
 	if (x < 0 || y < 0 || x + width() > world.width()
 	    || y + height() > world.height()) {
-		std::cerr << std::format(
-			"PixelShapedStructure::setup: structure at ({}, {}) with size ({}, "
-			"{}) "
-			"out of world bounds ({}, {})\n",
-			x, y, width(), height(), world.width(), world.height()
+		throw std::runtime_error(
+			std::format(
+				"PixelShapedStructure::setup: structure at ({}, {}) with size "
+				"({}, {}) "
+				"out of world bounds ({}, {})\n",
+				x, y, width(), height(), world.width(), world.height()
+			)
 		);
-#ifndef NDEBUG
-		cpptrace::generate_trace().print();
-#endif
-		std::abort();
 	}
 
 	for (int sy = 0; sy < height(); ++sy) {

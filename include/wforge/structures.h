@@ -25,7 +25,7 @@ protected:
 struct PixelShapedStructure : PositionedStructure {
 	PixelShapedStructure(int x, int y, const PixelShape &shape) noexcept;
 
-	void setup(PixelWorld &world) noexcept;
+	void setup(PixelWorld &world);
 
 	void customRender(
 		std::span<std::uint8_t> buf, const PixelWorld &world
@@ -76,7 +76,7 @@ struct LaserEmitter : InputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;
 
-	LaserEmitter(int x, int y, FacingDirection dir) noexcept;
+	LaserEmitter(int x, int y, FacingDirection dir);
 
 private:
 	FacingDirection _dir;
@@ -87,7 +87,7 @@ struct LaserReceiver : OutputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;
 
-	LaserReceiver(int x, int y, FacingDirection dir) noexcept;
+	LaserReceiver(int x, int y, FacingDirection dir);
 };
 
 struct PressurePlate : OutputElectricalStructure {

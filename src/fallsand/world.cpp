@@ -205,7 +205,7 @@ void PixelWorld::step() noexcept {
 	resetDirtyFlags();
 }
 
-void PixelWorld::addStructure(StructureEntity structure) noexcept {
+void PixelWorld::addStructure(StructureEntity structure) {
 	structure->setup(*this);
 
 	// Insert structure based on priority

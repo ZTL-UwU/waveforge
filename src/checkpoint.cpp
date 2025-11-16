@@ -4,14 +4,8 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
-#include <cpptrace/basic.hpp>
 #include <cstdlib>
-
-#ifndef NDEBUG
-#include <cpptrace/cpptrace.hpp>
 #include <format>
-#include <iostream>
-#endif
 
 namespace wf {
 
@@ -104,33 +98,24 @@ bool CheckpointArea::_isDuckInside(const Level &level) const noexcept {
 CheckpointSprite::CheckpointSprite(
 	sf::Image &checkpoint_1, sf::Image &checkpoint_2
 ) {
-#ifndef NDEBUG
 	if (checkpoint_1.getSize() != checkpoint_2.getSize()) {
-		std::cerr << std::format(
-			"{}: checkpoint_1 and checkpoint_2 have different sizes: ({}, {}) "
-			"vs ({}, {})\n",
-			__FUNCTION__, checkpoint_1.getSize().x, checkpoint_1.getSize().y,
-			checkpoint_2.getSize().x, checkpoint_2.getSize().y
+		throw std::invalid_argument(
+			std::format(
+				"CheckpointSprite: checkpoint_1 and checkpoint_2 have "
+				"different "
+				"sizes: ({}, {}) vs ({}, {})",
+				checkpoint_1.getSize().x, checkpoint_1.getSize().y,
+				checkpoint_2.getSize().x, checkpoint_2.getSize().y
+			)
 		);
-		cpptrace::generate_trace().print();
-		std::abort();
 	}
-#endif
 
 	if (!_ckeckpoint_1.loadFromImage(checkpoint_1)) {
-#ifndef NDEBUG
-		std::cerr << "Failed to load checkpoint_1 texture\n";
-		cpptrace::generate_trace().print();
-#endif
-		std::abort();
+		throw std::runtime_error("Failed to load checkpoint_1 texture");
 	}
 
 	if (!_checkpoint_2.loadFromImage(checkpoint_2)) {
-#ifndef NDEBUG
-		std::cerr << "Failed to load checkpoint_2 texture\n";
-		cpptrace::generate_trace().print();
-#endif
-		std::abort();
+		throw std::runtime_error("Failed to load checkpoint_2 texture");
 	}
 
 	_ckeckpoint_1.setSmooth(false);
@@ -147,22 +132,21 @@ int CheckpointSprite::height() const noexcept {
 
 void CheckpointSprite::render(
 	sf::RenderTarget &target, int x, int y, int progress, int scale
-) const noexcept {
+) const {
 	// Top height - progress pixels from checkpoint_1
 	// Bottom progress pixels from checkpoint_2
 	auto height = this->height();
 	auto width = this->width();
 
-#ifndef NDEBUG
 	if (progress > height || progress < 0) {
-		std::cerr << std::format(
-			"wf::CheckpointSprite::render: progress {} out of bounds [0, {}]\n",
-			progress, height
+		throw std::invalid_argument(
+			std::format(
+				"CheckpointSprite::render: invalid progress value: {} "
+				"(out of range 0-{})",
+				progress, height
+			)
 		);
-		cpptrace::generate_trace().print();
-		std::abort();
 	}
-#endif
 
 	if (progress > 0) {
 		sf::Sprite sprite_bottom(
