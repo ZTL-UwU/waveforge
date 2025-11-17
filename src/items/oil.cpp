@@ -20,6 +20,7 @@ bool OilBrush::use(Level &level, int x, int y, int scale) noexcept {
 	auto &world = level.fallsand;
 	auto [top_left_x, top_left_y] = brushTopLeft(x, y, scale);
 	int brush_size = brushSize();
+	bool used = false;
 	for (int dx = 0; dx < brush_size; ++dx) {
 		for (int dy = 0; dy < brush_size; ++dy) {
 			int wx = top_left_x + dx;
@@ -31,10 +32,11 @@ bool OilBrush::use(Level &level, int x, int y, int scale) noexcept {
 
 			if (world.classOfIs(wx, wy, PixelClass::Gas)) {
 				world.replacePixel(wx, wy, element::Oil::create());
+				used = true;
 			}
 		}
 	}
-	return true;
+	return used;
 }
 
 std::string_view OilBrush::name() const noexcept {
