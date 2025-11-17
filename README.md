@@ -6,7 +6,7 @@ Waveforge is the game I'm developing for [GitHub Game Off 2025](https://itch.io/
 
 Waveforge is a 2D platformer where the player needs to manipulate water waves (and other physical phenomena) to somehow move a rubber duck to the checkpoint in a pixel emulated world with physics simulation (of it's own style, not always realistic though).
 
-For more details about the game physics system, please refer to [Physics System](docs/physics-system.md).
+For more details about the game physics system, please refer to [Physics System Documentation](docs/physics-system.md).
 
 ## Current status
 
@@ -69,7 +69,7 @@ The current `main.cpp` (mainly used for testing) is quite messy (partly because 
 
 ## Acknowledgements
 
-We would like to thank [ZTL-UwU](https://github.com/ZTL-UwU/) for their help with early testing and feedback.
+We would like to thank [ZTL-UwU](https://github.com/ZTL-UwU/) for their help with pixel art, as well as their early testing and feedback.
 
 We would also like to thank the following open source projects for making this game possible:
 

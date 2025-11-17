@@ -12,6 +12,7 @@ namespace {
 
 constexpr float duck_buoyancy_factor = .02f;
 constexpr float duck_flow_factor = .03f;
+constexpr float duck_steam_jet_factor = 0.07f;
 constexpr float duck_air_drag = 0.95f;
 constexpr float duck_fluid_drag = 0.7f;
 constexpr float duck_ground_friction = 0.7f;
@@ -177,6 +178,22 @@ void DuckEntity::step(const Level &level) noexcept {
 		}
 	}
 	velocity.x += duck_flow_factor * total_flow;
+
+	// Apply steam jet
+	float total_steam_force = .0f;
+	for (const auto &rp : related_pixels) {
+		auto tag = world.tagOf(rp.x, rp.y);
+		switch (tag.type) {
+		case PixelType::Steam:
+		case PixelType::Smoke:
+			total_steam_force += rp.area * duck_steam_jet_factor;
+			break;
+
+		default:
+			break;
+		}
+	}
+	velocity.y -= total_steam_force;
 
 	// Apply drag
 	float total_drag = .0f;

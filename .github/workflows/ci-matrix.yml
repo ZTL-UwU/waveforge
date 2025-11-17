@@ -62,11 +62,11 @@ jobs:
         
     - name: Configure CMake
       run: |
-        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo .
+        cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release .
     
     - name: Build
       run: |
-        cmake --build build --config RelWithDebInfo
+        cmake --build build --config Release
     
     - name: Set up Python
       uses: actions/setup-python@v5

@@ -112,7 +112,9 @@ The Laser Receiver structure detects incoming laser beams from a specified direc
 
 The Pressure Plate structure outputs an electrical signal when some fluid/solid pixels are on top of it. The signal is turned off when there are no pixels on top of it.
 
-Note: since pressure plates structure has curved-in on top surface, it is likely that pixels will get stuck on top of it. However, this is intended behavior, and removing stuck pixels not impossible by clever level design, for example, activating pressure plates using oil, and then burning the oil away later.
+### Power Source
+
+The Power Source structure outputs a constant electrical signal.
 
 ### Smoke detector
 
