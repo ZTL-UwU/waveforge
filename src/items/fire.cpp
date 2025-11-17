@@ -12,7 +12,14 @@ bool FireBrush::use(Level &level, int x, int y, int scale) noexcept {
 	auto size = brushSize();
 	for (int dy = 0; dy < size; dy++) {
 		for (int dx = 0; dx < size; dx++) {
-			auto &tag = world.tagOf(tx + dx, ty + dy);
+			int wx = tx + dx;
+			int wy = ty + dy;
+			if (wx < 0 || wx >= world.width() || wy < 0
+			    || wy >= world.height()) {
+				continue;
+			}
+
+			auto &tag = world.tagOf(wx, wy);
 			tag.heat = PixelTag::heat_max;
 		}
 	}
