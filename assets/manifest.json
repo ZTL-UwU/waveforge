@@ -180,6 +180,24 @@
 			"description": "Calculating power source shape"
 		},
 		{
+			"id": "heater/raw",
+			"type": "image",
+			"file": "heater.png",
+			"description": "Loading heater PNG"
+		},
+		{
+			"id": "heater/trimmed",
+			"type": "trim-image",
+			"input": "heater/raw",
+			"description": "Trimming heater image"
+		},
+		{
+			"id": "heater/shape",
+			"type": "calculate-shape",
+			"input": "heater/trimmed",
+			"description": "Calculating heater shape"
+		},
+		{
 			"id": "level/demo/map",
 			"type": "image",
 			"file": "levels/demo.png",
@@ -190,6 +208,18 @@
 			"type": "level-metadata",
 			"file": "levels/demo.json",
 			"description": "Loading demo level metadata"
+		},
+		{
+			"id": "level/demo2/map",
+			"type": "image",
+			"file": "levels/demo2.png",
+			"description": "Loading demo2 level prototype image"
+		},
+		{
+			"id": "level/demo2",
+			"type": "level-metadata",
+			"file": "levels/demo2.json",
+			"description": "Loading demo 2 level metadata"
 		}
 	]
 }

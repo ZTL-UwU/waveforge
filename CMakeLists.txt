@@ -80,6 +80,7 @@ add_executable(waveforge
 	src/loader.cpp
 	src/main.cpp
 	src/structures/electric.cpp
+	src/structures/heater.cpp
 	src/structures/laser.cpp
 	src/structures/position.cpp
 	src/structures/power_source.cpp

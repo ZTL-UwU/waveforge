@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/demo2/map",
+	"metadata": {
+		"level_name": "Steam Jet Test",
+		"description": "Test level for steam jet."
+	},
+	"items": [
+		{
+			"id": "fire_brush",
+			"amount": 20
+		}
+	]
+}

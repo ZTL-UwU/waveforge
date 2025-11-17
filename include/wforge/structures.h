@@ -104,6 +104,13 @@ struct PowerSource : OutputElectricalStructure {
 	PowerSource(int x, int y) noexcept;
 };
 
+struct Heater : InputElectricalStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	Heater(int x, int y) noexcept;
+};
+
 } // namespace structure
 } // namespace wf
 

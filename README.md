@@ -63,13 +63,12 @@ The current `main.cpp` (mainly used for testing) is quite messy (partly because 
 
 ## Team Members
 
-- Code & Pixel Art: [fang_erj](https://github.com/szdytom)
+- Code: [fang_erj](https://github.com/szdytom)
 - Music & SFX: [stevvven](https://github.com/Stevvven777)
+- Pixel Art: [ZTL-UwU](https://github.com/ZTL-UwU/)
 - Game Play: zurry
 
 ## Acknowledgements
-
-We would like to thank [ZTL-UwU](https://github.com/ZTL-UwU/) for their help with pixel art, as well as their early testing and feedback.
 
 We would also like to thank the following open source projects for making this game possible:
 
