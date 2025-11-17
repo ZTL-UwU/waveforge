@@ -43,6 +43,8 @@ Item constructItemByName(const std::string &name) {
 	static const std::unordered_map<std::string, constructor_ptr> constructors{
 		{"water_brush", item::WaterBrush::create},
 		{"water_brush_large", item::WaterBrush::createLarge},
+		{"oil_brush", item::OilBrush::create},
+		{"oil_brush_large", item::OilBrush::createLarge},
 		{"fire_brush", item::FireBrush::create},
 	};
 

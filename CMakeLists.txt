@@ -75,6 +75,7 @@ add_executable(waveforge
 	src/items/brush.cpp
 	src/items/fire.cpp
 	src/items/water.cpp
+	src/items/oil.cpp
 	src/level.cpp
 	src/loader.cpp
 	src/main.cpp

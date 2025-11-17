@@ -199,6 +199,19 @@ private:
 	bool _is_large;
 };
 
+struct OilBrush : BrushSizeChangableItem {
+	OilBrush(bool is_large_brush) noexcept;
+
+	bool use(Level &level, int x, int y, int scale) noexcept;
+	std::string_view name() const noexcept;
+
+	static Item create() noexcept;
+	static Item createLarge() noexcept;
+
+private:
+	bool _is_large;
+};
+
 struct FireBrush : BrushSizeChangableItem {
 	FireBrush() noexcept;
 
