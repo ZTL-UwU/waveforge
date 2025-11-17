@@ -67,9 +67,12 @@ bool LaserEmitter::step(PixelWorld &world) noexcept {
 		auto &pixel_tag = world.tagOf(cur_x, cur_y);
 
 		// Solid & smoke can block laser beam
-		if (pixel_tag.pclass == PixelClass::Solid
-		    || pixel_tag.type == PixelType::Smoke) {
+		if (pixel_tag.pclass == PixelClass::Solid) {
 			pixel_tag.heat += laser_heat_amount;
+			break;
+		}
+
+		if (pixel_tag.type == PixelType::Smoke) {
 			break;
 		}
 
