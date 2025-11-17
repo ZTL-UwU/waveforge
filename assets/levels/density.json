@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/density/map",
+	"metadata": {
+		"level_name": "Density",
+		"description": "USE D-E-N-S-I-T-Y!"
+	},
+	"items": [
+		{
+			"id": "water_brush_large",
+			"amount": 5
+		}
+	]
+}

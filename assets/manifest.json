@@ -220,6 +220,18 @@
 			"type": "level-metadata",
 			"file": "levels/demo2.json",
 			"description": "Loading demo 2 level metadata"
+		},
+		{
+			"id": "level/density/map",
+			"type": "image",
+			"file": "levels/density.png",
+			"description": "Loading density level prototype image"
+		},
+		{
+			"id": "level/density",
+			"type": "level-metadata",
+			"file": "levels/density.json",
+			"description": "Loading density level metadata"
 		}
 	]
 }
