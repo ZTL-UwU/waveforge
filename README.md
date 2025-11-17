@@ -14,14 +14,12 @@ A demo level is loaded and can be played. The physics system is mostly implement
 
 The UI for selection of items (tools) is not implemented yet, so the player can only use the first item in the inventory (a water spawner) to play the demo level. The player can spawn water pixels to move the duck to the checkpoint. Use mouse sroll wheel to adjust the amount of water spawned each time, and use left mouse button to spawn water pixels at the mouse cursor position. The demo level restricts the player to only use this item up to 10 times.
 
-There are also two other demo levels, to play them, explicit invoke the executable with command line argument `demo2` or `density` respectively, e.g.
+There are also two other demo levels, to play them, explicit invoke the executable with command line argument `steam_jet` or `density` respectively, e.g.
 
 ```bash
-./waveforge demo2
+./waveforge steam_jet
 ./waveforge density
 ```
-
-Please note that level `demo2` is for testing purpose only and can not be completed. Level `density` can be completed (with some effort), and it's likely to be included in the final game as a proper level, with some adjustments.
 
 Four music tracks are created and added to the repository, but only "Pixelated Paradise-X" is loaded as background music currently.
 

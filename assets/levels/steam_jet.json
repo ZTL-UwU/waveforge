@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/steam_jet/map",
+	"metadata": {
+		"level_name": "Steam",
+		"description": "HINT:DUCK GOES UP ON STEAM"
+	},
+	"items": [
+		{
+			"id": "fire_brush",
+			"amount": 20
+		}
+	]
+}

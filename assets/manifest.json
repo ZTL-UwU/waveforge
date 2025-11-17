@@ -234,16 +234,16 @@
 			"description": "Loading demo level metadata"
 		},
 		{
-			"id": "level/demo2/map",
+			"id": "level/steam_jet/map",
 			"type": "image",
-			"file": "levels/demo2.png",
-			"description": "Loading demo2 level prototype image"
+			"file": "levels/steam_jet.png",
+			"description": "Loading steam_jet level prototype image"
 		},
 		{
-			"id": "level/demo2",
+			"id": "level/steam_jet",
 			"type": "level-metadata",
-			"file": "levels/demo2.json",
-			"description": "Loading demo 2 level metadata"
+			"file": "levels/steam_jet.json",
+			"description": "Loading steam_jet level metadata"
 		},
 		{
 			"id": "level/density/map",
