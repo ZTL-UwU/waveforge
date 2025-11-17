@@ -180,8 +180,8 @@ bool Gate::_canMoveFurther(
 		int wy = y + by;
 
 		if (direction < 0) {
-			wx += (gate_length - next_progress) * dx;
-			wy += (gate_length - next_progress) * dy;
+			wx += (gate_length - next_progress - 1) * dx;
+			wy += (gate_length - next_progress - 1) * dy;
 		} else {
 			wx += (-next_progress) * dx;
 			wy += (-next_progress) * dy;
