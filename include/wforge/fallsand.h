@@ -119,6 +119,10 @@ public:
 		return _height;
 	}
 
+	bool inBounds(int x, int y) const noexcept {
+		return x >= 0 && x < _width && y >= 0 && y < _height;
+	}
+
 	PixelTag tagOf(int x, int y) const noexcept;
 	PixelTag &tagOf(int x, int y) noexcept;
 	PixelElement &elementOf(int x, int y) noexcept;

@@ -40,7 +40,7 @@ Some pixels can conduct electricity. Electrical signals can be used to trigger c
 
 ### Laser beams
 
-Some structures can emit laser beams that can interact with other pixels / structures. Laser beams goes in straight lines until they hit an solid pixel or smoke. Lasers can be used to trigger mechanisms and transfering signals over long distances.
+Some structures can emit laser beams that can interact with other pixels / structures. Laser beams goes in straight lines until they hit an solid pixel or smoke. Lasers can be used to trigger mechanisms and transfering signals over long distances. Laser beams can also heat up solid pixels that they hit.
 
 ## Basic Pixel Elements
 
@@ -116,13 +116,13 @@ The Pressure Plate structure outputs an electrical signal when some fluid/solid 
 
 The Power Source structure outputs a constant electrical signal.
 
-### Smoke detector
-
-The Smoke Detector structure outputs an electrical signal when smoke pixels are in its detection area. The signal is turned off when there is no smoke in the area.
-
 ### Heater
 
 The Heater structure produces heat when powered by an electrical signal.
+
+### Gate
+
+The Gate structure that can open or close a passage for the duck and fluid pixels. When powered by an electrical signal, the gate opens, allowing the duck and fluid pixels to pass through. When not powered, the gate closes, blocking passage.
 
 ### Heat Sensor
 

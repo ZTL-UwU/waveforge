@@ -46,6 +46,9 @@ The following table lists the structure marker colors and their associated struc
 | `#33ffb8e7` | Laser Emitter  | Yes             |
 | `#f0229fe7` | Laser Receiver | Yes             |
 | `#f0229fe7` | Pressure Plate | No              |
+| `#94a83ae7` | Power Source   | No              |
+| `#b72336e7` | Heater		 | No              |
+| `#323232e7` | Gate           | Yes             |
 
 ### Duck & Checkpoint Markers
 

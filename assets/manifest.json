@@ -198,6 +198,30 @@
 			"description": "Calculating heater shape"
 		},
 		{
+			"id": "gate/raw",
+			"type": "image",
+			"file": "gate.png",
+			"description": "Loading gate PNG"
+		},
+		{
+			"id": "gate/trimmed",
+			"type": "trim-image",
+			"input": "gate/raw",
+			"description": "Trimming gate image"
+		},
+		{
+			"id": "gate/images",
+			"type": "create-image-of-all-facings",
+			"input": "gate/trimmed",
+			"description": "Creating gate images for all facings"
+		},
+		{
+			"id": "gate/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "gate/images",
+			"description": "Creating gate pixel shapes for all facings"
+		},
+		{
 			"id": "level/demo/map",
 			"type": "image",
 			"file": "levels/demo.png",

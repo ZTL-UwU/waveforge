@@ -30,7 +30,7 @@ Four music tracks are created and added to the repository, but only "Pixelated P
 You need to have CMake and a C++23 compatible compiler installed (e.g. GCC 14, Clang 20, MSVC 19.44.35219.0). Then run the following commands in the project root directory:
 
 ```bash
-# Make sure to enter MSVC environment on Windows
+# Make sure to enter MSVC environment when on Windows
 cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo .
 cmake --build build --config RelWithDebInfo
 ```

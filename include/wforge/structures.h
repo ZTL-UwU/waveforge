@@ -111,6 +111,24 @@ struct Heater : InputElectricalStructure {
 	Heater(int x, int y) noexcept;
 };
 
+struct Gate : InputElectricalStructure {
+	void setup(PixelWorld &world);
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	Gate(int x, int y, FacingDirection dir);
+
+private:
+	int _openProgress() const noexcept;
+	bool _canMoveFurther(const PixelWorld &world, int d) const noexcept;
+	void _openFurther(PixelWorld &world) noexcept;
+	void _closeFurther(PixelWorld &world) noexcept;
+	bool _checkIntegrity(const PixelWorld &world) const noexcept;
+
+	FacingDirection _dir;
+	int _open_state;
+};
+
 } // namespace structure
 } // namespace wf
 

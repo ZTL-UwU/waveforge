@@ -24,6 +24,7 @@ constexpr sf::Color laser_receiver_marker_color{187, 39, 82, 231};
 constexpr sf::Color pressure_plate_marker_color{240, 34, 159, 231};
 constexpr sf::Color power_source_marker_color{148, 168, 58, 231};
 constexpr sf::Color heater_marker_color{183, 35, 54, 231};
+constexpr sf::Color gate_marker_color{50, 50, 50, 231};
 
 std::array<int, 2> convertBottomCenterToTopLeft(
 	int x, int y, int shape_width, int shape_height
@@ -218,6 +219,14 @@ Level Level::loadFromAsset(const std::string &level_id) {
 			case heater_marker_color.toInteger():
 				structures.push_back(
 					constructStructureWithoutDirection<structure::Heater>(
+						image, x, y
+					)
+				);
+				break;
+
+			case gate_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithDirection<structure::Gate>(
 						image, x, y
 					)
 				);
