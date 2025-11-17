@@ -144,6 +144,6 @@ The duck is the main character in Waveforge. The player cannot directly control 
 
 - Fluid flow: The duck will be carried by the flow of fluid pixels.
 
-- Steam jets: The duck will be propelled by gas pixels, allowing it to reach higher areas.
+- Steam jets: The duck will be propelled by steam pixels, allowing it to reach higher areas.
 
 - Explosion knockback: The duck will be pushed away from explosions. (Note: this is not yet implemented.)

@@ -183,14 +183,8 @@ void DuckEntity::step(const Level &level) noexcept {
 	float total_steam_force = .0f;
 	for (const auto &rp : related_pixels) {
 		auto tag = world.tagOf(rp.x, rp.y);
-		switch (tag.type) {
-		case PixelType::Steam:
-		case PixelType::Smoke:
+		if (tag.type == PixelType::Steam) {
 			total_steam_force += rp.area * duck_steam_jet_factor;
-			break;
-
-		default:
-			break;
 		}
 	}
 	velocity.y -= total_steam_force;
