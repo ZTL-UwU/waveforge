@@ -199,6 +199,15 @@ private:
 	bool _is_large;
 };
 
+struct FireBrush : BrushSizeChangableItem {
+	FireBrush() noexcept;
+
+	bool use(Level &level, int x, int y, int scale) noexcept;
+	std::string_view name() const noexcept;
+
+	static Item create() noexcept;
+};
+
 } // namespace item
 
 } // namespace wf

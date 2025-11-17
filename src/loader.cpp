@@ -41,7 +41,9 @@ void setPositionAtBottomCenter(T &entity, int x, int y) noexcept {
 Item constructItemByName(const std::string &name) {
 	using constructor_ptr = Item (*)() noexcept;
 	static const std::unordered_map<std::string, constructor_ptr> constructors{
-		{"water_brush", item::WaterBrush::create}
+		{"water_brush", item::WaterBrush::create},
+		{"water_brush_large", item::WaterBrush::createLarge},
+		{"fire_brush", item::FireBrush::create},
 	};
 
 	auto it = constructors.find(name);
@@ -115,7 +117,7 @@ Level Level::loadFromAsset(const std::string &level_id) {
 		throw std::runtime_error(
 			std::format(
 				"Failed to load level map: dimensions too small: {}x{} (min "
-		        "{}x{})",
+				"{}x{})",
 				width, height, min_dimension, min_dimension
 			)
 		);
@@ -125,7 +127,7 @@ Level Level::loadFromAsset(const std::string &level_id) {
 		throw std::runtime_error(
 			std::format(
 				"Failed to load level map: dimensions too large: {}x{} (max "
-		        "{}x{})",
+				"{}x{})",
 				width, height, max_dimension, max_dimension
 			)
 		);

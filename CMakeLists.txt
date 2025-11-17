@@ -73,6 +73,7 @@ add_executable(waveforge
 	src/fallsand/thermal.cpp
 	src/fallsand/world.cpp
 	src/items/brush.cpp
+	src/items/fire.cpp
 	src/items/water.cpp
 	src/level.cpp
 	src/loader.cpp
