@@ -12,7 +12,7 @@ Oil::Oil() noexcept {
 	constexpr unsigned int burn_dur_variance = 12;
 
 	auto &rng = Xoroshiro128PP::globalInstance();
-	std::binomial_distribution<int> burn_dur_dist(burn_dur_variance * 2, 0.5);
+	std::binomial_distribution<> burn_dur_dist(burn_dur_variance * 2, 0.5);
 	burn_time_left = burn_duration - burn_dur_variance + burn_dur_dist(rng);
 }
 

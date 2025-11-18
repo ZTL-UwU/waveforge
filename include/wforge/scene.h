@@ -2,6 +2,7 @@
 #define WFORGE_SCENE_H
 
 #include "wforge/assets.h"
+#include "wforge/fallsand.h"
 #include "wforge/level.h"
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics.hpp>
@@ -17,9 +18,7 @@ namespace wf {
 namespace _dispatch {
 
 PRO_DEF_MEM_DISPATCH(MemSize, size);
-PRO_DEF_MEM_DISPATCH(MemInit, init);
 PRO_DEF_MEM_DISPATCH(MemHandleEvent, handleEvent);
-PRO_DEF_MEM_DISPATCH(MemTick, tick);
 
 }; // namespace _dispatch
 
@@ -28,9 +27,10 @@ class SceneManager;
 /* clang-format off */
 struct SceneFacade : pro::facade_builder
 	::add_convention<_dispatch::MemSize, std::array<int, 2>() const>
-	::add_convention<_dispatch::MemInit, void(SceneManager &)>
+	::add_convention<_dispatch::MemSetup, void(SceneManager &)>
 	::add_convention<_dispatch::MemHandleEvent, void(SceneManager &, sf::Event &)>
-	::add_convention<_dispatch::MemTick, void(SceneManager &, sf::RenderTarget &)>
+	::add_convention<_dispatch::MemStep, void(SceneManager &)>
+	::add_convention<_dispatch::MemRender, void(const SceneManager &, sf::RenderTarget &) const>
 	::build {};
 /* clang-format on */
 
@@ -66,14 +66,17 @@ struct LevelScene {
 	LevelScene(Level level, int scale);
 
 	std::array<int, 2> size() const;
-	void init(SceneManager &mgr);
+	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
-	void tick(SceneManager &mgr, sf::RenderTarget &target);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
 
 private:
+	void _restartLevel(SceneManager &mgr);
+
 	int _scale;
 	Level _level;
-	LevelRenderer _renderer;
+	mutable LevelRenderer _renderer;
 	PixelFont &font;
 };
 

@@ -2,6 +2,7 @@
 #include "wforge/assets.h"
 #include "wforge/scene.h"
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <cstdlib>
 #include <iostream>
 #include <proxy/v4/proxy.h>
@@ -43,7 +44,7 @@ std::array<int, 2> LevelScene::size() const {
 	return {_level.width() * _scale, _level.height() * _scale};
 }
 
-void LevelScene::init(SceneManager &mgr) {
+void LevelScene::setup(SceneManager &mgr) {
 	_level.selectItem(0);
 	mgr.setBGMCollection("background/level-music");
 }
@@ -63,22 +64,37 @@ void LevelScene::handleEvent(SceneManager &mgr, sf::Event &ev) {
 			_level.useActiveItem(mouse_pos.x, mouse_pos.y, _scale);
 		}
 	}
+
+	if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
+		if (kb->code == sf::Keyboard::Key::R) {
+			std::cerr << "Restarting level...\n";
+			_restartLevel(mgr);
+		}
+	}
 }
 
-void LevelScene::tick(SceneManager &mgr, sf::RenderTarget &target) {
+void LevelScene::_restartLevel(SceneManager &mgr) {
+	mgr.changeScene(
+		pro::make_proxy<SceneFacade, LevelScene>(
+			Level::loadFromMetadata(std::move(_level.metadata)), _scale
+		)
+	);
+}
+
+void LevelScene::render(
+	const SceneManager &mgr, sf::RenderTarget &target
+) const {
 	auto mouse_pos = mgr.mousePosition();
-	_level.step();
 	target.clear(sf::Color::White);
 	_renderer.render(target, mouse_pos.x, mouse_pos.y);
+}
+
+void LevelScene::step(SceneManager &mgr) {
+	_level.step();
 
 	if (_level.isFailed()) {
 		std::cerr << "Level failed! Restarting...\n";
-		// Restart level
-		mgr.changeScene(
-			pro::make_proxy<SceneFacade, LevelScene>(
-				Level::loadFromMetadata(std::move(_level.metadata)), _scale
-			)
-		);
+		_restartLevel(mgr);
 	}
 
 	if (_level.isCompleted()) {

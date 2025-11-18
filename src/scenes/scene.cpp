@@ -26,7 +26,7 @@ SceneManager::SceneManager(Scene initial_scene)
 	, _bgm_collection(nullptr)
 	, _cur_bgm(nullptr) {
 	window.setFramerateLimit(24);
-	_current_scene->init(*this);
+	_current_scene->setup(*this);
 }
 
 SceneManager::~SceneManager() {
@@ -47,7 +47,7 @@ void SceneManager::changeScene(Scene new_scene) {
 	if (width != old_width || height != old_height) {
 		window.setSize(sf::Vector2u(width, height));
 	}
-	_current_scene->init(*this);
+	_current_scene->setup(*this);
 }
 
 void SceneManager::handleEvent(sf::Event &evt) {
@@ -55,7 +55,8 @@ void SceneManager::handleEvent(sf::Event &evt) {
 }
 
 void SceneManager::tick() {
-	_current_scene->tick(*this, window);
+	_current_scene->step(*this);
+	_current_scene->render(*this, window);
 
 	if (_bgm_collection && !_bgm_collection->music.empty()) {
 		if (!_cur_bgm || _cur_bgm->getStatus() == sf::Music::Status::Stopped) {
