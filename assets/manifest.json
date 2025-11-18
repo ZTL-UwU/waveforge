@@ -43,6 +43,28 @@
 			"description": "Creating duck texture"
 		},
 		{
+			"id": "duckdeath/raw",
+			"type": "image",
+			"file": "duckdeath.png",
+			"description": "Loading duck death animation sprite sheet"
+		},
+		{
+			"id": "duckdeath/texture",
+			"type": "create-texture",
+			"input": "duckdeath/raw",
+			"description": "Creating duck death animation sprite sheet texture"
+		},
+		{
+			"id": "duckdeath/animation",
+			"type": "animation",
+			"input": "duckdeath/texture",
+			"frame_size": {
+				"width": 16,
+				"height": 16
+			},
+			"description": "Creating duck death animation frames"
+		},
+		{
 			"id": "checkpoint/image_1",
 			"type": "image",
 			"file": "checkpoint1.png",
@@ -92,7 +114,6 @@
 			"file": "Pixel Tide-X.mp3",
 			"description": "Loading Pixel Tide-X music",
 			"collections": [
-				"background/level-music",
 				"background/main-menu-music"
 			]
 		},

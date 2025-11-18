@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <cstdint>
 #include <generator>
@@ -25,7 +26,8 @@ struct PixelTypeAndColor {
 // Returns {PixelType::Decoration, 255} for not recognized colors
 PixelTypeAndColor pixelTypeFromColor(const sf::Color &color) noexcept;
 
-struct PixelFont {
+class PixelFont {
+public:
 	PixelFont(
 		int char_width, int char_height, std::string_view charset,
 		const sf::Image &img
@@ -68,7 +70,8 @@ private:
 };
 
 // Bitmap shape of a pixel-based entity
-struct PixelShape {
+class PixelShape {
+public:
 	PixelShape(const sf::Image &img) noexcept;
 	PixelShape() noexcept;
 
@@ -90,6 +93,37 @@ protected:
 	int _width;
 	int _height;
 	const std::uint8_t *_data; // no ownership, ~static
+};
+
+class PixelAnimationFrames {
+public:
+	PixelAnimationFrames(
+		sf::Texture &sprite_sheet, int frame_width, int frame_height
+	);
+
+	int length() const noexcept {
+		return _length;
+	}
+
+	int frameWidth() const noexcept {
+		return _frame_width;
+	}
+
+	int frameHeight() const noexcept {
+		return _frame_height;
+	}
+
+	void render(
+		sf::RenderTarget &target, int frame_index, int x, int y, int scale
+	) const;
+
+private:
+	sf::Texture &_texture;
+
+	int _frame_width;
+	int _frame_height;
+	int _length;
+	std::vector<sf::IntRect> _frames;
 };
 
 // Trim fully-transparent borders from an image

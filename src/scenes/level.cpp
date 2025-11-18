@@ -4,9 +4,9 @@
 #include "wforge/scene.h"
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <cmath>
+#include <cstdio>
 #include <cstdlib>
-#include <format>
-#include <iostream>
 #include <proxy/v4/proxy.h>
 #include <string_view>
 
@@ -39,24 +39,24 @@ constexpr int restart_hint_max_opacity = 200;
 
 } // namespace
 
-LevelScene::LevelScene(Level level): LevelScene(std::move(level), 0) {}
+LevelPlaying::LevelPlaying(Level level): LevelPlaying(std::move(level), 0) {}
 
-LevelScene::LevelScene(Level level, int scale)
+LevelPlaying::LevelPlaying(Level level, int scale)
 	: _scale(scale ? scale : automaticScale(level))
 	, _level(std::move(level))
 	, _renderer(_level, _scale)
 	, font(*loadFont()) {}
 
-std::array<int, 2> LevelScene::size() const {
+std::array<int, 2> LevelPlaying::size() const {
 	return {_level.width() * _scale, _level.height() * _scale};
 }
 
-void LevelScene::setup(SceneManager &mgr) {
+void LevelPlaying::setup(SceneManager &mgr) {
 	_level.selectItem(0);
 	mgr.setBGMCollection("background/level-music");
 }
 
-void LevelScene::handleEvent(SceneManager &mgr, sf::Event &ev) {
+void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (auto mw = ev.getIf<sf::Event::MouseWheelScrolled>()) {
 		if (mw->delta > 0) {
 			_level.changeActiveItemBrushSize(1);
@@ -75,10 +75,15 @@ void LevelScene::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
 		if (kb->code == sf::Keyboard::Key::R) {
 			if (restart_hint_opacity > 0) {
-				std::cerr << std::format(
-					"Restarting level '{}'\n", _level.metadata.name
+				int duck_x = std::round(_level.duck.position.x);
+				int duck_y = std::round(_level.duck.position.y);
+				mgr.changeScene(
+					pro::make_proxy<SceneFacade, DuckDeath>(
+						_level.width(), _level.height(), duck_x, duck_y, _scale,
+						LevelMetadata(_level.metadata)
+					)
 				);
-				_restartLevel(mgr);
+				return;
 			} else {
 				restart_hint_opacity = restart_hint_max_opacity;
 			}
@@ -86,19 +91,18 @@ void LevelScene::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	}
 }
 
-void LevelScene::_restartLevel(SceneManager &mgr) {
+void LevelPlaying::_restartLevel(SceneManager &mgr) {
 	mgr.changeScene(
-		pro::make_proxy<SceneFacade, LevelScene>(
+		pro::make_proxy<SceneFacade, LevelPlaying>(
 			Level::loadFromMetadata(std::move(_level.metadata)), _scale
 		)
 	);
 }
 
-void LevelScene::render(
+void LevelPlaying::render(
 	const SceneManager &mgr, sf::RenderTarget &target
 ) const {
 	auto mouse_pos = mgr.mousePosition();
-	target.clear(sf::Color::White);
 	_renderer.render(target, mouse_pos.x, mouse_pos.y);
 
 	if (restart_hint_opacity > 0) {
@@ -111,7 +115,7 @@ void LevelScene::render(
 	}
 }
 
-void LevelScene::step(SceneManager &mgr) {
+void LevelPlaying::step(SceneManager &mgr) {
 	_level.step();
 
 	if (restart_hint_opacity > 0) {
@@ -119,10 +123,8 @@ void LevelScene::step(SceneManager &mgr) {
 	}
 
 	if (_level.isFailed()) {
-		std::cerr << std::format(
-			"Level '{}' failed. Restarting...\n", _level.metadata.name
-		);
 		_restartLevel(mgr);
+		return;
 	}
 
 	if (_level.isCompleted()) {

@@ -1,5 +1,6 @@
 #include "wforge/scene.h"
 #include "wforge/assets.h"
+#include "wforge/colorpalette.h"
 #include "wforge/xoroshiro.h"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Window.hpp>
@@ -24,7 +25,8 @@ SceneManager::SceneManager(Scene initial_scene)
 	: window(createWindow(initial_scene))
 	, _current_scene(std::move(initial_scene))
 	, _bgm_collection(nullptr)
-	, _cur_bgm(nullptr) {
+	, _cur_bgm(nullptr)
+	, _scene_changed(false) {
 	window.setFramerateLimit(24);
 	_current_scene->setup(*this);
 }
@@ -38,7 +40,9 @@ SceneManager::~SceneManager() {
 
 void SceneManager::changeScene(Scene new_scene) {
 	unsetBGMCollection();
-	_cur_bgm->stop();
+	if (_cur_bgm) {
+		_cur_bgm->stop();
+	}
 	_cur_bgm = nullptr;
 
 	auto [old_width, old_height] = _current_scene->size();
@@ -48,6 +52,7 @@ void SceneManager::changeScene(Scene new_scene) {
 		window.setSize(sf::Vector2u(width, height));
 	}
 	_current_scene->setup(*this);
+	_scene_changed = true;
 }
 
 void SceneManager::handleEvent(sf::Event &evt) {
@@ -55,7 +60,13 @@ void SceneManager::handleEvent(sf::Event &evt) {
 }
 
 void SceneManager::tick() {
+	_scene_changed = false;
 	_current_scene->step(*this);
+	if (_scene_changed) {
+		return;
+	}
+
+	window.clear(window_background_color);
 	_current_scene->render(*this, window);
 
 	if (_bgm_collection && !_bgm_collection->music.empty()) {

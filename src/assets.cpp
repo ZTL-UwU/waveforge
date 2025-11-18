@@ -462,6 +462,23 @@ void fFont(
 	mgr.cacheAsset(id, font);
 }
 
+void fAnimationFrames(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &input_id = entry.at("input");
+	auto &texture = mgr.getAsset<sf::Texture>(input_id);
+	const std::string &id = entry.at("id");
+
+	const auto &frame_size = entry.at("frame_size");
+	int frame_width = frame_size.at("width");
+	int frame_height = frame_size.at("height");
+
+	auto animation_frames = new PixelAnimationFrames(
+		texture, frame_width, frame_height
+	);
+	mgr.cacheAsset(id, animation_frames);
+}
+
 } // namespace
 
 void AssetsManager::loadAllAssets() {
@@ -489,6 +506,7 @@ void AssetsManager::loadAllAssets() {
 		{"create-checkpoint-sprite", fCheckpointSprite},
 		{"level-metadata", fLevelMetadata},
 		{"font", fFont},
+		{"animation", fAnimationFrames},
 	};
 
 	nlohmann::json manifest = nlohmann::json::parse(manifest_file);

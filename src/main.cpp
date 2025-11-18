@@ -82,7 +82,7 @@ void entry(std::string_view level_id, int forced_scale) {
 	);
 
 	wf::SceneManager scene_mgr(
-		pro::make_proxy<wf::SceneFacade, wf::scene::LevelScene>(
+		pro::make_proxy<wf::SceneFacade, wf::scene::LevelPlaying>(
 			std::move(level), forced_scale
 		)
 	);

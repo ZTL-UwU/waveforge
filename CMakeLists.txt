@@ -51,11 +51,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(argparse)
 
 add_executable(waveforge
-	src/2d.cpp
-	src/assets.cpp
-	src/checkpoint.cpp
-	src/duck.cpp
-	src/font.cpp
 	src/elements/air.cpp
 	src/elements/copper.cpp
 	src/elements/decoration.cpp
@@ -76,9 +71,7 @@ add_executable(waveforge
 	src/items/fire.cpp
 	src/items/water.cpp
 	src/items/oil.cpp
-	src/level.cpp
-	src/loader.cpp
-	src/main.cpp
+	src/scenes/duckdeath.cpp
 	src/scenes/level.cpp
 	src/scenes/scene.cpp
 	src/structures/electric.cpp
@@ -89,6 +82,15 @@ add_executable(waveforge
 	src/structures/power_source.cpp
 	src/structures/pressure_plate.cpp
 	src/structures/shape.cpp
+	src/2d.cpp
+	src/animation.cpp
+	src/assets.cpp
+	src/checkpoint.cpp
+	src/duck.cpp
+	src/font.cpp
+	src/level.cpp
+	src/loader.cpp
+	src/main.cpp
 	src/xoroshiro.cpp
 )
 

@@ -57,13 +57,14 @@ private:
 
 	MusicCollection *_bgm_collection;
 	sf::Music *_cur_bgm;
+	bool _scene_changed;
 };
 
 namespace scene {
 
-struct LevelScene {
-	LevelScene(Level level);
-	LevelScene(Level level, int scale);
+struct LevelPlaying {
+	LevelPlaying(Level level);
+	LevelPlaying(Level level, int scale);
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
@@ -79,6 +80,32 @@ private:
 	mutable LevelRenderer _renderer;
 	int restart_hint_opacity = 0;
 	PixelFont &font;
+};
+
+struct DuckDeath {
+	DuckDeath(
+		int level_width, int level_height, int duck_x, int duck_y, int scale,
+		LevelMetadata level_metadata
+	);
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+
+private:
+	int _level_width;
+	int _level_height;
+	int _duck_x;
+	int _duck_y;
+	int _scale;
+	int _duck_anchor_bx;
+	int _duck_anchor_by;
+	int _pending_timer;
+	int _animation_frame;
+	LevelMetadata _level_metadata;
+	PixelAnimationFrames &_animation;
 };
 
 } // namespace scene
