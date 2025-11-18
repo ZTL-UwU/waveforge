@@ -1,6 +1,5 @@
 #include "wforge/scene.h"
 #include "wforge/assets.h"
-#include "wforge/colorpalette.h"
 #include "wforge/xoroshiro.h"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Window.hpp>
@@ -66,7 +65,7 @@ void SceneManager::tick() {
 		return;
 	}
 
-	window.clear(window_background_color);
+	window.clear(sf::Color::White);
 	_current_scene->render(*this, window);
 
 	if (_bgm_collection && !_bgm_collection->music.empty()) {

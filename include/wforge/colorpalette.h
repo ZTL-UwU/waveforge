@@ -12,7 +12,6 @@ struct ColorPaletteEntry {
 };
 
 constexpr sf::Color ui_text_color(200, 200, 200, 255);
-constexpr sf::Color window_background_color(220, 220, 220, 255);
 
 // All indexed colors must be here, for dynamic generated textures
 // Colors in static assets (e.g. PNG files) can be outside this palette

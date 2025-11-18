@@ -1,7 +1,6 @@
 #include "wforge/assets.h"
 #include "wforge/level.h"
 #include "wforge/scene.h"
-#include <iostream>
 #include <limits>
 #include <proxy/v4/proxy.h>
 
@@ -72,9 +71,6 @@ void DuckDeath::step(SceneManager &mgr) {
 			_pending_timer = pending_duration - frame_duration;
 		}
 	} else {
-		std::cerr << std::format(
-			"DuckDeath: restarting level '{}'\n", _level_metadata.name
-		);
 		mgr.changeScene(
 			pro::make_proxy<SceneFacade, LevelPlaying>(
 				Level::loadFromMetadata(std::move(_level_metadata)), _scale
@@ -87,6 +83,7 @@ void DuckDeath::step(SceneManager &mgr) {
 void DuckDeath::render(
 	const SceneManager &mgr, sf::RenderTarget &target
 ) const {
+	target.clear(sf::Color(220, 220, 220, 255));
 	int rx = _duck_x - _duck_anchor_bx;
 	int ry = _duck_y - _duck_anchor_by;
 	_animation.render(target, _animation_frame, rx, ry, _scale);
