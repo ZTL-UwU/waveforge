@@ -78,7 +78,7 @@ LevelRenderer::LevelRenderer(Level &level, int scale)
 	, _duck_sprite(
 		  AssetsManager::instance().getAsset<sf::Texture>("duck/texture")
 	  )
-	, _font(AssetsManager::instance().getAsset<Font>("font")) {
+	, _font(AssetsManager::instance().getAsset<PixelFont>("font")) {
 	if (!_fallsand_texture.resize(
 			sf::Vector2u(level.width(), level.height())
 		)) {

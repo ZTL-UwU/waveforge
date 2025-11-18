@@ -103,12 +103,15 @@ StructureEntity constructStructureWithDirection(
 } // namespace
 
 Level Level::loadFromAsset(const std::string &level_id) {
-	constexpr int min_dimension = 50;
-	constexpr int max_dimension = 2000;
-
-	LevelMetadata metadata = AssetsManager::instance().getAsset<LevelMetadata>(
+	auto &metadata = AssetsManager::instance().getAsset<LevelMetadata>(
 		level_id
 	);
+	return loadFromMetadata(metadata);
+}
+
+Level Level::loadFromMetadata(LevelMetadata metadata) {
+	constexpr int min_dimension = 50;
+	constexpr int max_dimension = 500;
 
 	const auto &image = AssetsManager::instance().getAsset<sf::Image>(
 		metadata.map_id

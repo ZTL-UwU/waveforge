@@ -6,11 +6,11 @@
 
 namespace wf {
 
-bool Font::CharInfo::isValid() const noexcept {
+bool PixelFont::CharInfo::isValid() const noexcept {
 	return x >= 0 && y >= 0;
 }
 
-Font::Font(
+PixelFont::PixelFont(
 	int char_width, int char_height, std::string_view charset,
 	const sf::Image &img
 )
@@ -62,18 +62,18 @@ Font::Font(
 	}
 }
 
-bool Font::hasChar(char c) const noexcept {
+bool PixelFont::hasChar(char c) const noexcept {
 	return _getCharInfo(c).isValid();
 }
 
-Font::CharInfo Font::_getCharInfo(char c) const noexcept {
+PixelFont::CharInfo PixelFont::_getCharInfo(char c) const noexcept {
 	if (static_cast<unsigned char>(c) >= 128) {
 		return CharInfo{};
 	}
 	return _char_info[static_cast<unsigned char>(c)];
 }
 
-void Font::renderText(
+void PixelFont::renderText(
 	sf::RenderTarget &target, std::string_view text, sf::Color color, int x,
 	int y, int scale
 ) const {
@@ -99,7 +99,7 @@ void Font::renderText(
 	}
 }
 
-std::generator<std::array<int, 2>> Font::textBitmap(
+std::generator<std::array<int, 2>> PixelFont::textBitmap(
 	std::string_view text
 ) const noexcept {
 	int x = 0;

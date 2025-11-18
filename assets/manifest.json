@@ -92,7 +92,8 @@
 			"file": "Pixel Tide-X.mp3",
 			"description": "Loading Pixel Tide-X music",
 			"collections": [
-				"background/level-music"
+				"background/level-music",
+				"background/main-menu-music"
 			]
 		},
 		{

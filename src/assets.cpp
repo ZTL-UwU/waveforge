@@ -205,6 +205,10 @@ void AssetsManager::_cacheAssetRaw(const std::string &id, void *asset) {
 	_asset_cache[id] = asset;
 }
 
+MusicCollection &AssetsManager::getMusicCollection(const std::string &id) {
+	return _music_collections[id];
+}
+
 namespace {
 
 std::filesystem::path findAssetsRoot() {
@@ -313,6 +317,15 @@ void fMusic(
 	}
 
 	mgr.cacheAsset(id, music);
+
+	if (entry.contains("collections")) {
+		for (const auto &collection_name : entry.at("collections")) {
+			auto &collection = mgr.getMusicCollection(
+				collection_name.get<std::string>()
+			);
+			collection.music.push_back(music);
+		}
+	}
 }
 
 void fTrimImage(
@@ -445,7 +458,7 @@ void fFont(
 	int char_height = font_size.at("height");
 	std::string charset = entry.at("charset");
 
-	auto font = new Font(char_width, char_height, std::move(charset), img);
+	auto font = new PixelFont(char_width, char_height, std::move(charset), img);
 	mgr.cacheAsset(id, font);
 }
 

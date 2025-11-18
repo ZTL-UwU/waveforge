@@ -3,6 +3,7 @@
 
 #include "wforge/2d.h"
 #include "wforge/fallsand.h"
+#include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
@@ -24,8 +25,8 @@ struct PixelTypeAndColor {
 // Returns {PixelType::Decoration, 255} for not recognized colors
 PixelTypeAndColor pixelTypeFromColor(const sf::Color &color) noexcept;
 
-struct Font {
-	Font(
+struct PixelFont {
+	PixelFont(
 		int char_width, int char_height, std::string_view charset,
 		const sf::Image &img
 	);
@@ -97,6 +98,10 @@ sf::Image trimImage(const sf::Image &img);
 // Assumes the input image is facing North
 sf::Image rotateImageTo(const sf::Image &img, FacingDirection dir) noexcept;
 
+struct MusicCollection {
+	std::vector<sf::Music *> music;
+};
+
 // Cache of loaded assets, singleton
 class AssetsManager {
 public:
@@ -119,6 +124,8 @@ public:
 		_cacheAssetRaw(id, static_cast<void *>(asset));
 	}
 
+	MusicCollection &getMusicCollection(const std::string &id);
+
 private:
 	AssetsManager() = default;
 
@@ -126,6 +133,7 @@ private:
 	void _cacheAssetRaw(const std::string &id, void *asset);
 
 	std::map<std::string, void *> _asset_cache; // owned pointers
+	std::map<std::string, MusicCollection> _music_collections;
 };
 
 // Checkpoint area sprite, which animates based on progress
