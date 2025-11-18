@@ -6,8 +6,7 @@
 #include <cmath>
 #include <random>
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 PixelTag Sand::newTag() const noexcept {
 	auto color_type = Xoroshiro128PP::globalInstance().next() % 3;
@@ -189,5 +188,4 @@ PixelElement Sand::create() noexcept {
 	return pro::make_proxy<PixelFacade, Sand>();
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

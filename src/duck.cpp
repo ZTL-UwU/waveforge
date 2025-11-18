@@ -233,7 +233,8 @@ void DuckEntity::step(const Level &level) noexcept {
 	// Apply solid collision correction force
 	float in_solid_area = .0f;
 	for (const auto &rp : related_pixels) {
-		if (world.classOfIs(rp.x, rp.y, PixelClass::Solid)) {
+		auto tag = world.tagOf(rp.x, rp.y);
+		if (tag.pclass == PixelClass::Solid && !tag.is_free_falling) {
 			in_solid_area += rp.area;
 		}
 	}
