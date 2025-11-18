@@ -59,13 +59,15 @@ struct Stone : SolidElement {
 };
 
 struct Wood : SolidElement {
+	Wood() noexcept;
+
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
 
 	static PixelElement create() noexcept;
 
 private:
-	int burn_time = 0;
+	int burn_time_left;
 };
 
 struct Copper : SolidElement {
@@ -94,13 +96,15 @@ struct Water : FluidElement {
 };
 
 struct Oil : FluidElement {
+	Oil() noexcept;
+
 	PixelTag newTag() const noexcept;
 	void step(PixelWorld &world, int x, int y) noexcept;
 
 	static PixelElement create() noexcept;
 
 private:
-	int burn_time = 0;
+	int burn_time_left;
 };
 
 struct FluidParticle : EmptySubsElement {
