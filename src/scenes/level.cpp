@@ -1,11 +1,14 @@
 #include "wforge/level.h"
 #include "wforge/assets.h"
+#include "wforge/colorpalette.h"
 #include "wforge/scene.h"
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <cstdlib>
+#include <format>
 #include <iostream>
 #include <proxy/v4/proxy.h>
+#include <string_view>
 
 namespace wf::scene {
 
@@ -29,6 +32,10 @@ auto loadFont() {
 	}
 	return font;
 }
+
+constexpr std::string_view restart_hint_text = "Press R again to restart";
+constexpr int restart_hint_fade_speed = 3;
+constexpr int restart_hint_max_opacity = 200;
 
 } // namespace
 
@@ -67,8 +74,14 @@ void LevelScene::handleEvent(SceneManager &mgr, sf::Event &ev) {
 
 	if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
 		if (kb->code == sf::Keyboard::Key::R) {
-			std::cerr << "Restarting level...\n";
-			_restartLevel(mgr);
+			if (restart_hint_opacity > 0) {
+				std::cerr << std::format(
+					"Restarting level '{}'\n", _level.metadata.name
+				);
+				_restartLevel(mgr);
+			} else {
+				restart_hint_opacity = restart_hint_max_opacity;
+			}
 		}
 	}
 }
@@ -87,13 +100,28 @@ void LevelScene::render(
 	auto mouse_pos = mgr.mousePosition();
 	target.clear(sf::Color::White);
 	_renderer.render(target, mouse_pos.x, mouse_pos.y);
+
+	if (restart_hint_opacity > 0) {
+		int text_width = restart_hint_text.size() * font.charWidth();
+		int x = (_level.width() - text_width) / 2;
+		int y = _level.height() - font.charHeight() - 10;
+		sf::Color text_color = ui_text_color;
+		text_color.a = static_cast<uint8_t>(restart_hint_opacity);
+		font.renderText(target, restart_hint_text, text_color, x, y, _scale);
+	}
 }
 
 void LevelScene::step(SceneManager &mgr) {
 	_level.step();
 
+	if (restart_hint_opacity > 0) {
+		restart_hint_opacity -= restart_hint_fade_speed;
+	}
+
 	if (_level.isFailed()) {
-		std::cerr << "Level failed! Restarting...\n";
+		std::cerr << std::format(
+			"Level '{}' failed. Restarting...\n", _level.metadata.name
+		);
 		_restartLevel(mgr);
 	}
 

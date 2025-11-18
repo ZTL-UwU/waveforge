@@ -77,6 +77,7 @@ private:
 	int _scale;
 	Level _level;
 	mutable LevelRenderer _renderer;
+	int restart_hint_opacity = 0;
 	PixelFont &font;
 };
 
