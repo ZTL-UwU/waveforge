@@ -95,6 +95,13 @@ struct PressurePlate : OutputElectricalStructure {
 	PressurePlate(int x, int y) noexcept;
 };
 
+struct HeavyPressurePlate : OutputElectricalStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	HeavyPressurePlate(int x, int y) noexcept;
+};
+
 struct PowerSource : OutputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;

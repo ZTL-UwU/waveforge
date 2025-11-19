@@ -184,6 +184,24 @@
 			"description": "Calculating pressure plate shape"
 		},
 		{
+			"id": "heavy-pressure-plate/raw",
+			"type": "image",
+			"file": "heavy-pressure-plate.png",
+			"description": "Loading heavy pressure plate PNG"
+		},
+		{
+			"id": "heavy-pressure-plate/trimmed",
+			"type": "trim-image",
+			"input": "heavy-pressure-plate/raw",
+			"description": "Trimming heavy pressure plate image"
+		},
+		{
+			"id": "heavy-pressure-plate/shape",
+			"type": "calculate-shape",
+			"input": "heavy-pressure-plate/trimmed",
+			"description": "Calculating heavy pressure plate shape"
+		},
+		{
 			"id": "power-source/raw",
 			"type": "image",
 			"file": "power-source.png",
