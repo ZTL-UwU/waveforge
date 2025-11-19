@@ -6,8 +6,7 @@
 #include <proxy/v4/proxy.h>
 #include <utility>
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 void FluidElement::step(PixelWorld &world, int x, int y) noexcept {
 	if (y + 1 >= world.height()) {
@@ -244,5 +243,4 @@ void FluidParticle::step(PixelWorld &world, int x, int y) noexcept {
 	}
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

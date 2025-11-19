@@ -1,8 +1,7 @@
 #include "wforge/colorpalette.h"
 #include "wforge/elements.h"
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 PixelTag Air::newTag() const noexcept {
 	return PixelTag{
@@ -17,5 +16,4 @@ PixelElement Air::create() noexcept {
 	return pro::make_proxy_inplace<PixelFacade, Air>();
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

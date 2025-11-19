@@ -2,8 +2,7 @@
 #include "wforge/elements.h"
 #include "wforge/fallsand.h"
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 PixelTag Water::newTag() const noexcept {
 	return PixelTag{
@@ -32,5 +31,4 @@ PixelElement Water::create() noexcept {
 	return pro::make_proxy<PixelFacade, Water>();
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

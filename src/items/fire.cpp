@@ -1,8 +1,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/level.h"
 
-namespace wf {
-namespace item {
+namespace wf::item {
 
 FireBrush::FireBrush() noexcept: BrushSizeChangableItem(3) {}
 
@@ -34,5 +33,4 @@ Item FireBrush::create() noexcept {
 	return pro::make_proxy<ItemFacade, FireBrush>();
 }
 
-} // namespace item
-} // namespace wf
+} // namespace wf::item

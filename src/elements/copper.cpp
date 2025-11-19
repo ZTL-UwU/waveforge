@@ -3,8 +3,7 @@
 #include "wforge/elements.h"
 #include "wforge/fallsand.h"
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 PixelTag Copper::newTag() const noexcept {
 	return PixelTag{
@@ -38,5 +37,4 @@ void Copper::step(PixelWorld &world, int x, int y) noexcept {
 	SolidElement::step(world, x, y);
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

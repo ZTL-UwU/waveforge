@@ -2,8 +2,7 @@
 #include "wforge/elements.h"
 #include "wforge/fallsand.h"
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 PixelTag Decoration::newTag() const noexcept {
 	return PixelTag{
@@ -18,5 +17,4 @@ PixelElement Decoration::create() noexcept {
 	return pro::make_proxy_inplace<PixelFacade, Decoration>();
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

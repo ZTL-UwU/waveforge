@@ -2,8 +2,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 namespace {
 
@@ -79,5 +78,4 @@ void GasElement::step(PixelWorld &world, int x, int y) noexcept {
 	}
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

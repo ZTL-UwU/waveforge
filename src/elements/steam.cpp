@@ -3,8 +3,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 PixelTag Steam::newTag() const noexcept {
 	auto rng = Xoroshiro128PP::globalInstance().next() % 3;
@@ -30,5 +29,4 @@ void Steam::step(PixelWorld &world, int x, int y) noexcept {
 	GasElement::step(world, x, y);
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

@@ -3,8 +3,7 @@
 #include "wforge/fallsand.h"
 #include <proxy/v4/proxy.h>
 
-namespace wf {
-namespace element {
+namespace wf::element {
 
 PixelTag Stone::newTag() const noexcept {
 	return PixelTag{
@@ -19,5 +18,4 @@ PixelElement Stone::create() noexcept {
 	return pro::make_proxy_inplace<PixelFacade, Stone>();
 }
 
-} // namespace element
-} // namespace wf
+} // namespace wf::element

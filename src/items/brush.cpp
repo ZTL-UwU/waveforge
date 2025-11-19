@@ -2,8 +2,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace wf {
-namespace item {
+namespace wf::item {
 BrushSizeChangableItem::BrushSizeChangableItem(
 	int max_brush_size, int initial_brush_size
 ) noexcept
@@ -47,5 +46,4 @@ void BrushSizeChangableItem::render(
 	target.draw(rect);
 }
 
-} // namespace item
-} // namespace wf
+} // namespace wf::item

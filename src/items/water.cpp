@@ -1,8 +1,7 @@
 #include "wforge/elements.h"
 #include "wforge/level.h"
 
-namespace wf {
-namespace item {
+namespace wf::item {
 
 WaterBrush::WaterBrush(bool is_large_brush) noexcept
 	: BrushSizeChangableItem(is_large_brush ? 24 : 12)
@@ -47,5 +46,4 @@ std::string_view WaterBrush::name() const noexcept {
 	}
 }
 
-} // namespace item
-} // namespace wf
+} // namespace wf::item
