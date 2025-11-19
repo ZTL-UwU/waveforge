@@ -9,9 +9,7 @@
 #include <span>
 #include <vector>
 
-namespace wf {
-
-namespace structure {
+namespace wf::structure {
 
 struct PositionedStructure {
 	PositionedStructure() noexcept = default;
@@ -129,7 +127,28 @@ private:
 	int _open_state;
 };
 
-} // namespace structure
-} // namespace wf
+struct TransistorNPN : InputElectricalStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	TransistorNPN(int x, int y, FacingDirection dir);
+
+private:
+	bool _conducting;
+	FacingDirection _dir;
+};
+
+struct TransistorPNP : InputElectricalStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	TransistorPNP(int x, int y, FacingDirection dir);
+
+private:
+	bool _insulating;
+	FacingDirection _dir;
+};
+
+} // namespace wf::structure
 
 #endif // WFORGE_STRUCTURES_H

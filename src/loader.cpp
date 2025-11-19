@@ -25,6 +25,8 @@ constexpr sf::Color pressure_plate_marker_color{240, 34, 159, 231};
 constexpr sf::Color power_source_marker_color{148, 168, 58, 231};
 constexpr sf::Color heater_marker_color{183, 35, 54, 231};
 constexpr sf::Color gate_marker_color{50, 50, 50, 231};
+constexpr sf::Color pnp_transistor_marker_color{179, 169, 19, 231};
+constexpr sf::Color npn_transistor_marker_color{240, 133, 168, 231};
 
 std::array<int, 2> convertBottomCenterToTopLeft(
 	int x, int y, int shape_width, int shape_height
@@ -230,6 +232,22 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 			case gate_marker_color.toInteger():
 				structures.push_back(
 					constructStructureWithDirection<structure::Gate>(
+						image, x, y
+					)
+				);
+				break;
+
+			case pnp_transistor_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithDirection<structure::TransistorPNP>(
+						image, x, y
+					)
+				);
+				break;
+
+			case npn_transistor_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithDirection<structure::TransistorNPN>(
 						image, x, y
 					)
 				);

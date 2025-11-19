@@ -244,6 +244,30 @@
 			"description": "Creating gate pixel shapes for all facings"
 		},
 		{
+			"id": "transistor/raw",
+			"type": "image",
+			"file": "transistor.png",
+			"description": "Loading transistor PNG"
+		},
+		{
+			"id": "transistor/trimmed",
+			"type": "trim-image",
+			"input": "transistor/raw",
+			"description": "Trimming transistor image"
+		},
+		{
+			"id": "transistor/images",
+			"type": "create-image-of-all-facings",
+			"input": "transistor/trimmed",
+			"description": "Creating transistor images for all facings"
+		},
+		{
+			"id": "transistor/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "transistor/images",
+			"description": "Creating transistor pixel shapes for all facings"
+		},
+		{
 			"id": "level/demo/map",
 			"type": "image",
 			"file": "levels/demo.png",
