@@ -9,7 +9,8 @@ namespace wf {
 
 struct ColorPaletteEntry {
 	const char *name;
-	sf::Color color; // in RGBA
+	sf::Color color;        // in RGBA
+	sf::Color active_color; // electricity blend
 };
 
 constexpr sf::Color ui_text_color(std::uint8_t a) {
@@ -25,19 +26,64 @@ constexpr ColorPaletteEntry _colors[] = {
 	},
 	{
 		.name = "Stone1",
+		.color = sf::Color(96, 96, 96, 255),
+	},
+	{
+		.name = "Stone2",
 		.color = sf::Color(128, 128, 128, 255),
 	},
 	{
+		.name = "Stone3",
+		.color = sf::Color(144, 144, 144, 255),
+	},
+	{
+		.name = "Stone4",
+		.color = sf::Color(182, 182, 182, 255),
+	},
+	{
 		.name = "Wood1",
-		.color = sf::Color(116, 90, 54, 255),
+		.color = sf::Color(188, 112, 61, 255),
 	},
 	{
 		.name = "Wood2",
+		.color = sf::Color(210, 134, 84, 255),
+	},
+	{
+		.name = "Wood3",
+		.color = sf::Color(229, 159, 111, 255),
+	},
+	{
+		.name = "Wood4",
+		.color = sf::Color(116, 90, 54, 255),
+	},
+	{
+		.name = "Wood5",
 		.color = sf::Color(76, 61, 38, 255),
 	},
 	{
-		.name = "Copper",
+		.name = "Copper1",
+		.color = sf::Color(194, 107, 76, 255),
+		.active_color = sf::Color(2, 177, 240, 255),
+	},
+	{
+		.name = "Copper2",
+		.color = sf::Color(201, 129, 104, 255),
+		.active_color = sf::Color(93, 196, 233, 255),
+	},
+	{
+		.name = "Copper3", // holder
+		.color = sf::Color(87, 55, 8, 255),
+		.active_color = sf::Color(87, 55, 8, 255),
+	},
+	{
+		.name = "Copper4", // holder
+		.color = sf::Color(97, 63, 13, 255),
+		.active_color = sf::Color(97, 63, 13, 255),
+	},
+	{
+		.name = "Copper5", // legacy copper color
 		.color = sf::Color(184, 115, 51, 255),
+		.active_color = sf::Color(2, 177, 240, 255),
 	},
 	{
 		.name = "Sand1",
@@ -129,6 +175,10 @@ inline consteval unsigned int colorIndexOf(const char *name) {
 
 inline constexpr sf::Color colorOfIndex(unsigned int index) {
 	return _colors[index].color;
+}
+
+inline constexpr ColorPaletteEntry colorPaletteOfIndex(unsigned int index) {
+	return _colors[index];
 }
 
 inline consteval sf::Color colorOfName(const char *name) {

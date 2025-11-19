@@ -263,8 +263,6 @@ void PixelWorld::renderToBuffer(std::span<std::uint8_t> buf) const noexcept {
 			} else {
 				color_idx = colorIndexOf("Fire3");
 			}
-		} else if (_tags[i].electric_power >= render_electric_power_threshold) {
-			color_idx = colorIndexOf("Electric");
 		} else {
 			color_idx = _tags[i].color_index;
 		}
@@ -272,6 +270,8 @@ void PixelWorld::renderToBuffer(std::span<std::uint8_t> buf) const noexcept {
 		sf::Color color;
 		if (_static_tags[i].laser_active) {
 			color = laserBlendedColorOfIndex(color_idx);
+		} else if (_tags[i].electric_power >= render_electric_power_threshold) {
+			color = colorPaletteOfIndex(color_idx).active_color;
 		} else {
 			color = colorOfIndex(color_idx);
 		}
