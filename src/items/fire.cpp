@@ -9,12 +9,15 @@ bool FireBrush::use(Level &level, int x, int y, int scale) noexcept {
 	auto &world = level.fallsand;
 	auto [tx, ty] = brushTopLeft(x, y, scale);
 	auto size = brushSize();
-	for (int dy = 0; dy < size; dy++) {
-		for (int dx = 0; dx < size; dx++) {
-			int wx = tx + dx;
+	for (int dx = 0; dx < size; dx++) {
+		int wx = tx + dx;
+		if (wx < 0 || wx >= world.width()) {
+			continue;
+		}
+
+		for (int dy = 0; dy < size; dy++) {
 			int wy = ty + dy;
-			if (wx < 0 || wx >= world.width() || wy < 0
-			    || wy >= world.height()) {
+			if (wy < 0 || wy >= world.height()) {
 				continue;
 			}
 

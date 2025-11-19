@@ -117,6 +117,15 @@ StaticPixelTag &PixelWorld::staticTagOf(int x, int y) noexcept {
 	return _static_tags[y * _width + x];
 }
 
+void PixelWorld::activateLaserAt(int x, int y) noexcept {
+	auto &stag = staticTagOf(x, y);
+	stag.laser_active = true;
+}
+
+bool PixelWorld::isExternalEntityPresent(int x, int y) const noexcept {
+	return staticTagOf(x, y).external_entity_present;
+}
+
 void PixelWorld::swapPixels(int x1, int y1, int x2, int y2) noexcept {
 	using std::swap; // ADL two steps
 	swap(tagOf(x1, y1), tagOf(x2, y2));
@@ -203,6 +212,12 @@ void PixelWorld::step() noexcept {
 	}
 
 	resetDirtyFlags();
+}
+
+void PixelWorld::resetEntityPresenceTags() noexcept {
+	for (int i = 0; i < _width * _height; ++i) {
+		_static_tags[i].external_entity_present = false;
+	}
 }
 
 void PixelWorld::addStructure(StructureEntity structure) {

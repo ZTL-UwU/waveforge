@@ -104,21 +104,24 @@ void DuckEntity::step(const Level &level) noexcept {
 
 	// Calculate related pixels for buoyancy
 	std::vector<RelatedPixel> raw_related_pixels;
+	int floor_x = std::floor(position.x);
+	int ceil_x = std::ceil(position.x);
+	int floor_y = std::floor(position.y);
+	int ceil_y = std::ceil(position.y);
 	for (int dx = 0; dx < shape.width(); ++dx) {
 		for (int dy = 0; dy < shape.height(); ++dy) {
 			if (!shape.hasPixel(dx, dy)) {
 				continue;
 			}
 
-			int fx = std::floor(position.x) + dx;
-			int cx = std::ceil(position.x) + dx;
-			int fy = std::floor(position.y) + dy;
-			int cy = std::ceil(position.y) + dy;
+			int fx = floor_x + dx;
+			int cx = ceil_x + dx;
+			int fy = floor_y + dy;
+			int cy = ceil_y + dy;
 
 			for (int px : {fx, cx}) {
 				for (int py : {fy, cy}) {
-					if (px < 0 || px >= world.width() || py < 0
-					    || py >= world.height()) {
+					if (!world.inBounds(px, py)) {
 						continue;
 					}
 
@@ -315,4 +318,36 @@ void DuckEntity::step(const Level &level) noexcept {
 	velocity.x = 0.0f;
 	velocity.y = 0.0f;
 }
+
+void DuckEntity::commitEntityPresence(PixelWorld &world) noexcept {
+	int floor_x = std::floor(position.x);
+	int ceil_x = std::ceil(position.x);
+	int floor_y = std::floor(position.y);
+	int ceil_y = std::ceil(position.y);
+
+	for (int dx = 0; dx < shape.width(); ++dx) {
+		for (int dy = 0; dy < shape.height(); ++dy) {
+			if (!shape.hasPixel(dx, dy)) {
+				continue;
+			}
+
+			int fx = floor_x + dx;
+			int cx = ceil_x + dx;
+			int fy = floor_y + dy;
+			int cy = ceil_y + dy;
+
+			for (int px : {fx, cx}) {
+				for (int py : {fy, cy}) {
+					if (!world.inBounds(px, py)) {
+						continue;
+					}
+
+					auto &stag = world.staticTagOf(px, py);
+					stag.external_entity_present = true;
+				}
+			}
+		}
+	}
+}
+
 } // namespace wf

@@ -50,6 +50,7 @@ Item constructItemByName(const std::string &name) {
 		{"oil_brush", item::OilBrush::create},
 		{"oil_brush_large", item::OilBrush::createLarge},
 		{"fire_brush", item::FireBrush::create},
+		{"copper_brush", item::CopperBrush::create},
 	};
 
 	auto it = constructors.find(name);

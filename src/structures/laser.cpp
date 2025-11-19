@@ -77,7 +77,7 @@ bool LaserEmitter::step(PixelWorld &world) noexcept {
 		}
 
 		// Activate laser
-		world.staticTagOf(cur_x, cur_y).laser_active = true;
+		world.activateLaserAt(cur_x, cur_y);
 	}
 	return true;
 }

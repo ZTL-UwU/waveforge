@@ -102,6 +102,7 @@ struct PixelTag {
 
 struct StaticPixelTag {
 	bool laser_active : 1 = false;
+	bool external_entity_present : 1 = false;
 };
 
 class PixelWorld {
@@ -130,6 +131,9 @@ public:
 	StaticPixelTag staticTagOf(int x, int y) const noexcept;
 	StaticPixelTag &staticTagOf(int x, int y) noexcept;
 
+	void activateLaserAt(int x, int y) noexcept;
+	bool isExternalEntityPresent(int x, int y) const noexcept;
+
 	void swapPixels(int x1, int y1, int x2, int y2) noexcept;
 
 	// swapPixels without swapping fluid_dir
@@ -151,6 +155,8 @@ public:
 	void renderToBuffer(std::span<std::uint8_t> buf) const noexcept;
 
 	void addStructure(StructureEntity structure);
+
+	void resetEntityPresenceTags() noexcept;
 
 protected:
 	void resetDirtyFlags() noexcept;

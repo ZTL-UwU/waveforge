@@ -9,6 +9,8 @@ namespace wf {
 Level::Level(int width, int height) noexcept: fallsand(width, height) {}
 
 void Level::step() {
+	fallsand.resetEntityPresenceTags();
+	duck.commitEntityPresence(fallsand);
 	fallsand.step();
 	duck.step(*this);
 	checkpoint.step(*this);

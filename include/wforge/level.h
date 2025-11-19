@@ -70,6 +70,8 @@ struct DuckEntity {
 	bool currentlyColliding(const Level &level) const noexcept;
 
 	void step(const Level &level) noexcept;
+
+	void commitEntityPresence(PixelWorld &world) noexcept;
 };
 
 struct CheckpointArea {
@@ -215,6 +217,15 @@ private:
 
 struct FireBrush : BrushSizeChangableItem {
 	FireBrush() noexcept;
+
+	bool use(Level &level, int x, int y, int scale) noexcept;
+	std::string_view name() const noexcept;
+
+	static Item create() noexcept;
+};
+
+struct CopperBrush : BrushSizeChangableItem {
+	CopperBrush() noexcept;
 
 	bool use(Level &level, int x, int y, int scale) noexcept;
 	std::string_view name() const noexcept;

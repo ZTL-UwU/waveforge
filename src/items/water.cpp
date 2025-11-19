@@ -21,11 +21,14 @@ bool WaterBrush::use(Level &level, int x, int y, int scale) noexcept {
 	int brush_size = brushSize();
 	bool used = false;
 	for (int dx = 0; dx < brush_size; ++dx) {
+		int wx = top_left_x + dx;
+		if (wx < 0 || wx >= world.width()) {
+			continue;
+		}
+
 		for (int dy = 0; dy < brush_size; ++dy) {
-			int wx = top_left_x + dx;
 			int wy = top_left_y + dy;
-			if (wx < 0 || wx >= world.width() || wy < 0
-			    || wy >= world.height()) {
+			if (wy < 0 || wy >= world.height()) {
 				continue;
 			}
 
