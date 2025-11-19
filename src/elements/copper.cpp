@@ -10,7 +10,7 @@ PixelTag Copper::newTag() const noexcept {
 	return PixelTag{
 		.type = PixelType::Copper,
 		.pclass = PixelClass::Solid,
-		.color_index = colorIndexOf("Copper"),
+		.color_index = colorIndexOf("Copper1"),
 		.thermal_conductivity = 60,
 	};
 }

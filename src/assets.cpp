@@ -31,15 +31,34 @@ PixelTypeAndColor pixelTypeFromColor(const sf::Color &color) noexcept {
 
 	case packColorByName("Stone1"):
 		return {PixelType::Stone, colorIndexOf("Stone1")};
+	case packColorByName("Stone2"):
+		return {PixelType::Stone, colorIndexOf("Stone2")};
+	case packColorByName("Stone3"):
+		return {PixelType::Stone, colorIndexOf("Stone3")};
+	case packColorByName("Stone4"):
+		return {PixelType::Stone, colorIndexOf("Stone4")};
 
 	case packColorByName("Wood1"):
 		return {PixelType::Wood, colorIndexOf("Wood1")};
-
 	case packColorByName("Wood2"):
 		return {PixelType::Wood, colorIndexOf("Wood2")};
+	case packColorByName("Wood3"):
+		return {PixelType::Wood, colorIndexOf("Wood3")};
+	case packColorByName("Wood4"):
+		return {PixelType::Wood, colorIndexOf("Wood4")};
+	case packColorByName("Wood5"):
+		return {PixelType::Wood, colorIndexOf("Wood5")};
 
-	case packColorByName("Copper"):
-		return {PixelType::Copper, colorIndexOf("Copper")};
+	case packColorByName("Copper1"):
+		return {PixelType::Copper, colorIndexOf("Copper1")};
+	case packColorByName("Copper2"):
+		return {PixelType::Copper, colorIndexOf("Copper2")};
+	case packColorByName("Copper3"):
+		return {PixelType::Copper, colorIndexOf("Copper3")};
+	case packColorByName("Copper4"):
+		return {PixelType::Copper, colorIndexOf("Copper4")};
+	case packColorByName("Copper5"):
+		return {PixelType::Copper, colorIndexOf("Copper5")};
 
 	case packColorByName("Sand1"):
 		return {PixelType::Sand, colorIndexOf("Sand1")};
