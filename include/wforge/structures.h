@@ -92,28 +92,28 @@ struct PressurePlate : OutputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;
 
-	PressurePlate(int x, int y) noexcept;
+	PressurePlate(int x, int y);
 };
 
 struct HeavyPressurePlate : OutputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;
 
-	HeavyPressurePlate(int x, int y) noexcept;
+	HeavyPressurePlate(int x, int y);
 };
 
 struct PowerSource : OutputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;
 
-	PowerSource(int x, int y) noexcept;
+	PowerSource(int x, int y);
 };
 
 struct Heater : InputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;
 
-	Heater(int x, int y) noexcept;
+	Heater(int x, int y);
 };
 
 struct Gate : InputElectricalStructure {
@@ -154,6 +154,20 @@ struct TransistorPNP : InputElectricalStructure {
 private:
 	bool _insulating;
 	FacingDirection _dir;
+};
+
+struct WaterTap : InputElectricalStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	WaterTap(int x, int y, FacingDirection dir);
+};
+
+struct OilTap : InputElectricalStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	OilTap(int x, int y, FacingDirection dir);
 };
 
 } // namespace wf::structure

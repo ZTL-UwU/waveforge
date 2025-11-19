@@ -5,7 +5,7 @@ namespace structure {
 
 namespace {
 
-PixelShape &loadPowerSourceShape() noexcept {
+PixelShape &loadPowerSourceShape() {
 	static PixelShape *shape = nullptr;
 	if (shape == nullptr) {
 		shape = &AssetsManager::instance().getAsset<PixelShape>(
@@ -17,7 +17,7 @@ PixelShape &loadPowerSourceShape() noexcept {
 
 } // namespace
 
-PowerSource::PowerSource(int x, int y) noexcept
+PowerSource::PowerSource(int x, int y)
 	: OutputElectricalStructure(x, y, loadPowerSourceShape()) {}
 
 bool PowerSource::step(PixelWorld &world) noexcept {

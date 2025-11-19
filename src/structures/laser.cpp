@@ -9,7 +9,7 @@ namespace structure {
 
 namespace {
 
-PixelShape &laserEmitterShape(FacingDirection dir) noexcept {
+PixelShape &laserEmitterShape(FacingDirection dir) {
 	static PixelShape *ptr = nullptr;
 	if (ptr == nullptr) {
 		ptr = AssetsManager::instance()
@@ -19,7 +19,7 @@ PixelShape &laserEmitterShape(FacingDirection dir) noexcept {
 	return ptr[static_cast<std::uint8_t>(dir)];
 }
 
-PixelShape &laserReceiverShape(FacingDirection dir) noexcept {
+PixelShape &laserReceiverShape(FacingDirection dir) {
 	static PixelShape *ptr = nullptr;
 	if (ptr == nullptr) {
 		ptr = AssetsManager::instance()

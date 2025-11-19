@@ -28,6 +28,8 @@ constexpr sf::Color heater_marker_color{183, 35, 54, 231};
 constexpr sf::Color gate_marker_color{50, 50, 50, 231};
 constexpr sf::Color pnp_transistor_marker_color{179, 169, 19, 231};
 constexpr sf::Color npn_transistor_marker_color{240, 133, 168, 231};
+constexpr sf::Color water_tap_marker_color{83, 77, 128, 231};
+constexpr sf::Color oil_tap_marker_color{75, 89, 49, 231};
 
 std::array<int, 2> convertBottomCenterToTopLeft(
 	int x, int y, int shape_width, int shape_height
@@ -257,6 +259,22 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 			case npn_transistor_marker_color.toInteger():
 				structures.push_back(
 					constructStructureWithDirection<structure::TransistorNPN>(
+						image, x, y
+					)
+				);
+				break;
+
+			case water_tap_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithDirection<structure::WaterTap>(
+						image, x, y
+					)
+				);
+				break;
+
+			case oil_tap_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithDirection<structure::OilTap>(
 						image, x, y
 					)
 				);

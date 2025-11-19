@@ -83,6 +83,7 @@ add_executable(waveforge
 	src/structures/power_source.cpp
 	src/structures/pressure_plate.cpp
 	src/structures/shape.cpp
+	src/structures/tap.cpp
 	src/structures/transistor.cpp
 	src/2d.cpp
 	src/animation.cpp

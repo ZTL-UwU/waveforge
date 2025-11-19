@@ -286,6 +286,30 @@
 			"description": "Creating transistor pixel shapes for all facings"
 		},
 		{
+			"id": "water-tap/raw",
+			"type": "image",
+			"file": "watertap.png",
+			"description": "Loading water tap PNG"
+		},
+		{
+			"id": "water-tap/trimmed",
+			"type": "trim-image",
+			"input": "water-tap/raw",
+			"description": "Trimming water tap image"
+		},
+		{
+			"id": "water-tap/images",
+			"type": "create-image-of-all-facings",
+			"input": "water-tap/trimmed",
+			"description": "Creating water tap images for all facings"
+		},
+		{
+			"id": "water-tap/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "water-tap/images",
+			"description": "Creating water tap pixel shapes for all facings"
+		},
+		{
 			"id": "level/demo/map",
 			"type": "image",
 			"file": "levels/demo.png",

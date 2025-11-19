@@ -6,7 +6,7 @@ namespace structure {
 
 namespace {
 
-PixelShape &heaterShape() noexcept {
+PixelShape &heaterShape() {
 	static PixelShape *ptr = nullptr;
 	if (ptr == nullptr) {
 		ptr = &AssetsManager::instance().getAsset<PixelShape>("heater/shape");
@@ -16,8 +16,7 @@ PixelShape &heaterShape() noexcept {
 
 } // namespace
 
-Heater::Heater(int x, int y) noexcept
-	: InputElectricalStructure(x, y, heaterShape()) {}
+Heater::Heater(int x, int y): InputElectricalStructure(x, y, heaterShape()) {}
 
 bool Heater::step(PixelWorld &world) noexcept {
 	constexpr unsigned int heat_production = 15;

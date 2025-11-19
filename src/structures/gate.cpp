@@ -9,7 +9,7 @@ namespace {
 constexpr int gate_length = 20;
 constexpr int gate_open_speed = 3; // ticks per pixel, i.e. larger is slower
 
-PixelShape &gateShape(FacingDirection dir) noexcept {
+PixelShape &gateShape(FacingDirection dir) {
 	static PixelShape *ptr = nullptr;
 	if (ptr == nullptr) {
 		ptr = AssetsManager::instance()

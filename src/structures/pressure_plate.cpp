@@ -5,7 +5,7 @@ namespace structure {
 
 namespace {
 
-static PixelShape &loadPressurePlateShape() noexcept {
+PixelShape &loadPressurePlateShape() {
 	static PixelShape *shape = nullptr;
 	if (shape == nullptr) {
 		shape = &AssetsManager::instance().getAsset<PixelShape>(
@@ -15,7 +15,7 @@ static PixelShape &loadPressurePlateShape() noexcept {
 	return *shape;
 }
 
-static PixelShape &loadHeavyPressurePlateShape() noexcept {
+PixelShape &loadHeavyPressurePlateShape() {
 	static PixelShape *shape = nullptr;
 	if (shape == nullptr) {
 		shape = &AssetsManager::instance().getAsset<PixelShape>(
@@ -27,7 +27,7 @@ static PixelShape &loadHeavyPressurePlateShape() noexcept {
 
 } // namespace
 
-PressurePlate::PressurePlate(int x, int y) noexcept
+PressurePlate::PressurePlate(int x, int y)
 	: OutputElectricalStructure(x, y, loadPressurePlateShape()) {}
 
 bool PressurePlate::step(PixelWorld &world) noexcept {
@@ -63,7 +63,7 @@ int PressurePlate::priority() const noexcept {
 	return 10;
 }
 
-HeavyPressurePlate::HeavyPressurePlate(int x, int y) noexcept
+HeavyPressurePlate::HeavyPressurePlate(int x, int y)
 	: OutputElectricalStructure(x, y, loadHeavyPressurePlateShape()) {}
 
 bool HeavyPressurePlate::step(PixelWorld &world) noexcept {
