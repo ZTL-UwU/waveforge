@@ -233,17 +233,19 @@ void LevelSelectionMenu::render(
 		_level_title.y, _scale, _level_title.size
 	);
 
-	// Render level description
-	font.renderText(
-		target, selected_metadata->description, _level_desc.color,
-		_level_desc.x, _level_desc.y, _scale, _level_desc.size
-	);
+	if (_selected_index <= save_data.completed_levels) {
+		// Render level description
+		font.renderText(
+			target, selected_metadata->description, _level_desc.color,
+			_level_desc.x, _level_desc.y, _scale, _level_desc.size
+		);
 
-	// Render enter hint
-	font.renderText(
-		target, "[ENTER]", _enter_hint.color, _enter_hint.x, _enter_hint.y,
-		_scale, _enter_hint.size
-	);
+		// Render enter hint
+		font.renderText(
+			target, "[ENTER]", _enter_hint.color, _enter_hint.x, _enter_hint.y,
+			_scale, _enter_hint.size
+		);
+	}
 }
 
 } // namespace wf::scene
