@@ -1,0 +1,103 @@
+#include "wforge/2d.h"
+#include "wforge/colorpalette.h"
+#include "wforge/scene.h"
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <iostream>
+#include <string_view>
+
+namespace wf::scene {
+
+namespace {
+
+constexpr std::string_view level_complete_text = "LEVEL COMPLETED!";
+
+}
+
+LevelComplete::LevelComplete(
+	int level_width, int level_height, int duck_x, int duck_y, int scale
+)
+	: _level_width(level_width)
+	, _level_height(level_height)
+	, _scale(scale)
+	, _pending_timer(0)
+	, _current_step(0)
+	, _display_text(false)
+	, font(AssetsManager::instance().getAsset<PixelFont>("font"))
+	, _duck_texture(
+		  AssetsManager::instance().getAsset<sf::Texture>("duck/texture")
+	  ) {
+	constexpr int play_speed = 4;
+
+	int banner_width = level_complete_text.size() * font.charWidth() + 3
+		+ _duck_texture.getSize().x;
+
+	int banner_height = _duck_texture.getSize().y;
+
+	_top_left_x = (_level_width - banner_width) / 2;
+	int top_left_y = (_level_height - banner_height) / 2;
+
+	int frame = 0;
+	for (auto [tx, ty] :
+	     tilesOnSegment({duck_x, duck_y}, {_top_left_x, top_left_y})) {
+		if (frame % play_speed == 0) {
+			_step_positions.push_back({tx, ty});
+		}
+		frame++;
+	}
+
+	_duck_texture.setSmooth(false);
+}
+
+std::array<int, 2> LevelComplete::size() const {
+	return {_level_width * _scale, _level_height * _scale};
+}
+
+void LevelComplete::setup(SceneManager &mgr) {}
+
+void LevelComplete::handleEvent(SceneManager &mgr, sf::Event &evt) {}
+
+void LevelComplete::step(SceneManager &mgr) {
+	constexpr int pending_duration = 24;
+
+	if (_pending_timer < pending_duration) {
+		_pending_timer++;
+		return;
+	}
+
+	if (_display_text) {
+		// all done
+		// TODO: switch to next level
+		std::cerr << "Level complete sequence finished.\n";
+		std::exit(0);
+	}
+
+	if (_current_step + 1 < _step_positions.size()) {
+		_current_step++;
+		if (_current_step == _step_positions.size() - 1) {
+			_pending_timer = 0;
+			_display_text = true;
+		}
+	}
+}
+
+void LevelComplete::render(
+	const SceneManager &mgr, sf::RenderTarget &target
+) const {
+	sf::Sprite duck_sprite(_duck_texture);
+	duck_sprite.setScale(sf::Vector2f(_scale, _scale));
+
+	auto [cur_x, cur_y] = _step_positions[_current_step];
+	duck_sprite.setPosition(sf::Vector2f(cur_x * _scale, cur_y * _scale));
+	target.draw(duck_sprite);
+
+	if (_display_text) {
+		int text_x = _top_left_x + _duck_texture.getSize().x + 3;
+		int text_y = (_level_height - font.charHeight()) / 2;
+		font.renderText(
+			target, level_complete_text, ui_text_color, text_x, text_y, _scale
+		);
+	}
+}
+
+} // namespace wf::scene

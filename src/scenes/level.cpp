@@ -128,9 +128,14 @@ void LevelPlaying::step(SceneManager &mgr) {
 	}
 
 	if (_level.isCompleted()) {
-		std::puts("Level completed! Congratulations!");
-		// TODO: go to next level
-		std::exit(0);
+		mgr.changeScene(
+			pro::make_proxy<SceneFacade, LevelComplete>(
+				_level.width(), _level.height(),
+				std::round(_level.duck.position.x),
+				std::round(_level.duck.position.y), _scale
+			)
+		);
+		return;
 	}
 }
 

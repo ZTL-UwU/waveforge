@@ -108,6 +108,30 @@ private:
 	PixelAnimationFrames &_animation;
 };
 
+struct LevelComplete {
+	LevelComplete(
+		int level_width, int level_height, int duck_x, int duck_y, int scale
+	);
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+
+private:
+	int _level_width;
+	int _level_height;
+	int _scale;
+	int _pending_timer;
+	int _current_step;
+	bool _display_text;
+	PixelFont &font;
+	sf::Texture &_duck_texture;
+	std::vector<std::array<int, 2>> _step_positions;
+	int _top_left_x;
+};
+
 } // namespace scene
 
 } // namespace wf

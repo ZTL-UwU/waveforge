@@ -73,6 +73,7 @@ add_executable(waveforge
 	src/items/water.cpp
 	src/items/oil.cpp
 	src/scenes/duckdeath.cpp
+	src/scenes/level_switch.cpp
 	src/scenes/level.cpp
 	src/scenes/scene.cpp
 	src/structures/electric.cpp
