@@ -21,9 +21,27 @@ auto loadFont() {
 	return font;
 }
 
-constexpr std::string_view restart_hint_text = "Press R again to restart";
-constexpr int restart_hint_fade_speed = 3;
-constexpr int restart_hint_max_opacity = 200;
+constexpr int hint_fade_speed = 3;
+constexpr int hint_max_opacity = 200;
+
+enum HintType {
+	None = 0,
+	RestartLevel,
+	QuitLevel,
+};
+
+std::string_view hintTextOf(int type) {
+	switch (type) {
+	case HintType::RestartLevel:
+		return "Press R again to restart";
+
+	case HintType::QuitLevel:
+		return "Press ESC again to quit";
+
+	default:
+		return "";
+	}
+}
 
 } // namespace
 
@@ -33,6 +51,8 @@ LevelPlaying::LevelPlaying(Level level, int scale)
 	: _scale(automaticScale(level.width(), level.height(), scale))
 	, _level(std::move(level))
 	, _renderer(_level, _scale)
+	, _hint_type(HintType::None)
+	, _hint_opacity(0)
 	, font(*loadFont()) {}
 
 std::array<int, 2> LevelPlaying::size() const {
@@ -63,18 +83,24 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
 		switch (kb->code) {
 		case sf::Keyboard::Key::R:
-			if (restart_hint_opacity > 0) {
-				int duck_x = std::round(_level.duck.position.x);
-				int duck_y = std::round(_level.duck.position.y);
+			if (_hint_opacity > 0 && _hint_type == HintType::RestartLevel) {
+				_restartLevel(mgr, false);
+				return;
+			} else {
+				_hint_type = HintType::RestartLevel;
+				_hint_opacity = hint_max_opacity;
+			}
+			break;
+
+		case sf::Keyboard::Key::Escape:
+			if (_hint_opacity > 0 && _hint_type == HintType::QuitLevel) {
 				mgr.changeScene(
-					pro::make_proxy<SceneFacade, DuckDeath>(
-						_level.width(), _level.height(), duck_x, duck_y, _scale,
-						LevelMetadata(_level.metadata)
-					)
+					pro::make_proxy<SceneFacade, LevelSelectionMenu>(_scale)
 				);
 				return;
 			} else {
-				restart_hint_opacity = restart_hint_max_opacity;
+				_hint_type = HintType::QuitLevel;
+				_hint_opacity = hint_max_opacity;
 			}
 			break;
 
@@ -94,12 +120,26 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	}
 }
 
-void LevelPlaying::_restartLevel(SceneManager &mgr) {
+void LevelPlaying::_restartLevel(SceneManager &mgr, bool is_failed) {
+	int duck_x = std::round(_level.duck.position.x);
+	int duck_y = std::round(_level.duck.position.y);
+
+	if (is_failed) {
+		// duck is out of world bounds
+		// place it to center of the level for animation
+		int duck_w = _level.duck.width();
+		int duck_h = _level.duck.height();
+		duck_x = (_level.width() - duck_w) / 2;
+		duck_y = (_level.height() - duck_h) / 2;
+	}
+
 	mgr.changeScene(
-		pro::make_proxy<SceneFacade, LevelPlaying>(
-			Level::loadFromMetadata(std::move(_level.metadata)), _scale
+		pro::make_proxy<SceneFacade, DuckDeath>(
+			_level.width(), _level.height(), duck_x, duck_y, _scale,
+			LevelMetadata(_level.metadata)
 		)
 	);
+	return;
 }
 
 void LevelPlaying::render(
@@ -108,20 +148,26 @@ void LevelPlaying::render(
 	auto mouse_pos = mgr.mousePosition();
 	_renderer.render(target, mouse_pos.x, mouse_pos.y);
 
-	if (restart_hint_opacity > 0) {
-		int text_width = restart_hint_text.size() * font.charWidth();
+	if (_hint_opacity > 0) {
+		auto hint_text = hintTextOf(_hint_type);
+		int text_width = hint_text.size() * font.charWidth();
 		int x = (_level.width() - text_width) / 2;
 		int y = _level.height() - font.charHeight() - 10;
-		sf::Color text_color = ui_text_color(restart_hint_opacity);
-		font.renderText(target, restart_hint_text, text_color, x, y, _scale);
+		sf::Color text_color = ui_text_color(_hint_opacity);
+		font.renderText(target, hint_text, text_color, x, y, _scale);
 	}
 }
 
 void LevelPlaying::step(SceneManager &mgr) {
 	_level.step();
 
-	if (restart_hint_opacity > 0) {
-		restart_hint_opacity -= restart_hint_fade_speed;
+	if (_hint_opacity > 0) {
+		_hint_opacity -= hint_fade_speed;
+
+		if (_hint_opacity <= 0) {
+			_hint_opacity = 0;
+			_hint_type = HintType::None;
+		}
 	}
 
 	if (_level.isFailed()) {

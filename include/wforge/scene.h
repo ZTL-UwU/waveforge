@@ -76,12 +76,13 @@ struct LevelPlaying {
 	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
 
 private:
-	void _restartLevel(SceneManager &mgr);
+	void _restartLevel(SceneManager &mgr, bool is_failed = true);
 
 	int _scale;
 	Level _level;
 	mutable LevelRenderer _renderer;
-	int restart_hint_opacity = 0;
+	int _hint_type;
+	int _hint_opacity;
 	PixelFont &font;
 };
 
