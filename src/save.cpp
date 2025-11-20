@@ -1,4 +1,5 @@
 #include "wforge/save.h"
+#include <cstdlib>
 #include <exception>
 #include <filesystem>
 #include <fstream>
@@ -85,6 +86,13 @@ SaveData &SaveData::instance() noexcept {
 				}
 			}
 		}
+
+		// Please don't relay on this saving mechanism
+		// it only works as an extra safeguard against data loss
+		// Please save manually whenever change is made
+		std::atexit([]() {
+			instance->save();
+		});
 	}
 	return *instance;
 }

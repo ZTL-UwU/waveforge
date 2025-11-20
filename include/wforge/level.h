@@ -111,6 +111,7 @@ private:
 };
 
 struct LevelMetadata {
+	int index;
 	std::string name;
 	std::string description;
 	std::string map_id;

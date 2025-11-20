@@ -509,6 +509,7 @@ void fLevelSequence(
 
 	for (const auto &level_id : entry.at("levels")) {
 		auto level_metadata = &mgr.getAsset<LevelMetadata>(level_id);
+		level_metadata->index = static_cast<int>(level_seq->levels.size());
 		level_seq->levels.push_back(level_metadata);
 	}
 

@@ -1,6 +1,7 @@
 #include "wforge/level.h"
 #include "wforge/assets.h"
 #include "wforge/colorpalette.h"
+#include "wforge/save.h"
 #include "wforge/scene.h"
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -129,6 +130,12 @@ void LevelPlaying::step(SceneManager &mgr) {
 	}
 
 	if (_level.isCompleted()) {
+		auto &save = SaveData::instance();
+		if (save.completed_levels < _level.metadata.index + 1) {
+			save.completed_levels = _level.metadata.index + 1;
+			save.save();
+		}
+
 		mgr.changeScene(
 			pro::make_proxy<SceneFacade, LevelComplete>(
 				_level.width(), _level.height(),

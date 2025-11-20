@@ -3,7 +3,6 @@
 #include "wforge/scene.h"
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <iostream>
 #include <string_view>
 
 namespace wf::scene {
@@ -67,16 +66,15 @@ void LevelComplete::step(SceneManager &mgr) {
 	}
 
 	if (_display_text) {
-		// all done
-		// TODO: switch to next level
-		std::cerr << "Level complete sequence finished.\n";
-		std::exit(0);
+		// Go back to level menu
+		mgr.changeScene(Scene(std::make_unique<LevelSelectionMenu>(_scale)));
+		return;
 	}
 
 	if (_current_step + 1 < _step_positions.size()) {
 		_current_step++;
 		if (_current_step == _step_positions.size() - 1) {
-			_pending_timer = -48;
+			_pending_timer = 0;
 			_display_text = true;
 		}
 	}
