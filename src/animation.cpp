@@ -43,8 +43,6 @@ PixelAnimationFrames::PixelAnimationFrames(
 			sf::Vector2i(frame_width, frame_height)
 		);
 	}
-
-	_texture.setSmooth(false);
 }
 
 void PixelAnimationFrames::render(

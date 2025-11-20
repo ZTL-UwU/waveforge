@@ -117,9 +117,6 @@ CheckpointSprite::CheckpointSprite(
 	if (!_checkpoint_2.loadFromImage(checkpoint_2)) {
 		throw std::runtime_error("Failed to load checkpoint_2 texture");
 	}
-
-	_ckeckpoint_1.setSmooth(false);
-	_checkpoint_2.setSmooth(false);
 }
 
 int CheckpointSprite::width() const noexcept {

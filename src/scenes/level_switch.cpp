@@ -45,8 +45,6 @@ LevelComplete::LevelComplete(
 		frame++;
 	}
 	_step_positions.push_back({_top_left_x, top_left_y});
-
-	_duck_texture.setSmooth(false);
 }
 
 std::array<int, 2> LevelComplete::size() const {
