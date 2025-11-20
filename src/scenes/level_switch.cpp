@@ -45,6 +45,7 @@ LevelComplete::LevelComplete(
 		}
 		frame++;
 	}
+	_step_positions.push_back({_top_left_x, top_left_y});
 
 	_duck_texture.setSmooth(false);
 }
@@ -75,7 +76,7 @@ void LevelComplete::step(SceneManager &mgr) {
 	if (_current_step + 1 < _step_positions.size()) {
 		_current_step++;
 		if (_current_step == _step_positions.size() - 1) {
-			_pending_timer = 0;
+			_pending_timer = -48;
 			_display_text = true;
 		}
 	}
