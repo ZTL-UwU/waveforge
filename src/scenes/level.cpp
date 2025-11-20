@@ -5,8 +5,6 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <proxy/v4/proxy.h>
 #include <string_view>
 
@@ -73,7 +71,8 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	}
 
 	if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
-		if (kb->code == sf::Keyboard::Key::R) {
+		switch (kb->code) {
+		case sf::Keyboard::Key::R:
 			if (restart_hint_opacity > 0) {
 				int duck_x = std::round(_level.duck.position.x);
 				int duck_y = std::round(_level.duck.position.y);
@@ -87,6 +86,20 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 			} else {
 				restart_hint_opacity = restart_hint_max_opacity;
 			}
+			break;
+
+		case sf::Keyboard::Key::Up:
+		case sf::Keyboard::Key::PageUp:
+			_level.prevItem();
+			break;
+
+		case sf::Keyboard::Key::Down:
+		case sf::Keyboard::Key::PageDown:
+			_level.nextItem();
+			break;
+
+		default:
+			break;
 		}
 	}
 }

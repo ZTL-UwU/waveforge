@@ -308,8 +308,9 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 		world.addStructure(std::move(s));
 	}
 
-	for (const auto &[item_name, item_count] : metadata.items) {
-		level.items.emplace_back(constructItemByName(item_name), item_count);
+	for (int i = 0; i < metadata.items.size(); ++i) {
+		auto [item_name, item_count] = metadata.items[i];
+		level.items.emplace_back(i, item_count, constructItemByName(item_name));
 	}
 
 	level.metadata = std::move(metadata);

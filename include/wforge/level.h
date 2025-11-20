@@ -38,8 +38,9 @@ struct ItemFacade : pro::facade_builder
 using Item = pro::proxy<ItemFacade>;
 
 struct ItemStack {
-	Item item;
+	int id;
 	int amount;
+	Item item;
 };
 
 struct DuckEntity {
@@ -142,6 +143,8 @@ struct Level {
 	void useActiveItem(int x, int y, int scale) noexcept;
 	void changeActiveItemBrushSize(int delta) noexcept;
 	void selectItem(int index) noexcept;
+	void prevItem() noexcept;
+	void nextItem() noexcept;
 
 	bool isFailed() const noexcept;
 	bool isCompleted() const noexcept;
@@ -149,6 +152,10 @@ struct Level {
 	void step();
 
 private:
+	int _prevItemId() const noexcept;
+	int _nextItemId() const noexcept;
+	void _normalizeActiveItemIndex() noexcept;
+
 	int _active_item_index; // -1 means no active item
 };
 

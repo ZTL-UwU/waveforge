@@ -17,17 +17,7 @@ void Level::step() {
 }
 
 ItemStack *Level::activeItemStack() noexcept {
-	if (_active_item_index < 0
-	    || _active_item_index >= static_cast<int>(items.size())) {
-		_active_item_index = -1;
-		return nullptr;
-	}
-
-	if (items[_active_item_index].amount <= 0) {
-		_active_item_index = -1;
-		return nullptr;
-	}
-
+	_normalizeActiveItemIndex();
 	return &items[_active_item_index];
 }
 
@@ -35,11 +25,8 @@ void Level::useActiveItem(int x, int y, int scale) noexcept {
 	if (auto itemstack = activeItemStack()) {
 		if (itemstack->item->use(*this, x, y, scale)) {
 			// item used successfully, decrease quantity
-			auto &stack = items[_active_item_index];
-			stack.amount -= 1;
-			if (stack.amount <= 0) {
-				_active_item_index = -1; // deactivate item
-			}
+			itemstack->amount -= 1;
+			_normalizeActiveItemIndex();
 		}
 	}
 }
@@ -59,6 +46,61 @@ void Level::selectItem(int index) noexcept {
 		} else {
 			_active_item_index = -1;
 		}
+	}
+}
+
+void Level::prevItem() noexcept {
+	int idx = _prevItemId();
+	if (idx != -1) {
+		_active_item_index = idx;
+	}
+}
+
+void Level::nextItem() noexcept {
+	int idx = _nextItemId();
+	if (idx != -1) {
+		_active_item_index = idx;
+	}
+}
+
+int Level::_prevItemId() const noexcept {
+	int start_index = _active_item_index == -1
+		? items.size()
+		: _active_item_index;
+
+	for (int i = start_index - 1; i >= 0; --i) {
+		if (items[i].amount > 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+int Level::_nextItemId() const noexcept {
+	int start_index = _active_item_index == -1 ? 0 : _active_item_index + 1;
+
+	for (int i = start_index; i < items.size(); ++i) {
+		if (items[i].amount > 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+void Level::_normalizeActiveItemIndex() noexcept {
+	if (_active_item_index < 0 || _active_item_index >= items.size()) {
+		_active_item_index = -1;
+	}
+
+	if (_active_item_index != -1 && items[_active_item_index].amount > 0) {
+		return;
+	}
+
+	int next_id = _nextItemId();
+	if (next_id != -1) {
+		_active_item_index = next_id;
+	} else {
+		_active_item_index = _prevItemId();
 	}
 }
 
