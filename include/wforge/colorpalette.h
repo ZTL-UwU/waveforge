@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/Color.hpp>
 #include <array>
+#include <cstdint>
 
 namespace wf {
 
@@ -11,7 +12,9 @@ struct ColorPaletteEntry {
 	sf::Color color; // in RGBA
 };
 
-constexpr sf::Color ui_text_color(200, 200, 200, 255);
+constexpr sf::Color ui_text_color(std::uint8_t a) {
+	return sf::Color(0, 0, 0, a);
+}
 
 // All indexed colors must be here, for dynamic generated textures
 // Colors in static assets (e.g. PNG files) can be outside this palette

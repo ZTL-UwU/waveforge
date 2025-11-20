@@ -122,8 +122,7 @@ void LevelPlaying::render(
 		int text_width = restart_hint_text.size() * font.charWidth();
 		int x = (_level.width() - text_width) / 2;
 		int y = _level.height() - font.charHeight() - 10;
-		sf::Color text_color = ui_text_color;
-		text_color.a = static_cast<uint8_t>(restart_hint_opacity);
+		sf::Color text_color = ui_text_color(restart_hint_opacity);
 		font.renderText(target, restart_hint_text, text_color, x, y, _scale);
 	}
 }

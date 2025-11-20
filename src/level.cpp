@@ -166,9 +166,7 @@ void LevelRenderer::render(
 	if (auto itemstack = _level.activeItemStack()) {
 		itemstack->item->render(target, mouse_x, mouse_y, scale);
 
-		constexpr sf::Color text_color(
-			ui_text_color.r, ui_text_color.g, ui_text_color.b, 120
-		);
+		constexpr sf::Color text_color = ui_text_color(120);
 		auto display_text = std::format(
 			"{}({})", itemstack->item->name(), itemstack->amount
 		);

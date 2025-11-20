@@ -96,7 +96,8 @@ void LevelComplete::render(
 		int text_x = _top_left_x + _duck_texture.getSize().x + 3;
 		int text_y = (_level_height - font.charHeight()) / 2;
 		font.renderText(
-			target, level_complete_text, ui_text_color, text_x, text_y, _scale
+			target, level_complete_text, ui_text_color(255), text_x, text_y,
+			_scale
 		);
 	}
 }
