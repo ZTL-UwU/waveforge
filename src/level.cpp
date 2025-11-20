@@ -18,6 +18,10 @@ void Level::step() {
 
 ItemStack *Level::activeItemStack() noexcept {
 	_normalizeActiveItemIndex();
+	if (_active_item_index == -1) {
+		return nullptr;
+	}
+
 	return &items[_active_item_index];
 }
 
