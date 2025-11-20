@@ -1,5 +1,4 @@
 #include "wforge/assets.h"
-#include "wforge/level.h"
 #include "wforge/scene.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -12,9 +11,8 @@
 #include <cpptrace/from_current_macros.hpp>
 #include <iostream>
 #include <proxy/proxy.h>
-#include <proxy/v4/proxy.h>
 
-void entry(std::string_view level_id, int forced_scale = 0);
+void entry(std::string_view level_id, int scale_config);
 
 std::filesystem::path wf::_executable_path;
 int main(int argc, char **argv) {
@@ -73,17 +71,10 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void entry(std::string_view level_id, int forced_scale) {
-	auto level = wf::Level::loadFromAsset(std::format("level/{}", level_id));
-
-	std::cerr << std::format(
-		"Loaded level '{}' of size {}x{}\n", level_id, level.width(),
-		level.height()
-	);
-
+void entry(std::string_view level_id, int scale_config) {
 	wf::SceneManager scene_mgr(
-		pro::make_proxy<wf::SceneFacade, wf::scene::LevelPlaying>(
-			std::move(level), forced_scale
+		pro::make_proxy<wf::SceneFacade, wf::scene::LevelSelectionMenu>(
+			scale_config
 		)
 	);
 

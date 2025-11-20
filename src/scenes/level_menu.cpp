@@ -1,0 +1,249 @@
+#include "wforge/assets.h"
+#include "wforge/level.h"
+#include "wforge/save.h"
+#include "wforge/scene.h"
+#include <SFML/Graphics/Texture.hpp>
+#include <nlohmann/json.hpp>
+#include <proxy/v4/proxy.h>
+
+namespace wf::scene {
+
+LevelSelectionMenu::LevelSelectionMenu(int scale)
+	: _level_seq(
+		  AssetsManager::instance().getAsset<LevelSequence>("level-sequence")
+	  )
+	, font(AssetsManager::instance().getAsset<PixelFont>("font")) {
+	auto &json_data = AssetsManager::instance().getAsset<nlohmann::json>(
+		"ui-config/level-menu"
+	);
+
+	_width = json_data.at("width");
+	_height = json_data.at("height");
+	_scale = automaticScale(_width, _height, scale);
+
+	auto parseTextDescriptor = [&](const nlohmann::json &data) {
+		TextDescriptor desc;
+		desc.x = data.at("x");
+		desc.y = data.at("y");
+		desc.size = data.at("size");
+		desc.color = sf::Color(
+			data.at("color").at(0), data.at("color").at(1),
+			data.at("color").at(2)
+		);
+		return desc;
+	};
+
+	_header = parseTextDescriptor(json_data.at("header"));
+	_level_button_text = parseTextDescriptor(json_data.at("level-button-text"));
+	_level_title = parseTextDescriptor(json_data.at("level-title"));
+	_level_desc = parseTextDescriptor(json_data.at("level-description"));
+	_enter_hint = parseTextDescriptor(json_data.at("enter-hint"));
+
+	for (const auto &btn : json_data.at("level-buttons")) {
+		_level_button.push_back({btn.at("x"), btn.at("y")});
+	}
+
+	for (const auto &link : json_data.at("level-links")) {
+		_level_links.push_back({link.at("x"), link.at("y")});
+	}
+
+	if (_level_links.size() != _level_button.size() + 1) {
+		throw std::runtime_error(
+			"Level menu configuration error: "
+			"number of level links must be equal to number of level buttons + 1"
+		);
+	}
+
+	_duck_rel[0] = json_data.at("level-duck").at("xrel");
+	_duck_rel[1] = json_data.at("level-duck").at("yrel");
+
+	auto &texture_data = json_data.at("texture");
+	auto loadTexture = [&](const std::string &key) {
+		return &AssetsManager::instance().getAsset<sf::Texture>(
+			texture_data.at(key)
+		);
+	};
+
+	_duck_texture = loadTexture("duck");
+	_level_button_texture_normal = loadTexture("level-button-normal");
+	_level_button_texture_selected = loadTexture("level-button-selected");
+	_level_button_texture_locked = loadTexture("level-button-locked");
+	_level_link_texture_activated = loadTexture("link-activated");
+	_level_link_texture_locked = loadTexture("link-locked");
+
+	auto &save_data = SaveData::instance();
+	_selected_index = save_data.completed_levels;
+	if (_selected_index >= _level_seq.levels.size()) {
+		_selected_index = _level_seq.levels.size() - 1;
+	}
+}
+
+std::array<int, 2> LevelSelectionMenu::size() const {
+	return {_width * _scale, _height * _scale};
+}
+
+void LevelSelectionMenu::setup(SceneManager &mgr) {
+	mgr.setBGMCollection("background/main-menu-music");
+}
+
+void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
+	if (auto kb = evt.getIf<sf::Event::KeyPressed>()) {
+		switch (kb->code) {
+		case sf::Keyboard::Key::Up:
+		case sf::Keyboard::Key::Left:
+			if (_selected_index > 0) {
+				_selected_index--;
+			}
+			break;
+
+		case sf::Keyboard::Key::Down:
+		case sf::Keyboard::Key::Right:
+			if (_selected_index + 1 < _level_seq.levels.size()) {
+				_selected_index++;
+			}
+			break;
+
+		case sf::Keyboard::Key::Enter:
+		case sf::Keyboard::Key::Space:
+			if (_selected_index <= SaveData::instance().completed_levels) {
+				mgr.changeScene(
+					pro::make_proxy<SceneFacade, LevelPlaying>(
+						Level::loadFromMetadata(
+							*_level_seq.levels.at(_selected_index)
+						),
+						_scale
+					)
+				);
+				return;
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+void LevelSelectionMenu::step(SceneManager &mgr) {
+	// nothing to do here
+}
+
+void LevelSelectionMenu::render(
+	const SceneManager &mgr, sf::RenderTarget &target
+) const {
+	// Render header
+	font.renderText(
+		target, "Levels", _header.color, _header.x, _header.y, _scale,
+		_header.size
+	);
+
+	// Render level buttons and links
+	auto &save_data = SaveData::instance();
+	int btn_cnt = _level_button.size();
+	int ideal_duck_btn_index = (btn_cnt - 1) / 2;
+	int duck_btn_index = ideal_duck_btn_index;
+	if (_selected_index < ideal_duck_btn_index) {
+		duck_btn_index = _selected_index;
+	} else if (_selected_index + (btn_cnt - ideal_duck_btn_index)
+	           >= _level_seq.levels.size()) {
+		duck_btn_index = btn_cnt - 1
+			- (_level_seq.levels.size() - _selected_index);
+	}
+	int first_btn_level = _selected_index - duck_btn_index;
+
+	for (int i = 0; i < btn_cnt; ++i) {
+		int level_index = first_btn_level + i;
+		if (level_index >= _level_seq.levels.size()) {
+			break;
+		}
+
+		bool level_locked = level_index > save_data.completed_levels;
+
+		auto [btn_x, btn_y] = _level_button[i];
+		sf::Texture *btn_texture = _level_button_texture_normal;
+		if (level_locked) {
+			btn_texture = _level_button_texture_locked;
+		} else if (level_index == _selected_index) {
+			btn_texture = _level_button_texture_selected;
+		}
+
+		sf::Sprite btn_sprite(*btn_texture);
+		btn_sprite.setPosition(sf::Vector2f(btn_x * _scale, btn_y * _scale));
+		btn_sprite.setScale(sf::Vector2f(_scale, _scale));
+		target.draw(btn_sprite);
+
+		if (level_index != 0) {
+			// Render link to previous level
+			auto [link_x, link_y] = _level_links[i];
+			auto link_texture = level_locked
+				? _level_link_texture_locked
+				: _level_link_texture_activated;
+			sf::Sprite link_sprite(*link_texture);
+			link_sprite.setPosition(
+				sf::Vector2f(link_x * _scale, link_y * _scale)
+			);
+			link_sprite.setScale(sf::Vector2f(_scale, _scale));
+			target.draw(link_sprite);
+		}
+
+		// Render button text
+		if (!level_locked) {
+			int topleft_x = btn_x + _level_button_text.x;
+			int topleft_y = btn_y + _level_button_text.y;
+			int size = _level_button_text.size;
+			std::string level_label = std::to_string(level_index + 1);
+			// caclulate text centering
+			int text_width = level_label.size() * font.charWidth(size);
+			int text_height = font.charHeight(size);
+
+			int bottom_right_x = btn_x + btn_texture->getSize().x;
+			int bottom_right_y = btn_y + btn_texture->getSize().y;
+			int text_x = topleft_x
+				+ (bottom_right_x - topleft_x - text_width) / 2;
+			int text_y = topleft_y
+				+ (bottom_right_y - topleft_y - text_height) / 2;
+
+			font.renderText(
+				target, level_label, _level_button_text.color, text_x, text_y,
+				_scale, size
+			);
+		}
+
+		// Render duck
+		if (level_index == _selected_index) {
+			int duck_x = btn_x + _duck_rel[0];
+			int duck_y = btn_y + _duck_rel[1];
+			// duck_x and duck_y are of anchor bottom-middle
+
+			int duck_render_x = duck_x - (_duck_texture->getSize().x / 2);
+			int duck_render_y = duck_y - _duck_texture->getSize().y + 1;
+			sf::Sprite duck_sprite(*_duck_texture);
+			duck_sprite.setPosition(
+				sf::Vector2f(duck_render_x * _scale, duck_render_y * _scale)
+			);
+			duck_sprite.setScale(sf::Vector2f(_scale, _scale));
+			target.draw(duck_sprite);
+		}
+	}
+
+	auto selected_metadata = _level_seq.levels.at(_selected_index);
+	// Render level title
+	font.renderText(
+		target, selected_metadata->name, _level_title.color, _level_title.x,
+		_level_title.y, _scale, _level_title.size
+	);
+
+	// Render level description
+	font.renderText(
+		target, selected_metadata->description, _level_desc.color,
+		_level_desc.x, _level_desc.y, _scale, _level_desc.size
+	);
+
+	// Render enter hint
+	font.renderText(
+		target, "[ENTER]", _enter_hint.color, _enter_hint.x, _enter_hint.y,
+		_scale, _enter_hint.size
+	);
+}
+
+} // namespace wf::scene

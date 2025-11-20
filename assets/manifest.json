@@ -310,6 +310,48 @@
 			"description": "Creating water tap pixel shapes for all facings"
 		},
 		{
+			"id": "ui/level-button/raw",
+			"type": "image",
+			"file": "ui/level-button.png",
+			"description": "Loading level button image"
+		},
+		{
+			"id": "ui/level-button",
+			"type": "create-texture",
+			"input": "ui/level-button/raw",
+			"description": "Creating level button texture"
+		},
+		{
+			"id": "ui/level-button-locked/raw",
+			"type": "image",
+			"file": "ui/level-button-locked.png",
+			"description": "Loading locked level button image"
+		},
+		{
+			"id": "ui/level-button-locked",
+			"type": "create-texture",
+			"input": "ui/level-button-locked/raw",
+			"description": "Creating locked level button texture"
+		},
+		{
+			"id": "ui/level-link/raw",
+			"type": "image",
+			"file": "ui/link.png",
+			"description": "Loading level link image"
+		},
+		{
+			"id": "ui/level-link",
+			"type": "create-texture",
+			"input": "ui/level-link/raw",
+			"description": "Creating level link texture"
+		},
+		{
+			"id": "ui-config/level-menu",
+			"type": "json",
+			"file": "ui/level-menu.json",
+			"description": "Loading level menu UI configuration"
+		},
+		{
 			"id": "level/demo/map",
 			"type": "image",
 			"file": "levels/demo.png",
@@ -344,6 +386,16 @@
 			"type": "level-metadata",
 			"file": "levels/density.json",
 			"description": "Loading density level metadata"
+		},
+		{
+			"id": "level-sequence",
+			"type": "level-sequence",
+			"levels": [
+				"level/demo",
+				"level/density",
+				"level/steam_jet"
+			],
+			"description": "Creating level sequence"
 		}
 	]
 }

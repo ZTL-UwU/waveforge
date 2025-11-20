@@ -260,6 +260,27 @@ using operationFunc = void (*)(
 	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
 );
 
+void fJSON(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &file = entry.at("file");
+	auto file_path = assets_root / file;
+	const std::string &id = entry.at("id");
+
+	std::ifstream file_stream(file_path);
+	if (!file_stream.is_open()) {
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: failed to open JSON asset file '{}'",
+				file_path.string()
+			)
+		);
+	}
+
+	auto json_data = new nlohmann::json(nlohmann::json::parse(file_stream));
+	mgr.cacheAsset(id, json_data);
+}
+
 void fImage(
 	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
 ) {
@@ -295,6 +316,7 @@ void fTexture(
 			)
 		);
 	}
+	texture->setSmooth(false);
 
 	mgr.cacheAsset(id, texture);
 }
@@ -479,6 +501,20 @@ void fAnimationFrames(
 	mgr.cacheAsset(id, animation_frames);
 }
 
+void fLevelSequence(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &id = entry.at("id");
+	LevelSequence *level_seq = new LevelSequence();
+
+	for (const auto &level_id : entry.at("levels")) {
+		auto level_metadata = &mgr.getAsset<LevelMetadata>(level_id);
+		level_seq->levels.push_back(level_metadata);
+	}
+
+	mgr.cacheAsset(id, level_seq);
+}
+
 } // namespace
 
 void AssetsManager::loadAllAssets() {
@@ -496,6 +532,7 @@ void AssetsManager::loadAllAssets() {
 	}
 
 	std::unordered_map<std::string, operationFunc> operations = {
+		{"json", fJSON},
 		{"image", fImage},
 		{"create-texture", fTexture},
 		{"music", fMusic},
@@ -507,6 +544,7 @@ void AssetsManager::loadAllAssets() {
 		{"level-metadata", fLevelMetadata},
 		{"font", fFont},
 		{"animation", fAnimationFrames},
+		{"level-sequence", fLevelSequence},
 	};
 
 	nlohmann::json manifest = nlohmann::json::parse(manifest_file);

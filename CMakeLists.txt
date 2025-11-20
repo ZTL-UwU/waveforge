@@ -73,6 +73,7 @@ add_executable(waveforge
 	src/items/water.cpp
 	src/items/oil.cpp
 	src/scenes/duckdeath.cpp
+	src/scenes/level_menu.cpp
 	src/scenes/level_switch.cpp
 	src/scenes/level.cpp
 	src/scenes/scene.cpp
@@ -95,6 +96,7 @@ add_executable(waveforge
 	src/level.cpp
 	src/loader.cpp
 	src/main.cpp
+	src/save.cpp
 	src/xoroshiro.cpp
 )
 

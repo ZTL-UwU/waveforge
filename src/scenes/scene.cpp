@@ -12,13 +12,29 @@ namespace {
 sf::RenderWindow createWindow(Scene &scene) {
 	auto [width, height] = scene->size();
 	sf::Vector2u window_size(width, height);
-	return sf::RenderWindow(
+	sf::RenderWindow window(
 		sf::VideoMode(window_size), "Waveforge Demo",
 		sf::Style::Titlebar | sf::Style::Close
 	);
+	window.setFramerateLimit(24);
+	return window;
 }
 
 } // namespace
+
+int automaticScale(int width, int height, int scale_configured) {
+	if (scale_configured > 0) {
+		return scale_configured;
+	}
+
+	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
+	return std::max<int>(
+		1,
+		std::min(
+			player_screen_size.x / width - 1, player_screen_size.y / height - 1
+		)
+	);
+}
 
 SceneManager::SceneManager(Scene initial_scene)
 	: window(createWindow(initial_scene))
@@ -26,7 +42,6 @@ SceneManager::SceneManager(Scene initial_scene)
 	, _bgm_collection(nullptr)
 	, _cur_bgm(nullptr)
 	, _scene_changed(false) {
-	window.setFramerateLimit(24);
 	_current_scene->setup(*this);
 }
 
@@ -48,7 +63,8 @@ void SceneManager::changeScene(Scene new_scene) {
 	_current_scene = std::move(new_scene);
 	auto [width, height] = _current_scene->size();
 	if (width != old_width || height != old_height) {
-		window.setSize(sf::Vector2u(width, height));
+		window.close();
+		window = createWindow(_current_scene);
 	}
 	_current_scene->setup(*this);
 	_scene_changed = true;

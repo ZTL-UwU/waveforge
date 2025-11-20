@@ -12,17 +12,6 @@ namespace wf::scene {
 
 namespace {
 
-int automaticScale(const Level &level) {
-	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
-	return std::max<int>(
-		1,
-		std::min(
-			player_screen_size.x / level.width() - 1,
-			player_screen_size.y / level.height() - 1
-		)
-	);
-}
-
 auto loadFont() {
 	static PixelFont *font = nullptr;
 	if (!font) {
@@ -40,7 +29,7 @@ constexpr int restart_hint_max_opacity = 200;
 LevelPlaying::LevelPlaying(Level level): LevelPlaying(std::move(level), 0) {}
 
 LevelPlaying::LevelPlaying(Level level, int scale)
-	: _scale(scale ? scale : automaticScale(level))
+	: _scale(automaticScale(level.width(), level.height(), scale))
 	, _level(std::move(level))
 	, _renderer(_level, _scale)
 	, font(*loadFont()) {}

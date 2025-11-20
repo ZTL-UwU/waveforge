@@ -75,7 +75,7 @@ PixelFont::CharInfo PixelFont::_getCharInfo(char c) const noexcept {
 
 void PixelFont::renderText(
 	sf::RenderTarget &target, std::string_view text, sf::Color color, int x,
-	int y, int scale
+	int y, int scale, int size
 ) const {
 	x *= scale;
 	y *= scale;
@@ -92,10 +92,10 @@ void PixelFont::renderText(
 		);
 		sprite.setColor(color);
 		sprite.setPosition(sf::Vector2f(x, y));
-		sprite.setScale(sf::Vector2f(scale, scale));
+		sprite.setScale(sf::Vector2f(scale * size, scale * size));
 		target.draw(sprite);
 
-		x += _char_width * scale;
+		x += _char_width * scale * size;
 	}
 }
 

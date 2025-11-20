@@ -33,17 +33,17 @@ public:
 		const sf::Image &img
 	);
 
-	int charWidth() const noexcept {
-		return _char_width;
+	int charWidth(int size = 1) const noexcept {
+		return (_char_width - 1) * size + 1;
 	}
 
-	int charHeight() const noexcept {
-		return _char_height;
+	int charHeight(int size = 1) const noexcept {
+		return (_char_height - 1) * size + 1;
 	}
 
 	void renderText(
 		sf::RenderTarget &target, std::string_view text, sf::Color color, int x,
-		int y, int scale
+		int y, int scale, int size = 1
 	) const;
 
 	std::generator<std::array<int, 2>> textBitmap(

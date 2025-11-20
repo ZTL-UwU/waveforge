@@ -12,6 +12,7 @@
 #include <SFML/Window/Window.hpp>
 #include <proxy/v4/proxy.h>
 #include <proxy/v4/proxy_macros.h>
+#include <vector>
 
 namespace wf {
 
@@ -35,6 +36,8 @@ struct SceneFacade : pro::facade_builder
 /* clang-format on */
 
 using Scene = pro::proxy<SceneFacade>;
+
+int automaticScale(int width, int height, int scale_configured = 0);
 
 class SceneManager {
 public:
@@ -126,10 +129,52 @@ private:
 	int _pending_timer;
 	int _current_step;
 	bool _display_text;
-	PixelFont &font;
+	const PixelFont &font;
 	sf::Texture &_duck_texture;
 	std::vector<std::array<int, 2>> _step_positions;
 	int _top_left_x;
+};
+
+struct LevelSelectionMenu {
+	LevelSelectionMenu(int scale);
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+
+private:
+	int _scale;
+	int _selected_index;
+	const LevelSequence &_level_seq;
+
+	int _width;
+	int _height;
+	const PixelFont &font;
+
+	struct TextDescriptor {
+		int x;
+		int y;
+		int size;
+		sf::Color color;
+	};
+
+	TextDescriptor _header;
+	TextDescriptor _level_button_text;
+	TextDescriptor _level_title;
+	TextDescriptor _level_desc;
+	TextDescriptor _enter_hint;
+	std::vector<std::array<int, 2>> _level_button;
+	std::vector<std::array<int, 2>> _level_links;
+	std::array<int, 2> _duck_rel;
+
+	sf::Texture *_duck_texture;
+	sf::Texture *_level_button_texture_normal;
+	sf::Texture *_level_button_texture_selected;
+	sf::Texture *_level_button_texture_locked;
+	sf::Texture *_level_link_texture_activated;
+	sf::Texture *_level_link_texture_locked;
 };
 
 } // namespace scene

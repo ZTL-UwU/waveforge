@@ -178,6 +178,10 @@ private:
 	void _renderDuck(sf::RenderTarget &target) noexcept;
 };
 
+struct LevelSequence {
+	std::vector<LevelMetadata *> levels; // non-owning pointers
+};
+
 namespace item {
 
 struct BrushSizeChangableItem {
