@@ -3,6 +3,7 @@
 #include "wforge/scene.h"
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <limits>
+#include <nlohmann/json.hpp>
 #include <proxy/v4/proxy.h>
 
 namespace wf::scene {
@@ -30,11 +31,11 @@ DuckDeath::DuckDeath(
 	, _duck_x(duck_x)
 	, _duck_y(duck_y)
 	, _scale(scale)
-	, _pending_timer(0)
+	, _tick(0)
 	, _animation_frame(0)
 	, _level_metadata(std::move(level_metadata))
 	, _animation(duckDeathAnimation())
-	, _duck_death_sound(
+	, _reborn_sound(
 		  AssetsManager::instance().getAsset<sf::SoundBuffer>("sfx/duckdeath")
 	  )
 	, _duck_death_separate_sound(
@@ -56,6 +57,17 @@ DuckDeath::DuckDeath(
 			}
 		}
 	}
+
+	const auto &json_data = AssetsManager::instance().getAsset<nlohmann::json>(
+		"duckdeath/timeline"
+	);
+
+	_total_duration = json_data.at("total-duration");
+	const auto &timeline = json_data.at("timeline");
+	_animation_start = timeline.at("animation-start");
+	_animation_frame_duration = timeline.at("animation-frame-duration");
+	_sperate_sfx_start = timeline.at("separate-sfx-start");
+	_reborn_sfx_start = timeline.at("reborn-sfx-start");
 }
 
 std::array<int, 2> DuckDeath::size() const {
@@ -67,33 +79,32 @@ void DuckDeath::setup(SceneManager &mgr) {}
 void DuckDeath::handleEvent(SceneManager &mgr, sf::Event &evt) {}
 
 void DuckDeath::step(SceneManager &mgr) {
-	constexpr int pending_duration = 24 * 2.5;
-	constexpr int frame_duration = 2;
-
-	if (_pending_timer < pending_duration) {
-		_pending_timer++;
-		if (_animation_frame == 0) {
-			if (_pending_timer == 1) {
-				_duck_death_separate_sound.play();
-			} else if (_pending_timer == pending_duration - 24) {
-				_duck_death_sound.play();
-			}
-		}
-	} else if (_animation_frame + 1 < _animation.length()) {
-		_animation_frame++;
-		if (_animation_frame == _animation.length() - 1) {
-			_pending_timer = -5;
-		} else {
-			_pending_timer = pending_duration - frame_duration;
-		}
-	} else {
-		_duck_death_sound.stop();
+	_tick += 1;
+	if (_tick > _total_duration) {
+		_reborn_sound.stop();
 		mgr.changeScene(
 			pro::make_proxy<SceneFacade, LevelPlaying>(
 				Level::loadFromMetadata(std::move(_level_metadata)), _scale
 			)
 		);
 		return;
+	}
+
+	if (_tick == _sperate_sfx_start) {
+		_duck_death_separate_sound.play();
+	}
+
+	if (_tick == _reborn_sfx_start) {
+		_reborn_sound.play();
+	}
+
+	if (_tick >= _animation_start) {
+		if (_tick % _animation_frame_duration == 0) {
+			_animation_frame += 1;
+			if (_animation_frame >= _animation.length()) {
+				_animation_frame = _animation.length() - 1;
+			}
+		}
 	}
 }
 

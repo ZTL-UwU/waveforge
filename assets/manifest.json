@@ -130,6 +130,12 @@
 			"description": "Loading duck death separate sound effect"
 		},
 		{
+			"id": "duckdeath/timeline",
+			"type": "json",
+			"file": "ui/duck-death.json",
+			"description": "Loading duck death timeline configuration"
+		},
+		{
 			"id": "laser-emitter/raw",
 			"type": "image",
 			"file": "laser-emitter.png",

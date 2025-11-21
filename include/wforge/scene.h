@@ -102,16 +102,25 @@ struct DuckDeath {
 private:
 	int _level_width;
 	int _level_height;
+
 	int _duck_x;
 	int _duck_y;
 	int _scale;
 	int _duck_anchor_bx;
 	int _duck_anchor_by;
-	int _pending_timer;
+
+	int _tick;
 	int _animation_frame;
+
+	int _total_duration;
+	int _animation_start;
+	int _animation_frame_duration;
+	int _sperate_sfx_start;
+	int _reborn_sfx_start;
+
 	LevelMetadata _level_metadata;
 	PixelAnimationFrames &_animation;
-	sf::Sound _duck_death_sound;
+	sf::Sound _reborn_sound;
 	sf::Sound _duck_death_separate_sound;
 };
 
