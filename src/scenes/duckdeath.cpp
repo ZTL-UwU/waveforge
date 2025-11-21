@@ -78,7 +78,20 @@ void DuckDeath::setup(SceneManager &mgr) {
 	mgr.unsetBGMCollection();
 }
 
-void DuckDeath::handleEvent(SceneManager &mgr, sf::Event &evt) {}
+void DuckDeath::handleEvent(SceneManager &mgr, sf::Event &evt) {
+	if (auto kb = evt.getIf<sf::Event::KeyPressed>()) {
+		switch (kb->code) {
+		case sf::Keyboard::Key::Space:
+		case sf::Keyboard::Key::Enter:
+		case sf::Keyboard::Key::R:
+			_tick = _total_duration;
+			break;
+
+		default:
+			break;
+		}
+	}
+}
 
 void DuckDeath::step(SceneManager &mgr) {
 	_tick += 1;
