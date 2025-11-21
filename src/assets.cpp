@@ -5,6 +5,7 @@
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <chrono>
 #include <cstdlib>
 #include <filesystem>
 #include <format>
@@ -544,6 +545,8 @@ void AssetsManager::loadAllAssets() {
 	auto assets_root = findAssetsRoot();
 	std::cerr << "AssetsManager: loading assets from " << assets_root << "\n";
 
+	auto start_loading_time = std::chrono::steady_clock::now();
+
 	std::ifstream manifest_file(assets_root / "manifest.json");
 	if (!manifest_file.is_open()) {
 		throw std::runtime_error(
@@ -584,10 +587,15 @@ void AssetsManager::loadAllAssets() {
 	}
 
 	const auto &entries = manifest.at("sequence");
+	int total_entries = entries.size();
+	int current_entry = 0;
 	for (const auto &entry : entries) {
 		const std::string &op_name = entry.at("type");
 		const std::string &description = entry.at("description");
-		std::cerr << description << "...\n";
+		current_entry += 1;
+		std::cerr << std::format(
+			"[{:02}/{:02}] {}...\n", current_entry, total_entries, description
+		);
 		auto it = operations.find(op_name);
 		if (it == operations.end()) {
 			throw std::runtime_error(
@@ -598,6 +606,13 @@ void AssetsManager::loadAllAssets() {
 		auto func = it->second;
 		func(entry, assets_root, mgr);
 	}
+
+	auto dur = std::chrono::steady_clock::now() - start_loading_time;
+	std::cerr << std::format(
+		"Successfully executed {} asset loading operations in {} ms.\n",
+		total_entries,
+		std::chrono::duration_cast<std::chrono::milliseconds>(dur).count()
+	);
 }
 
 } // namespace wf
