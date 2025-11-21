@@ -37,15 +37,15 @@ constexpr ColorPaletteEntry _colors[] = {
 	},
 	{
 		.name = "Wood1",
-		.color = sf::Color(158, 139, 97, 255),
+		.color = sf::Color(228, 202, 167, 255),
 	},
 	{
 		.name = "Wood2",
-		.color = sf::Color(184, 168, 117, 255),
+		.color = sf::Color(209, 177, 135, 255),
 	},
 	{
 		.name = "Wood3",
-		.color = sf::Color(215, 193, 133, 255),
+		.color = sf::Color(186, 145, 88, 255),
 	},
 	{
 		.name = "Copper1",
