@@ -48,10 +48,6 @@ PixelTypeAndColor pixelTypeFromColor(const sf::Color &color) noexcept {
 		return {PixelType::Wood, colorIndexOf("Wood2")};
 	case packColorByName("Wood3"):
 		return {PixelType::Wood, colorIndexOf("Wood3")};
-	case packColorByName("Wood4"):
-		return {PixelType::Wood, colorIndexOf("Wood4")};
-	case packColorByName("Wood5"):
-		return {PixelType::Wood, colorIndexOf("Wood5")};
 
 	case packColorByName("Copper1"):
 		return {PixelType::Copper, colorIndexOf("Copper1")};
