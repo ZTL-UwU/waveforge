@@ -33,7 +33,7 @@ enum HintType {
 std::string_view hintTextOf(int type) {
 	switch (type) {
 	case HintType::RestartLevel:
-		return "Press R again to restart";
+		return "Press R again to retry";
 
 	case HintType::QuitLevel:
 		return "Press ESC again to quit";
@@ -106,11 +106,13 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 
 		case sf::Keyboard::Key::Up:
 		case sf::Keyboard::Key::PageUp:
+		case sf::Keyboard::Key::W:
 			_level.prevItem();
 			break;
 
 		case sf::Keyboard::Key::Down:
 		case sf::Keyboard::Key::PageDown:
+		case sf::Keyboard::Key::S:
 			_level.nextItem();
 			break;
 

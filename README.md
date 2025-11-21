@@ -10,18 +10,19 @@ For more details about the game physics system, please refer to [Physics System 
 
 ## Current status
 
-A demo level is loaded and can be played. The physics system is mostly implemented. Main screen and level selection screen are not implemented yet.
+Three demo levels are created and can be played. The settings screen is not implemented yet. The UI for main menu and level complete screens are placeholders. The new art style is being worked on.
 
-The UI for selection of items (tools) is not implemented yet, so the player can only use the first item in the inventory (a water spawner) to play the demo level. The player can spawn water pixels to move the duck to the checkpoint. Use mouse sroll wheel to adjust the amount of water spawned each time, and use left mouse button to spawn water pixels at the mouse cursor position. The demo level restricts the player to only use this item up to 10 times.
+### Controls
 
-There are also two other demo levels, to play them, explicit invoke the executable with command line argument `steam_jet` or `density` respectively, e.g.
-
-```bash
-./waveforge steam_jet
-./waveforge density
-```
-
-Four music tracks are created and added to the repository, but only "Pixelated Paradise-X" is loaded as background music currently.
+| Key		 | Action                     |
+|--------------|----------------------------|
+| Arrow Keys/WASD   | UI navigation |
+| Enter/Space  | UI selection               |
+| ESC		  | Back |
+| R		  | Retry current level       |
+| LMB		  | Use current item			|
+| Mouse Wheel | Change item brush size		|
+| Arrow Up/Down / W S | Change current item		|
 
 ## Build instructions
 
