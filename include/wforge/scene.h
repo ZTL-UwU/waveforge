@@ -67,6 +67,7 @@ private:
 namespace scene {
 
 struct LevelPlaying {
+	LevelPlaying(const std::string &level_id, int scale);
 	LevelPlaying(Level level);
 	LevelPlaying(Level level, int scale);
 

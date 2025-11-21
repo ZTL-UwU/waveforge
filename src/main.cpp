@@ -12,7 +12,7 @@
 #include <iostream>
 #include <proxy/proxy.h>
 
-void entry(std::string_view level_id, int scale_config);
+void entry(const std::string &level_id, int scale_config);
 
 std::filesystem::path wf::_executable_path;
 int main(int argc, char **argv) {
@@ -43,8 +43,8 @@ int main(int argc, char **argv) {
 	);
 
 	program.add_argument("level")
-		.help("Level ID to load (without 'level/' prefix)")
-		.default_value(std::string("demo"));
+		.help("Level ID to load (- for main menu)")
+		.default_value("-");
 
 	program.add_argument("--scale")
 		.help("Set rendering scale (0 for automatic)")
@@ -71,9 +71,15 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void entry(std::string_view level_id, int scale_config) {
+void entry(const std::string &level_id, int scale_config) {
 	wf::SceneManager scene_mgr(
-		pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>(scale_config)
+		level_id == "-"
+			? pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>(
+				  scale_config
+			  )
+			: pro::make_proxy<wf::SceneFacade, wf::scene::LevelPlaying>(
+				  level_id, scale_config
+			  )
 	);
 
 	auto &window = scene_mgr.window;

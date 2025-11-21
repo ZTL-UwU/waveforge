@@ -45,6 +45,16 @@ std::string_view hintTextOf(int type) {
 
 } // namespace
 
+LevelPlaying::LevelPlaying(const std::string &level_id, int scale)
+	: LevelPlaying(
+		  Level::loadFromMetadata(
+			  AssetsManager::instance().getAsset<LevelMetadata>(
+				  "level/" + level_id
+			  )
+		  ),
+		  scale
+	  ) {}
+
 LevelPlaying::LevelPlaying(Level level): LevelPlaying(std::move(level), 0) {}
 
 LevelPlaying::LevelPlaying(Level level, int scale)

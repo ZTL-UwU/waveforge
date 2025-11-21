@@ -13,7 +13,7 @@ sf::RenderWindow createWindow(Scene &scene) {
 	auto [width, height] = scene->size();
 	sf::Vector2u window_size(width, height);
 	sf::RenderWindow window(
-		sf::VideoMode(window_size), "Waveforge Demo",
+		sf::VideoMode(window_size), "Waveforge 0.1alpha",
 		sf::Style::Titlebar | sf::Style::Close
 	);
 	window.setFramerateLimit(24);
