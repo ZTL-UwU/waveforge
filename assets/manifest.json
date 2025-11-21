@@ -118,6 +118,18 @@
 			]
 		},
 		{
+			"id": "sfx/duckdeath",
+			"type": "sound",
+			"file": "duckdeath.ogg",
+			"description": "Loading duck death sound effect"
+		},
+		{
+			"id": "sfx/duckdeath-separate",
+			"type": "sound",
+			"file": "duckdeath-sep.wav",
+			"description": "Loading duck death separate sound effect"
+		},
+		{
 			"id": "laser-emitter/raw",
 			"type": "image",
 			"file": "laser-emitter.png",

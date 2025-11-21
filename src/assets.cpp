@@ -2,7 +2,8 @@
 #include "wforge/colorpalette.h"
 #include "wforge/level.h"
 #include <SFML/Audio.hpp>
-#include <SFML/Graphics/Image.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Graphics.hpp>
 #include <array>
 #include <cstdlib>
 #include <filesystem>
@@ -350,6 +351,27 @@ void fMusic(
 	}
 }
 
+void fSound(
+	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
+) {
+	const std::string &file = entry.at("file");
+	auto file_path = assets_root / file;
+	const std::string &id = entry.at("id");
+
+	auto sound_buffer = new sf::SoundBuffer();
+
+	if (!sound_buffer->loadFromFile(file_path)) {
+		throw std::runtime_error(
+			std::format(
+				"AssetsManager: failed to load sound asset from file '{}'",
+				file_path.string()
+			)
+		);
+	}
+
+	mgr.cacheAsset(id, sound_buffer);
+}
+
 void fTrimImage(
 	const nlohmann::json &entry, const fs::path &assets_root, AssetsManager &mgr
 ) {
@@ -537,6 +559,7 @@ void AssetsManager::loadAllAssets() {
 		{"image", fImage},
 		{"create-texture", fTexture},
 		{"music", fMusic},
+		{"sound", fSound},
 		{"trim-image", fTrimImage},
 		{"create-image-of-all-facings", fImageAllRotated},
 		{"calculate-shape", fPixelShape},

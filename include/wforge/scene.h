@@ -5,6 +5,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/level.h"
 #include <SFML/Audio/Music.hpp>
+#include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -110,6 +111,8 @@ private:
 	int _animation_frame;
 	LevelMetadata _level_metadata;
 	PixelAnimationFrames &_animation;
+	sf::Sound _duck_death_sound;
+	sf::Sound _duck_death_separate_sound;
 };
 
 struct LevelComplete {
