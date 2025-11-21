@@ -53,12 +53,6 @@ SceneManager::~SceneManager() {
 }
 
 void SceneManager::changeScene(Scene new_scene) {
-	unsetBGMCollection();
-	if (_cur_bgm) {
-		_cur_bgm->stop();
-	}
-	_cur_bgm = nullptr;
-
 	auto [old_width, old_height] = _current_scene->size();
 	_current_scene = std::move(new_scene);
 	auto [width, height] = _current_scene->size();
@@ -105,13 +99,24 @@ void SceneManager::tick() {
 }
 
 void SceneManager::setBGMCollection(const std::string &collection_id) {
-	_bgm_collection = &AssetsManager::instance().getMusicCollection(
-		collection_id
-	);
+	if (!_bgm_collection || _bgm_collection->id != collection_id) {
+		if (_cur_bgm) {
+			_cur_bgm->stop();
+			_cur_bgm = nullptr;
+		}
+
+		_bgm_collection = &AssetsManager::instance().getMusicCollection(
+			collection_id
+		);
+	}
 }
 
 void SceneManager::unsetBGMCollection() {
 	_bgm_collection = nullptr;
+	if (_cur_bgm) {
+		_cur_bgm->stop();
+		_cur_bgm = nullptr;
+	}
 }
 
 sf::Vector2i SceneManager::mousePosition() const {

@@ -51,7 +51,9 @@ std::array<int, 2> LevelComplete::size() const {
 	return {_level_width * _scale, _level_height * _scale};
 }
 
-void LevelComplete::setup(SceneManager &mgr) {}
+void LevelComplete::setup(SceneManager &mgr) {
+	mgr.unsetBGMCollection();
+}
 
 void LevelComplete::handleEvent(SceneManager &mgr, sf::Event &evt) {}
 

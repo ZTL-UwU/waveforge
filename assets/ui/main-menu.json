@@ -1,0 +1,60 @@
+{
+	"width": 256,
+	"height": 192,
+	"textures": {
+		"background": "ui/main-menu-background"
+	},
+	"buttons": {
+		"play": {
+			"x": 78,
+			"y": 80,
+			"size": 3,
+			"color": [
+				0,
+				0,
+				0,
+				200
+			],
+			"active-color": [
+				207,
+				158,
+				9,
+				255
+			]
+		},
+		"settings": {
+			"x": 78,
+			"y": 112,
+			"size": 2,
+			"color": [
+				0,
+				0,
+				0,
+				200
+			],
+			"active-color": [
+				207,
+				158,
+				9,
+				255
+			]
+		},
+		"exit": {
+			"x": 78,
+			"y": 144,
+			"size": 2,
+			"color": [
+				0,
+				0,
+				0,
+				200
+			],
+			"active-color": [
+				207,
+				158,
+				9,
+				255
+			]
+		}
+	}
+}

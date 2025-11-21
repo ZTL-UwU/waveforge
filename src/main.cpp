@@ -73,9 +73,7 @@ int main(int argc, char **argv) {
 
 void entry(std::string_view level_id, int scale_config) {
 	wf::SceneManager scene_mgr(
-		pro::make_proxy<wf::SceneFacade, wf::scene::LevelSelectionMenu>(
-			scale_config
-		)
+		pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>(scale_config)
 	);
 
 	auto &window = scene_mgr.window;

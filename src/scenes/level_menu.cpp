@@ -13,7 +13,7 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 		  AssetsManager::instance().getAsset<LevelSequence>("level-sequence")
 	  )
 	, font(AssetsManager::instance().getAsset<PixelFont>("font")) {
-	auto &json_data = AssetsManager::instance().getAsset<nlohmann::json>(
+	const auto &json_data = AssetsManager::instance().getAsset<nlohmann::json>(
 		"ui-config/level-menu"
 	);
 
@@ -28,7 +28,7 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 		desc.size = data.at("size");
 		desc.color = sf::Color(
 			data.at("color").at(0), data.at("color").at(1),
-			data.at("color").at(2)
+			data.at("color").at(2), data.at("color").at(3)
 		);
 		return desc;
 	};
@@ -57,7 +57,7 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 	_duck_rel[0] = json_data.at("level-duck").at("xrel");
 	_duck_rel[1] = json_data.at("level-duck").at("yrel");
 
-	auto &texture_data = json_data.at("texture");
+	const auto &texture_data = json_data.at("texture");
 	auto loadTexture = [&](const std::string &key) {
 		return &AssetsManager::instance().getAsset<sf::Texture>(
 			texture_data.at(key)
@@ -89,15 +89,15 @@ void LevelSelectionMenu::setup(SceneManager &mgr) {
 void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 	if (auto kb = evt.getIf<sf::Event::KeyPressed>()) {
 		switch (kb->code) {
-		case sf::Keyboard::Key::Up:
 		case sf::Keyboard::Key::Left:
+		case sf::Keyboard::Key::A:
 			if (_selected_index > 0) {
 				_selected_index--;
 			}
 			break;
 
-		case sf::Keyboard::Key::Down:
 		case sf::Keyboard::Key::Right:
+		case sf::Keyboard::Key::D:
 			if (_selected_index + 1 < _level_seq.levels.size()) {
 				_selected_index++;
 			}
@@ -117,6 +117,10 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 				return;
 			}
 			break;
+
+		case sf::Keyboard::Key::Escape:
+			mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>(_scale));
+			return;
 
 		default:
 			break;

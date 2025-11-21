@@ -133,6 +133,7 @@ sf::Image trimImage(const sf::Image &img);
 sf::Image rotateImageTo(const sf::Image &img, FacingDirection dir) noexcept;
 
 struct MusicCollection {
+	std::string id;
 	std::vector<sf::Music *> music;
 };
 

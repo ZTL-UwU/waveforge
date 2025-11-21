@@ -208,7 +208,12 @@ void AssetsManager::_cacheAssetRaw(const std::string &id, void *asset) {
 }
 
 MusicCollection &AssetsManager::getMusicCollection(const std::string &id) {
-	return _music_collections[id];
+	auto it = _music_collections.find(id);
+	if (it == _music_collections.end()) {
+		auto [it, _] = _music_collections.insert({id, MusicCollection{id, {}}});
+		return it->second;
+	}
+	return it->second;
 }
 
 namespace {

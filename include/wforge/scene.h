@@ -190,6 +190,36 @@ private:
 	sf::Texture *_level_link_texture_locked;
 };
 
+struct MainMenu {
+	MainMenu(int scale);
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+
+private:
+	int _scale;
+	int _width;
+	int _height;
+	const PixelFont &font;
+	sf::Texture *_background_texture;
+
+	struct ButtonDescriptor {
+		int x;
+		int y;
+		int size;
+		sf::Color color;
+		sf::Color active_color;
+	};
+
+	int _current_button_index;
+	ButtonDescriptor _play_button;
+	ButtonDescriptor _settings_button;
+	ButtonDescriptor _exit_button;
+};
+
 } // namespace scene
 
 } // namespace wf

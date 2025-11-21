@@ -74,7 +74,9 @@ std::array<int, 2> DuckDeath::size() const {
 	return {_level_width * _scale, _level_height * _scale};
 }
 
-void DuckDeath::setup(SceneManager &mgr) {}
+void DuckDeath::setup(SceneManager &mgr) {
+	mgr.unsetBGMCollection();
+}
 
 void DuckDeath::handleEvent(SceneManager &mgr, sf::Event &evt) {}
 
