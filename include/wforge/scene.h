@@ -157,6 +157,7 @@ private:
 	bool _display_text;
 	const PixelFont &font;
 	sf::Texture &_duck_texture;
+	sf::Sound _level_complete_sound;
 	std::vector<std::array<int, 2>> _step_positions;
 	int _top_left_x;
 };

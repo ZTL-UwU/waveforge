@@ -28,6 +28,11 @@ LevelComplete::LevelComplete(
 	, font(AssetsManager::instance().getAsset<PixelFont>("font"))
 	, _duck_texture(
 		  AssetsManager::instance().getAsset<sf::Texture>("duck/texture")
+	  )
+	, _level_complete_sound(
+		  AssetsManager::instance().getAsset<sf::SoundBuffer>(
+			  "sfx/level-complete"
+		  )
 	  ) {
 	constexpr int play_speed = 4;
 
@@ -56,6 +61,7 @@ std::array<int, 2> LevelComplete::size() const {
 
 void LevelComplete::setup(SceneManager &mgr) {
 	mgr.bgm.unsetCollection();
+	_level_complete_sound.play();
 }
 
 void LevelComplete::handleEvent(SceneManager &mgr, sf::Event &evt) {}

@@ -132,6 +132,12 @@
 			"description": "Loading forward sound effect"
 		},
 		{
+			"id": "sfx/level-complete",
+			"type": "sound",
+			"file": "sounds/level-complete.ogg",
+			"description": "Loading level complete sound effect"
+		},
+		{
 			"id": "sfx/duckdeath",
 			"type": "sound",
 			"file": "sounds/reborn.ogg",
