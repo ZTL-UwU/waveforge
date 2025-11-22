@@ -3,6 +3,7 @@
 #include "wforge/xoroshiro.h"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Window.hpp>
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include <random>
 
@@ -48,12 +49,15 @@ int automaticScale(int width, int height, int scale_configured) {
 	}
 
 	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
-	return std::max<int>(
+	int res = std::max<int>(
 		1,
-		std::min(
+		std::min<int>(
 			player_screen_size.x / width - 1, player_screen_size.y / height - 1
 		)
 	);
+
+	std::cerr << "Automatic scale selected: " << res << "x\n";
+	return res;
 }
 
 SceneManager::SceneManager(Scene initial_scene)

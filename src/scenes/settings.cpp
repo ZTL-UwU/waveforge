@@ -92,7 +92,7 @@ struct ResetAllOption : SettingsMenu::Option {
 
 struct GoBackOption : SettingsMenu::Option {
 	std::string displayText() const override {
-		return "Back";
+		return "Back(esc)";
 	}
 
 	bool handleEnter() override {
