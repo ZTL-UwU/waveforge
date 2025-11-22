@@ -308,7 +308,12 @@ void SettingsMenu::render(
 			continue;
 		}
 
-		value_text = "<" + value_text + ">";
+		if (i == _current_option_index) {
+			value_text = "<" + value_text + ">";
+		} else {
+			value_text.push_back(' ');
+		}
+
 		int value_text_width = value_text.size()
 			* font.charWidth(_option_text_size);
 		int border_x = _option_start_pos[0] + _option_width;
