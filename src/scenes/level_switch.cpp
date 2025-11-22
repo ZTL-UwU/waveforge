@@ -1,8 +1,11 @@
 #include "wforge/2d.h"
+#include "wforge/audio.h"
 #include "wforge/colorpalette.h"
+#include "wforge/level.h"
 #include "wforge/scene.h"
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <proxy/v4/proxy.h>
 #include <string_view>
 
 namespace wf::scene {
@@ -52,7 +55,7 @@ std::array<int, 2> LevelComplete::size() const {
 }
 
 void LevelComplete::setup(SceneManager &mgr) {
-	mgr.unsetBGMCollection();
+	mgr.bgm.unsetCollection();
 }
 
 void LevelComplete::handleEvent(SceneManager &mgr, sf::Event &evt) {}
@@ -98,6 +101,52 @@ void LevelComplete::render(
 			_scale
 		);
 	}
+}
+
+LevelLoading::LevelLoading(
+	int width, int height, LevelMetadata level_metadata, int scale
+)
+	: _width(width)
+	, _height(height)
+	, _scale(scale)
+	, _tick(0)
+	, font(AssetsManager::instance().getAsset<PixelFont>("font"))
+	, _level_metadata(std::move(level_metadata)) {
+	auto fade_io = FadeIOConfig::load();
+	_total_duration = fade_io.fade_out_ticks;
+}
+
+std::array<int, 2> LevelLoading::size() const {
+	return {_width * _scale, _height * _scale};
+}
+
+void LevelLoading::setup(SceneManager &mgr) {
+	mgr.bgm.fadeOutCurrent(_total_duration);
+}
+
+void LevelLoading::handleEvent(SceneManager &mgr, sf::Event &evt) {}
+
+void LevelLoading::step(SceneManager &mgr) {
+	_tick++;
+	if (_tick >= _total_duration) {
+		// Load level scene
+		mgr.changeScene(Scene(
+			pro::make_proxy<SceneFacade, LevelPlaying>(
+				Level::loadFromMetadata(std::move(_level_metadata)), _scale
+			)
+		));
+	}
+}
+
+void LevelLoading::render(
+	const SceneManager &mgr, sf::RenderTarget &target
+) const {
+	constexpr std::string_view loading_text = "LOADING...";
+
+	int text_width = loading_text.size() * font.charWidth();
+	int x = (_width - text_width) / 2;
+	int y = (_height - font.charHeight()) / 2;
+	font.renderText(target, loading_text, ui_text_color(255), x, y, _scale);
 }
 
 } // namespace wf::scene

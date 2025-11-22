@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 namespace fs = std::filesystem;
 
@@ -103,6 +104,7 @@ void SaveData::save() const {
 	json_data["completed_levels"] = completed_levels;
 	json_data["user_settings"] = {
 		{"scale", user_settings.scale},
+		{"volume", user_settings.global_volume},
 	};
 
 	std::ofstream file(path);
@@ -134,6 +136,7 @@ void SaveData::resetAll() {
 UserSettings UserSettings::defaultSettings() noexcept {
 	return UserSettings{
 		.scale = 0,
+		.global_volume = 100,
 	};
 }
 

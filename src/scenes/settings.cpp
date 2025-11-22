@@ -1,6 +1,7 @@
 #include "wforge/save.h"
 #include "wforge/scene.h"
 #include <format>
+#include <nlohmann/json.hpp>
 #include <string>
 
 namespace wf::scene {
@@ -53,6 +54,35 @@ struct ScaleOption : SettingsMenu::Option {
 			settings.scale += 1;
 			SaveData::instance().save();
 		}
+		SaveData::instance().save();
+	}
+};
+
+struct VolumnOption : SettingsMenu::Option {
+	std::string displayText() const override {
+		return "Volumn";
+	}
+
+	std::string valueText() const override {
+		int volumn = SaveData::instance().user_settings.global_volume;
+		if (volumn == 0) {
+			return "Mute";
+		} else {
+			return std::to_string(volumn);
+		}
+	}
+
+	static constexpr int step = 5;
+
+	void handleLeft() override {
+		auto &settings = SaveData::instance().user_settings;
+		settings.global_volume = std::max(0, settings.global_volume - step);
+		SaveData::instance().save();
+	}
+
+	void handleRight() override {
+		auto &settings = SaveData::instance().user_settings;
+		settings.global_volume = std::min(100, settings.global_volume + step);
 		SaveData::instance().save();
 	}
 };
@@ -139,6 +169,7 @@ SettingsMenu::SettingsMenu(int scale)
 	);
 
 	_options.push_back(std::make_unique<ScaleOption>());
+	_options.push_back(std::make_unique<VolumnOption>());
 	_options.push_back(std::make_unique<ResetSettingsOption>());
 	_options.push_back(std::make_unique<ResetAllOption>());
 	_options.push_back(std::make_unique<GoBackOption>());

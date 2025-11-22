@@ -1,6 +1,7 @@
 #include "wforge/assets.h"
 #include "wforge/colorpalette.h"
 #include "wforge/level.h"
+#include "wforge/xoroshiro.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics.hpp>
@@ -180,6 +181,22 @@ sf::Image rotateImageTo(const sf::Image &img, FacingDirection dir) noexcept {
 		}
 	}
 	return rotated;
+}
+
+sf::Music *MusicCollection::getRandomMusic() const {
+	// Quick path
+	if (music.empty()) {
+		return nullptr;
+	}
+
+	if (music.size() == 1) {
+		return music[0];
+	}
+
+	// Random selection
+	auto &rng = Xoroshiro128PP::globalInstance();
+	std::uniform_int_distribution<std::size_t> dist(0, music.size() - 1);
+	return music[dist(rng)];
 }
 
 AssetsManager &AssetsManager::instance() noexcept {

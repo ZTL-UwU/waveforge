@@ -1,13 +1,11 @@
 #ifndef WFORGE_SAVE_H
 #define WFORGE_SAVE_H
 
-#include <nlohmann/detail/macro_scope.hpp>
-#include <nlohmann/json.hpp>
-
 namespace wf {
 
 struct UserSettings {
 	int scale;
+	int global_volume;
 
 	static UserSettings defaultSettings() noexcept;
 };

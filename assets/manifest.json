@@ -118,6 +118,12 @@
 			]
 		},
 		{
+			"id": "config/fade-io",
+			"type": "json",
+			"file": "fade-io.json",
+			"description": "Loading fade in/out configuration"
+		},
+		{
 			"id": "sfx/duckdeath",
 			"type": "sound",
 			"file": "duckdeath.ogg",

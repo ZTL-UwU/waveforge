@@ -135,6 +135,8 @@ sf::Image rotateImageTo(const sf::Image &img, FacingDirection dir) noexcept;
 struct MusicCollection {
 	std::string id;
 	std::vector<sf::Music *> music;
+
+	sf::Music *getRandomMusic() const;
 };
 
 // Cache of loaded assets, singleton

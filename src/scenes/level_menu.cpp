@@ -73,7 +73,7 @@ std::array<int, 2> LevelSelectionMenu::size() const {
 }
 
 void LevelSelectionMenu::setup(SceneManager &mgr) {
-	mgr.setBGMCollection("background/main-menu-music");
+	mgr.bgm.setCollection("background/main-menu-music");
 }
 
 void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
@@ -97,10 +97,8 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 		case sf::Keyboard::Key::Space:
 			if (_selected_index <= SaveData::instance().completed_levels) {
 				mgr.changeScene(
-					pro::make_proxy<SceneFacade, LevelPlaying>(
-						Level::loadFromMetadata(
-							*_level_seq.levels.at(_selected_index)
-						),
+					pro::make_proxy<SceneFacade, LevelLoading>(
+						_width, _height, *_level_seq.levels.at(_selected_index),
 						_scale
 					)
 				);

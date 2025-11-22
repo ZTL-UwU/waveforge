@@ -74,7 +74,7 @@ std::array<int, 2> MainMenu::size() const {
 }
 
 void MainMenu::setup(SceneManager &mgr) {
-	mgr.setBGMCollection("background/main-menu-music");
+	mgr.bgm.setCollection("background/main-menu-music");
 }
 
 void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {

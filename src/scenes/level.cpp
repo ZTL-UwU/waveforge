@@ -71,7 +71,11 @@ std::array<int, 2> LevelPlaying::size() const {
 
 void LevelPlaying::setup(SceneManager &mgr) {
 	_level.selectItem(0);
-	mgr.setBGMCollection("background/level-music");
+	mgr.bgm.setCollection("background/level-music");
+	const auto &bgm_fade = FadeIOConfig::load();
+	mgr.bgm.fadeInCurrent(
+		bgm_fade.fade_in_ticks, bgm_fade.fade_in_starting_volume
+	);
 }
 
 void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {

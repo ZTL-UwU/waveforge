@@ -92,6 +92,7 @@ add_executable(waveforge
 	src/2d.cpp
 	src/animation.cpp
 	src/assets.cpp
+	src/audio.cpp
 	src/checkpoint.cpp
 	src/duck.cpp
 	src/font.cpp

@@ -2,6 +2,7 @@
 #define WFORGE_SCENE_H
 
 #include "wforge/assets.h"
+#include "wforge/audio.h"
 #include "wforge/fallsand.h"
 #include "wforge/level.h"
 #include <SFML/Audio/Music.hpp>
@@ -65,18 +66,13 @@ public:
 	void handleEvent(sf::Event &evt);
 	void tick();
 
-	void setBGMCollection(const std::string &collection_id);
-	void unsetBGMCollection();
-
 	sf::Vector2i mousePosition() const;
 
 	sf::RenderWindow window;
+	BGMManager bgm;
 
 private:
 	Scene _current_scene;
-
-	MusicCollection *_bgm_collection;
-	sf::Music *_cur_bgm;
 	bool _scene_changed;
 };
 
@@ -163,6 +159,27 @@ private:
 	sf::Texture &_duck_texture;
 	std::vector<std::array<int, 2>> _step_positions;
 	int _top_left_x;
+};
+
+struct LevelLoading {
+	LevelLoading(
+		int width, int height, LevelMetadata level_metadata, int scale
+	);
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+
+private:
+	int _width;
+	int _height;
+	int _scale;
+	int _tick;
+	int _total_duration;
+	const PixelFont &font;
+	LevelMetadata _level_metadata;
 };
 
 struct LevelSelectionMenu {

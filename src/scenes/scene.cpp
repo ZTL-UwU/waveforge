@@ -1,11 +1,9 @@
 #include "wforge/scene.h"
 #include "wforge/assets.h"
-#include "wforge/xoroshiro.h"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Window.hpp>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <random>
 
 namespace wf {
 
@@ -63,16 +61,11 @@ int automaticScale(int width, int height, int scale_configured) {
 SceneManager::SceneManager(Scene initial_scene)
 	: window(createWindow(initial_scene))
 	, _current_scene(std::move(initial_scene))
-	, _bgm_collection(nullptr)
-	, _cur_bgm(nullptr)
 	, _scene_changed(false) {
 	_current_scene->setup(*this);
 }
 
 SceneManager::~SceneManager() {
-	if (_cur_bgm) {
-		_cur_bgm->stop();
-	}
 	window.close();
 }
 
@@ -99,48 +92,10 @@ void SceneManager::tick() {
 		return;
 	}
 
+	bgm.step();
 	window.clear(sf::Color::White);
 	_current_scene->render(*this, window);
-
-	if (_bgm_collection && !_bgm_collection->music.empty()) {
-		if (!_cur_bgm || _cur_bgm->getStatus() == sf::Music::Status::Stopped) {
-			if (_bgm_collection->music.size() == 1) {
-				// quick path for single-track collections
-				_cur_bgm = _bgm_collection->music.front();
-			} else {
-				// randomly select a new track
-				auto &rng = Xoroshiro128PP::globalInstance();
-				std::uniform_int_distribution<std::size_t> dist(
-					0, _bgm_collection->music.size() - 1
-				);
-				_cur_bgm = _bgm_collection->music[dist(rng)];
-			}
-			_cur_bgm->play();
-		}
-	}
-
 	window.display();
-}
-
-void SceneManager::setBGMCollection(const std::string &collection_id) {
-	if (!_bgm_collection || _bgm_collection->id != collection_id) {
-		if (_cur_bgm) {
-			_cur_bgm->stop();
-			_cur_bgm = nullptr;
-		}
-
-		_bgm_collection = &AssetsManager::instance().getMusicCollection(
-			collection_id
-		);
-	}
-}
-
-void SceneManager::unsetBGMCollection() {
-	_bgm_collection = nullptr;
-	if (_cur_bgm) {
-		_cur_bgm->stop();
-		_cur_bgm = nullptr;
-	}
 }
 
 sf::Vector2i SceneManager::mousePosition() const {
