@@ -7,8 +7,7 @@
 namespace wf {
 
 struct UserSettings {
-	// future settings can go here
-	int test_field;
+	int scale;
 
 	static UserSettings defaultSettings() noexcept;
 };

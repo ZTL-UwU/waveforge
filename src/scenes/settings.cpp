@@ -1,5 +1,6 @@
 #include "wforge/save.h"
 #include "wforge/scene.h"
+#include <format>
 #include <string>
 
 namespace wf::scene {
@@ -22,27 +23,37 @@ struct SettingsMenu::Option {
 
 namespace {
 
-struct DummyTestOption : SettingsMenu::Option {
+struct ScaleOption : SettingsMenu::Option {
 	std::string displayText() const override {
-		return "Dummy Option";
+		return "Scale";
 	}
 
 	std::string valueText() const override {
-		return std::to_string(SaveData::instance().user_settings.test_field);
+		int scale = SaveData::instance().user_settings.scale;
+		if (scale == 0) {
+			return "Auto";
+		} else {
+			return std::format("{}x", scale);
+		}
 	}
 
 	void handleLeft() override {
-		auto &save = SaveData::instance();
-		if (save.user_settings.test_field > 0) {
-			save.user_settings.test_field--;
-			save.save();
+		auto &settings = SaveData::instance().user_settings;
+		if (settings.scale > 0) {
+			settings.scale -= 1;
+			SaveData::instance().save();
 		}
 	}
 
 	void handleRight() override {
-		auto &save = SaveData::instance();
-		save.user_settings.test_field++;
-		save.save();
+		constexpr int max_scale = 12;
+
+		auto &settings = SaveData::instance().user_settings;
+		if (settings.scale < max_scale) {
+			settings.scale += 1;
+			SaveData::instance().save();
+		}
+		SaveData::instance().save();
 	}
 };
 
@@ -127,7 +138,7 @@ SettingsMenu::SettingsMenu(int scale)
 		option_data.at("active-color").at(3)
 	);
 
-	_options.push_back(std::make_unique<DummyTestOption>());
+	_options.push_back(std::make_unique<ScaleOption>());
 	_options.push_back(std::make_unique<ResetSettingsOption>());
 	_options.push_back(std::make_unique<ResetAllOption>());
 	_options.push_back(std::make_unique<GoBackOption>());

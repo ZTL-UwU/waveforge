@@ -55,7 +55,7 @@ fs::path saveFilePath() noexcept {
 }
 
 void loadUserSettings(UserSettings &settings, nlohmann::json &json_data) {
-	settings.test_field = json_data.value("test_field", 0);
+	settings.scale = json_data.value("scale", 0);
 }
 
 void loadSaveData(SaveData &data, nlohmann::json &json_data) {
@@ -102,7 +102,7 @@ void SaveData::save() const {
 	nlohmann::json json_data;
 	json_data["completed_levels"] = completed_levels;
 	json_data["user_settings"] = {
-		{"test_field", user_settings.test_field},
+		{"scale", user_settings.scale},
 	};
 
 	std::ofstream file(path);
@@ -133,7 +133,7 @@ void SaveData::resetAll() {
 
 UserSettings UserSettings::defaultSettings() noexcept {
 	return UserSettings{
-		.test_field = 0,
+		.scale = 0,
 	};
 }
 

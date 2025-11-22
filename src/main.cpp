@@ -1,4 +1,5 @@
 #include "wforge/assets.h"
+#include "wforge/save.h"
 #include "wforge/scene.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -31,12 +32,15 @@ int main(int argc, char **argv) {
 
 	CPPTRACE_TRY {
 		wf::AssetsManager::loadAllAssets();
+		wf::SaveData::instance(); // load / initialize save data
 	}
 	CPPTRACE_CATCH(const std::exception &e) {
 		std::cerr << "Failed to load assets: " << e.what() << "\n";
 		cpptrace::from_current_exception().print();
 		return 1;
 	}
+
+	auto &save = wf::SaveData::instance();
 
 	argparse::ArgumentParser program(
 		"waveforge", "0.1", argparse::default_arguments::help
@@ -48,7 +52,7 @@ int main(int argc, char **argv) {
 
 	program.add_argument("--scale")
 		.help("Set rendering scale (0 for automatic)")
-		.default_value(0)
+		.default_value(save.user_settings.scale)
 		.scan<'i', int>();
 
 	try {
