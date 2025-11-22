@@ -2,6 +2,7 @@
 #include "wforge/audio.h"
 #include "wforge/colorpalette.h"
 #include "wforge/level.h"
+#include "wforge/save.h"
 #include "wforge/scene.h"
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -61,7 +62,12 @@ std::array<int, 2> LevelComplete::size() const {
 
 void LevelComplete::setup(SceneManager &mgr) {
 	mgr.bgm.unsetCollection();
-	_level_complete_sound.play();
+	if (SaveData::instance().user_settings.skip_animations) {
+		_current_step = _step_positions.size() - 1;
+		_display_text = true;
+	} else {
+		_level_complete_sound.play();
+	}
 }
 
 void LevelComplete::handleEvent(SceneManager &mgr, sf::Event &evt) {}

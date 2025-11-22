@@ -111,6 +111,29 @@ struct StrictPixelPerfectionOption : SettingsMenu::Option {
 	}
 };
 
+struct SkipAnimationsOption : SettingsMenu::Option {
+	std::string displayText() const override {
+		return "Skip Animations";
+	}
+
+	std::string valueText() const override {
+		bool skip = SaveData::instance().user_settings.skip_animations;
+		return skip ? "On" : "Off";
+	}
+
+	void handleLeft() override {
+		auto &save = SaveData::instance();
+		save.user_settings.skip_animations = false;
+		save.save();
+	}
+
+	void handleRight() override {
+		auto &save = SaveData::instance();
+		save.user_settings.skip_animations = true;
+		save.save();
+	}
+};
+
 struct ResetSettingsOption : SettingsMenu::Option {
 	std::string displayText() const override {
 		return "Reset Settings";
@@ -195,6 +218,7 @@ SettingsMenu::SettingsMenu(int scale)
 	_options.push_back(std::make_unique<ScaleOption>());
 	_options.push_back(std::make_unique<VolumnOption>());
 	_options.push_back(std::make_unique<StrictPixelPerfectionOption>());
+	_options.push_back(std::make_unique<SkipAnimationsOption>());
 	_options.push_back(std::make_unique<ResetSettingsOption>());
 	_options.push_back(std::make_unique<ResetAllOption>());
 	_options.push_back(std::make_unique<GoBackOption>());

@@ -7,6 +7,7 @@ struct UserSettings {
 	int scale;
 	int global_volume;
 	bool strict_pixel_perfection;
+	bool skip_animations;
 
 	static UserSettings defaultSettings() noexcept;
 };

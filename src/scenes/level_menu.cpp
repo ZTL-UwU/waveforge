@@ -78,6 +78,7 @@ void LevelSelectionMenu::setup(SceneManager &mgr) {
 }
 
 void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
+	const auto &save = SaveData::instance();
 	if (auto kb = evt.getIf<sf::Event::KeyPressed>()) {
 		switch (kb->code) {
 		case sf::Keyboard::Key::Left:
@@ -98,13 +99,24 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 
 		case sf::Keyboard::Key::Enter:
 		case sf::Keyboard::Key::Space:
-			if (_selected_index <= SaveData::instance().completed_levels) {
-				mgr.changeScene(
-					pro::make_proxy<SceneFacade, LevelLoading>(
-						_width, _height, *_level_seq.levels.at(_selected_index),
-						_scale
-					)
-				);
+			if (_selected_index <= save.completed_levels) {
+				if (save.user_settings.skip_animations) {
+					mgr.changeScene(
+						pro::make_proxy<SceneFacade, LevelPlaying>(
+							Level::loadFromMetadata(
+								*_level_seq.levels.at(_selected_index)
+							),
+							_scale
+						)
+					);
+				} else {
+					mgr.changeScene(
+						pro::make_proxy<SceneFacade, LevelLoading>(
+							_width, _height,
+							*_level_seq.levels.at(_selected_index), _scale
+						)
+					);
+				}
 				return;
 			}
 			break;

@@ -1,5 +1,6 @@
 #include "wforge/assets.h"
 #include "wforge/level.h"
+#include "wforge/save.h"
 #include "wforge/scene.h"
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <limits>
@@ -76,6 +77,9 @@ std::array<int, 2> DuckDeath::size() const {
 
 void DuckDeath::setup(SceneManager &mgr) {
 	mgr.bgm.unsetCollection();
+	if (SaveData::instance().user_settings.skip_animations) {
+		_tick = _total_duration;
+	}
 }
 
 void DuckDeath::handleEvent(SceneManager &mgr, sf::Event &evt) {
