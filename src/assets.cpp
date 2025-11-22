@@ -13,6 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <random>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
