@@ -78,6 +78,7 @@ add_executable(waveforge
 	src/scenes/level.cpp
 	src/scenes/main_menu.cpp
 	src/scenes/scene.cpp
+	src/scenes/settings.cpp
 	src/structures/electric.cpp
 	src/structures/gate.cpp
 	src/structures/heater.cpp

@@ -3,9 +3,29 @@
 #include "wforge/xoroshiro.h"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Window.hpp>
+#include <nlohmann/json.hpp>
 #include <random>
 
 namespace wf {
+
+void UITextDescriptor::render(
+	sf::RenderTarget &target, const PixelFont &font, const std::string &text,
+	int scale
+) const {
+	font.renderText(target, text, color, x, y, scale, size);
+}
+
+UITextDescriptor UITextDescriptor::fromJson(const nlohmann::json &json_data) {
+	UITextDescriptor desc;
+	desc.x = json_data.at("x");
+	desc.y = json_data.at("y");
+	desc.size = json_data.at("size");
+	desc.color = sf::Color(
+		json_data.at("color").at(0), json_data.at("color").at(1),
+		json_data.at("color").at(2), json_data.at("color").at(3)
+	);
+	return desc;
+}
 
 namespace {
 

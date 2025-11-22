@@ -21,23 +21,13 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 	_height = json_data.at("height");
 	_scale = automaticScale(_width, _height, scale);
 
-	auto parseTextDescriptor = [&](const nlohmann::json &data) {
-		TextDescriptor desc;
-		desc.x = data.at("x");
-		desc.y = data.at("y");
-		desc.size = data.at("size");
-		desc.color = sf::Color(
-			data.at("color").at(0), data.at("color").at(1),
-			data.at("color").at(2), data.at("color").at(3)
-		);
-		return desc;
-	};
-
-	_header = parseTextDescriptor(json_data.at("header"));
-	_level_button_text = parseTextDescriptor(json_data.at("level-button-text"));
-	_level_title = parseTextDescriptor(json_data.at("level-title"));
-	_level_desc = parseTextDescriptor(json_data.at("level-description"));
-	_enter_hint = parseTextDescriptor(json_data.at("enter-hint"));
+	_header = UITextDescriptor::fromJson(json_data.at("header"));
+	_level_button_text = UITextDescriptor::fromJson(
+		json_data.at("level-button-text")
+	);
+	_level_title = UITextDescriptor::fromJson(json_data.at("level-title"));
+	_level_desc = UITextDescriptor::fromJson(json_data.at("level-description"));
+	_enter_hint = UITextDescriptor::fromJson(json_data.at("enter-hint"));
 
 	for (const auto &btn : json_data.at("level-buttons")) {
 		_level_button.push_back({btn.at("x"), btn.at("y")});
@@ -136,10 +126,7 @@ void LevelSelectionMenu::render(
 	const SceneManager &mgr, sf::RenderTarget &target
 ) const {
 	// Render header
-	font.renderText(
-		target, "Levels", _header.color, _header.x, _header.y, _scale,
-		_header.size
-	);
+	_header.render(target, font, "Levels", _scale);
 
 	// Render level buttons and links
 	auto &save_data = SaveData::instance();
@@ -232,23 +219,16 @@ void LevelSelectionMenu::render(
 
 	auto selected_metadata = _level_seq.levels.at(_selected_index);
 	// Render level title
-	font.renderText(
-		target, selected_metadata->name, _level_title.color, _level_title.x,
-		_level_title.y, _scale, _level_title.size
-	);
+	_level_title.render(target, font, selected_metadata->name, _scale);
 
 	if (_selected_index <= save_data.completed_levels) {
 		// Render level description
-		font.renderText(
-			target, selected_metadata->description, _level_desc.color,
-			_level_desc.x, _level_desc.y, _scale, _level_desc.size
+		_level_desc.render(
+			target, font, selected_metadata->description, _scale
 		);
 
 		// Render enter hint
-		font.renderText(
-			target, "[ENTER]", _enter_hint.color, _enter_hint.x, _enter_hint.y,
-			_scale, _enter_hint.size
-		);
+		_enter_hint.render(target, font, "[ENTER]", _scale);
 	}
 }
 

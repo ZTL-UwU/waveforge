@@ -388,6 +388,12 @@
 			"description": "Loading main menu UI configuration"
 		},
 		{
+			"id": "ui-config/settings-menu",
+			"type": "json",
+			"file": "ui/settings.json",
+			"description": "Loading settings menu UI configuration"
+		},
+		{
 			"id": "level/demo/map",
 			"type": "image",
 			"file": "levels/demo.png",

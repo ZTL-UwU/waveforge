@@ -19,6 +19,8 @@ struct SaveData {
 
 	static SaveData &instance() noexcept;
 	void save() const;
+	void resetSettings();
+	void resetAll();
 
 private:
 	SaveData();

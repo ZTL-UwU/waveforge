@@ -11,6 +11,8 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Window.hpp>
+#include <memory>
+#include <nlohmann/json_fwd.hpp>
 #include <proxy/v4/proxy.h>
 #include <proxy/v4/proxy_macros.h>
 #include <vector>
@@ -37,6 +39,20 @@ struct SceneFacade : pro::facade_builder
 /* clang-format on */
 
 using Scene = pro::proxy<SceneFacade>;
+
+struct UITextDescriptor {
+	int x;
+	int y;
+	int size;
+	sf::Color color;
+
+	void render(
+		sf::RenderTarget &target, const PixelFont &font,
+		const std::string &text, int scale
+	) const;
+
+	static UITextDescriptor fromJson(const nlohmann::json &json_data);
+};
 
 int automaticScale(int width, int height, int scale_configured = 0);
 
@@ -167,18 +183,11 @@ private:
 	int _height;
 	const PixelFont &font;
 
-	struct TextDescriptor {
-		int x;
-		int y;
-		int size;
-		sf::Color color;
-	};
-
-	TextDescriptor _header;
-	TextDescriptor _level_button_text;
-	TextDescriptor _level_title;
-	TextDescriptor _level_desc;
-	TextDescriptor _enter_hint;
+	UITextDescriptor _header;
+	UITextDescriptor _level_button_text;
+	UITextDescriptor _level_title;
+	UITextDescriptor _level_desc;
+	UITextDescriptor _enter_hint;
 	std::vector<std::array<int, 2>> _level_button;
 	std::vector<std::array<int, 2>> _level_links;
 	std::array<int, 2> _duck_rel;
@@ -219,6 +228,39 @@ private:
 	ButtonDescriptor _play_button;
 	ButtonDescriptor _settings_button;
 	ButtonDescriptor _exit_button;
+};
+
+class SettingsMenu {
+public:
+	SettingsMenu(int scale);
+	~SettingsMenu();
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+
+	struct Option;
+
+private:
+	int _scale;
+	int _width;
+	int _height;
+	const PixelFont &font;
+
+	UITextDescriptor _header;
+	UITextDescriptor _restart_hint;
+
+	int _current_option_index;
+	std::vector<std::unique_ptr<Option>> _options;
+
+	std::array<int, 2> _option_start_pos;
+	int _option_spacing;
+	int _option_text_size;
+	int _option_width;
+	sf::Color _option_color;
+	sf::Color _option_active_color;
 };
 
 } // namespace scene

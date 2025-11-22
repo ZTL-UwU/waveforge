@@ -120,6 +120,17 @@ void SaveData::save() const {
 	}
 }
 
+void SaveData::resetSettings() {
+	user_settings = UserSettings::defaultSettings();
+	save();
+}
+
+void SaveData::resetAll() {
+	completed_levels = 0;
+	user_settings = UserSettings::defaultSettings();
+	save();
+}
+
 UserSettings UserSettings::defaultSettings() noexcept {
 	return UserSettings{
 		.test_field = 0,

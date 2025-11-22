@@ -3,7 +3,6 @@
 #include "wforge/scene.h"
 #include <cstdlib>
 #include <format>
-#include <iostream>
 #include <nlohmann/json.hpp>
 
 namespace wf::scene {
@@ -107,9 +106,10 @@ void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 				return;
 
 			case MainMenuButton::SETTINGS:
-				// TODO: implement settings menu
-				std::cerr << "Settings menu button pressed\n";
-				break;
+				mgr.changeScene(
+					pro::make_proxy<SceneFacade, SettingsMenu>(_scale)
+				);
+				return;
 
 			case MainMenuButton::EXIT:
 				std::exit(0);
