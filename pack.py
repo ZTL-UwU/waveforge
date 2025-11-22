@@ -13,13 +13,13 @@ from pathlib import Path
 
 def copy_assets(assets_dir: Path, output_assets_dir: Path):
     """
-    Recursively copy required assets (*.png, *.json, *.md, *.mp3)
+    Recursively copy required assets
     Minify all .json files
     """
     output_assets_dir.mkdir(parents=True, exist_ok=True)
     
     # Extensions to include
-    included_extensions = {'.png', '.json', '.md', '.mp3'}
+    included_extensions = {'.png', '.json', '.md', '.mp3', '.wav', '.ogg'}
     
     # Recursively find and copy files
     for file_path in assets_dir.rglob('*'):
