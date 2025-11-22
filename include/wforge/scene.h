@@ -245,6 +245,7 @@ private:
 	int _current_button_index;
 	ButtonDescriptor _play_button;
 	ButtonDescriptor _settings_button;
+	ButtonDescriptor _credits_button;
 	ButtonDescriptor _exit_button;
 };
 
@@ -279,6 +280,32 @@ private:
 	int _option_width;
 	sf::Color _option_color;
 	sf::Color _option_active_color;
+};
+
+struct Credits {
+	Credits(int scale);
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+
+private:
+	int _scale;
+	int _width;
+	int _height;
+	const PixelFont &font;
+
+	UITextDescriptor _header;
+
+	std::array<int, 2> _credits_pos;
+	int _credits_size;
+	int _credits_spacing;
+	int _credits_width;
+	sf::Color _credits_color;
+
+	std::vector<std::pair<std::string, std::string>> _content;
 };
 
 } // namespace scene

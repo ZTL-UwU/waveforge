@@ -414,6 +414,12 @@
 			"description": "Loading settings menu UI configuration"
 		},
 		{
+			"id": "ui-config/credits",
+			"type": "json",
+			"file": "ui/credits.json",
+			"description": "Loading credits UI configuration"
+		},
+		{
 			"id": "level/demo/map",
 			"type": "image",
 			"file": "levels/demo.png",

@@ -74,9 +74,10 @@ The game scene management is implemented as a finite state machine, where each s
 - Code: [fang_erj](https://github.com/szdytom)
 - Music & SFX: [stevvven](https://github.com/Stevvven777)
 - Pixel Art: [ZTL-UwU](https://github.com/ZTL-UwU/)
-- Game Play: zurry
 
 ## Acknowledgements
+
+We would like to thank zurry for thier inspiring thoughts on game play, mechanics and level design.
 
 We would also like to thank the following open source projects for making this game possible:
 
