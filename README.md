@@ -54,7 +54,7 @@ This is quite a straightforward C++ project with simple structure:
 
 - `include/wforge`: header files
 - `src`: source files
-- `assets`: asset files including music and sound effects
+- `assets`: asset files, levels, UI configuration, music, sound effects, textures, etc.
 - `CMakeLists.txt`: CMake build script (all in one file for simplicity)
 
 The physics simulation is written from scratch. We use SFML for graphics rendering and audio playback. [proxy](https://github.com/microsoft/proxy) is used to for polymorphism (i.e. fat pointers) instead of traditional virtual functions for simplier and unified lifetime management.
@@ -65,9 +65,9 @@ The fluid simulation process is devided into two phases: the global update phase
 
 A thermal simulation system is also implemented, allowing pixels to exchange heat with adjacent pixels and change state when certain temperature thresholds are reached (e.g. oil igniting when heated enough). The heat exchange process is simple (linearly averaging respesting to thermal conductivity as weight), but it works fine for our purpose. The thermal simulation is implemented in `thermal.cpp`.
 
-Pixels can form structures. The structure is stored separately from the pixel 2D array, and each structure can span multiple pixels. The texture of the structure is loaded from an image asset.
+Pixels can form structures. The structure is stored separately from the pixel 2D array, and each structure can span multiple pixels. The texture of the structure is loaded from an image asset. The map is loaded from a prototype image, where each color represents a different pixel type or structure, more details can be found in [Level Format Documentation](assets/levels/README.md).
 
-The current `main.cpp` (mainly used for testing) is quite messy (partly because it's mostly written by Github Copilot). Instead of drawing bunches of rectangles for each pixel, the rendering system dynamically create a texture representing the pixel world and render it all at once for better performance.
+The game scene management is implemented as a finite state machine, where each scene is a state. The UI for some scenes (e.g. main menu, level menu, settings) are partially data-driven and can be configured via JSON files in `assets/ui`.
 
 ## Team Members
 
