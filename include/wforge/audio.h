@@ -14,6 +14,13 @@ struct FadeIOConfig {
 	static FadeIOConfig &load();
 };
 
+struct UISounds {
+	sf::Sound forward;
+	sf::Sound backward;
+
+	static UISounds &instance() noexcept;
+};
+
 class BGMManager {
 public:
 	BGMManager() noexcept;

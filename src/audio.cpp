@@ -1,5 +1,6 @@
 #include "wforge/audio.h"
 #include "wforge/save.h"
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <nlohmann/json.hpp>
 
 namespace wf {
@@ -25,6 +26,24 @@ FadeIOConfig &FadeIOConfig::load() {
 BGMManager &BGMManager::instance() noexcept {
 	static BGMManager instance;
 	return instance;
+}
+
+UISounds &UISounds::instance() noexcept {
+	static UISounds *instance = nullptr;
+	if (instance == nullptr) {
+		sf::Sound forward_sound(
+			AssetsManager::instance().getAsset<sf::SoundBuffer>("sfx/forward")
+		);
+
+		sf::Sound backward_sound(
+			AssetsManager::instance().getAsset<sf::SoundBuffer>("sfx/backward")
+		);
+		instance = new UISounds{
+			.forward = std::move(forward_sound),
+			.backward = std::move(backward_sound),
+		};
+	}
+	return *instance;
 }
 
 BGMManager::BGMManager() noexcept

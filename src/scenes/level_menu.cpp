@@ -1,4 +1,5 @@
 #include "wforge/assets.h"
+#include "wforge/audio.h"
 #include "wforge/level.h"
 #include "wforge/save.h"
 #include "wforge/scene.h"
@@ -81,6 +82,7 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 		switch (kb->code) {
 		case sf::Keyboard::Key::Left:
 		case sf::Keyboard::Key::A:
+			UISounds::instance().backward.play();
 			if (_selected_index > 0) {
 				_selected_index--;
 			}
@@ -88,6 +90,7 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 
 		case sf::Keyboard::Key::Right:
 		case sf::Keyboard::Key::D:
+			UISounds::instance().forward.play();
 			if (_selected_index + 1 < _level_seq.levels.size()) {
 				_selected_index++;
 			}

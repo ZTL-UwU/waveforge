@@ -1,3 +1,4 @@
+#include "wforge/audio.h"
 #include "wforge/save.h"
 #include "wforge/scene.h"
 #include <format>
@@ -216,12 +217,14 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 
 		case sf::Keyboard::Key::Tab:
 			if (kb->shift) {
+				UISounds::instance().backward.play();
 				if (_current_option_index > 0) {
 					_current_option_index--;
 				} else {
 					_current_option_index = _options.size() - 1;
 				}
 			} else {
+				UISounds::instance().forward.play();
 				if (_current_option_index + 1 < _options.size()) {
 					_current_option_index++;
 				} else {
@@ -231,6 +234,7 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 
 		case sf::Keyboard::Key::Up:
 		case sf::Keyboard::Key::W:
+			UISounds::instance().backward.play();
 			if (_current_option_index > 0) {
 				_current_option_index--;
 			}
@@ -238,6 +242,7 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 
 		case sf::Keyboard::Key::Down:
 		case sf::Keyboard::Key::S:
+			UISounds::instance().forward.play();
 			if (_current_option_index + 1 < _options.size()) {
 				_current_option_index++;
 			}
@@ -245,11 +250,13 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 
 		case sf::Keyboard::Key::Left:
 		case sf::Keyboard::Key::A:
+			UISounds::instance().backward.play();
 			_options[_current_option_index]->handleLeft();
 			break;
 
 		case sf::Keyboard::Key::Right:
 		case sf::Keyboard::Key::D:
+			UISounds::instance().forward.play();
 			_options[_current_option_index]->handleRight();
 			break;
 

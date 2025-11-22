@@ -104,18 +104,14 @@
 			"type": "music",
 			"file": "Pixel Tide.mp3",
 			"description": "Loading Pixel Tide music",
-			"collections": [
-				"background/main-menu-music"
-			]
+			"collections": []
 		},
 		{
 			"id": "music/Pixel Tide-X",
 			"type": "music",
 			"file": "Pixel Tide-X.mp3",
 			"description": "Loading Pixel Tide-X music",
-			"collections": [
-				"background/main-menu-music"
-			]
+			"collections": []
 		},
 		{
 			"id": "config/fade-io",
@@ -124,15 +120,27 @@
 			"description": "Loading fade in/out configuration"
 		},
 		{
+			"id": "sfx/backward",
+			"type": "sound",
+			"file": "sounds/backward.ogg",
+			"description": "Loading backward sound effect"
+		},
+		{
+			"id": "sfx/forward",
+			"type": "sound",
+			"file": "sounds/forward.ogg",
+			"description": "Loading forward sound effect"
+		},
+		{
 			"id": "sfx/duckdeath",
 			"type": "sound",
-			"file": "duckdeath.ogg",
+			"file": "sounds/reborn.ogg",
 			"description": "Loading duck death sound effect"
 		},
 		{
 			"id": "sfx/duckdeath-separate",
 			"type": "sound",
-			"file": "duckdeath-sep.wav",
+			"file": "sounds/duckdeath-sep.wav",
 			"description": "Loading duck death separate sound effect"
 		},
 		{

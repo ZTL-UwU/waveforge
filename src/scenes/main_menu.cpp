@@ -1,4 +1,5 @@
 #include "wforge/assets.h"
+#include "wforge/audio.h"
 #include "wforge/save.h"
 #include "wforge/scene.h"
 #include <cstdlib>
@@ -82,6 +83,7 @@ void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 		switch (kb->code) {
 		case sf::Keyboard::Key::Up:
 		case sf::Keyboard::Key::W:
+			UISounds::instance().backward.play();
 			_current_button_index--;
 			if (_current_button_index < 0) {
 				_current_button_index = MainMenuButton::BUTTON_COUNT - 1;
@@ -90,6 +92,7 @@ void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 
 		case sf::Keyboard::Key::Down:
 		case sf::Keyboard::Key::S:
+			UISounds::instance().forward.play();
 			_current_button_index++;
 			if (_current_button_index >= MainMenuButton::BUTTON_COUNT) {
 				_current_button_index = 0;
