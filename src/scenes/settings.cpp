@@ -87,6 +87,29 @@ struct VolumnOption : SettingsMenu::Option {
 	}
 };
 
+struct StrictPixelPerfectionOption : SettingsMenu::Option {
+	std::string displayText() const override {
+		return "Pixel Perfect Rendering";
+	}
+
+	std::string valueText() const override {
+		bool spp = SaveData::instance().user_settings.strict_pixel_perfection;
+		return spp ? "On" : "Off";
+	}
+
+	void handleLeft() override {
+		auto &save = SaveData::instance();
+		save.user_settings.strict_pixel_perfection = false;
+		save.save();
+	}
+
+	void handleRight() override {
+		auto &save = SaveData::instance();
+		save.user_settings.strict_pixel_perfection = true;
+		save.save();
+	}
+};
+
 struct ResetSettingsOption : SettingsMenu::Option {
 	std::string displayText() const override {
 		return "Reset Settings";
@@ -170,6 +193,7 @@ SettingsMenu::SettingsMenu(int scale)
 
 	_options.push_back(std::make_unique<ScaleOption>());
 	_options.push_back(std::make_unique<VolumnOption>());
+	_options.push_back(std::make_unique<StrictPixelPerfectionOption>());
 	_options.push_back(std::make_unique<ResetSettingsOption>());
 	_options.push_back(std::make_unique<ResetAllOption>());
 	_options.push_back(std::make_unique<GoBackOption>());

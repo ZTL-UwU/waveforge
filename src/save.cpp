@@ -57,6 +57,10 @@ fs::path saveFilePath() noexcept {
 
 void loadUserSettings(UserSettings &settings, nlohmann::json &json_data) {
 	settings.scale = json_data.value("scale", 0);
+	settings.global_volume = json_data.value("volume", 100);
+	settings.strict_pixel_perfection = json_data.value(
+		"strict_pixel_perfection", false
+	);
 }
 
 void loadSaveData(SaveData &data, nlohmann::json &json_data) {
@@ -105,6 +109,7 @@ void SaveData::save() const {
 	json_data["user_settings"] = {
 		{"scale", user_settings.scale},
 		{"volume", user_settings.global_volume},
+		{"strict_pixel_perfection", user_settings.strict_pixel_perfection}
 	};
 
 	std::ofstream file(path);
@@ -136,7 +141,8 @@ void SaveData::resetAll() {
 UserSettings UserSettings::defaultSettings() noexcept {
 	return UserSettings{
 		.scale = 0,
-		.global_volume = 100,
+		.global_volume = 80,
+		.strict_pixel_perfection = false,
 	};
 }
 

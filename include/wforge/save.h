@@ -6,6 +6,7 @@ namespace wf {
 struct UserSettings {
 	int scale;
 	int global_volume;
+	bool strict_pixel_perfection;
 
 	static UserSettings defaultSettings() noexcept;
 };
@@ -18,6 +19,9 @@ struct SaveData {
 	void save() const;
 	void resetSettings();
 	void resetAll();
+
+	SaveData(const SaveData &) = delete;
+	SaveData &operator=(const SaveData &) = delete;
 
 private:
 	SaveData();

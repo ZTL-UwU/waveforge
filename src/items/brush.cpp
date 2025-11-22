@@ -1,4 +1,5 @@
 #include "wforge/level.h"
+#include "wforge/save.h"
 #include <algorithm>
 #include <cmath>
 
@@ -42,7 +43,11 @@ void BrushSizeChangableItem::render(
 	rect.setSize(sf::Vector2f(_brush_size * scale, _brush_size * scale));
 	rect.setFillColor(sf::Color::Transparent);
 	rect.setOutlineColor(outline_color);
-	rect.setOutlineThickness(1.0f);
+
+	const auto &save = SaveData::instance();
+	rect.setOutlineThickness(
+		save.user_settings.strict_pixel_perfection ? scale : 1.f
+	);
 	target.draw(rect);
 }
 
