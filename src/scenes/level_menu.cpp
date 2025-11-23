@@ -149,9 +149,8 @@ void LevelSelectionMenu::render(
 	if (_selected_index < ideal_duck_btn_index) {
 		duck_btn_index = _selected_index;
 	} else if (_selected_index + (btn_cnt - ideal_duck_btn_index)
-	           >= _level_seq.levels.size()) {
-		duck_btn_index = btn_cnt - 1
-			- (_level_seq.levels.size() - _selected_index);
+	           > _level_seq.levels.size()) {
+		duck_btn_index = btn_cnt - (_level_seq.levels.size() - _selected_index);
 	}
 	int first_btn_level = _selected_index - duck_btn_index;
 
@@ -228,6 +227,20 @@ void LevelSelectionMenu::render(
 			duck_sprite.setScale(sf::Vector2f(_scale, _scale));
 			target.draw(duck_sprite);
 		}
+	}
+
+	// Render the last link if applicable
+	if (first_btn_level + btn_cnt < _level_seq.levels.size()) {
+		auto [link_x, link_y] = _level_links[btn_cnt];
+		bool level_locked = first_btn_level + btn_cnt
+			> save_data.completed_levels;
+		auto link_texture = level_locked
+			? _level_link_texture_locked
+			: _level_link_texture_activated;
+		sf::Sprite link_sprite(*link_texture);
+		link_sprite.setPosition(sf::Vector2f(link_x * _scale, link_y * _scale));
+		link_sprite.setScale(sf::Vector2f(_scale, _scale));
+		target.draw(link_sprite);
 	}
 
 	auto selected_metadata = _level_seq.levels.at(_selected_index);
