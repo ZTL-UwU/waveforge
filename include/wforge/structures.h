@@ -119,6 +119,9 @@ struct Heater : InputElectricalStructure {
 struct Gate : InputElectricalStructure {
 	void setup(PixelWorld &world);
 	bool step(PixelWorld &world) noexcept;
+	void customRender(
+		std::span<std::uint8_t> buf, const PixelWorld &world
+	) const noexcept;
 	int priority() const noexcept;
 
 	Gate(int x, int y, FacingDirection dir);

@@ -229,6 +229,46 @@ bool Gate::step(PixelWorld &world) noexcept {
 	return true;
 }
 
+void Gate::customRender(
+	std::span<std::uint8_t> buf, const PixelWorld &world
+) const noexcept {
+	PixelShapedStructure::customRender(buf, world);
+	int progress = _openProgress();
+	int dx = xDeltaOf(_dir);
+	int dy = yDeltaOf(_dir);
+
+	int offset_x = -progress * dx;
+	int offset_y = -progress * dy;
+
+	for (int i = 0; i < _gate_wall_shape.width(); ++i) {
+		int wx = _base_place_x + offset_x + i;
+		if (wx < 0 || wx >= world.width()) {
+			continue;
+		}
+
+		for (int j = 0; j < _gate_wall_shape.height(); ++j) {
+			if (!_gate_wall_shape.hasPixel(i, j)) {
+				continue;
+			}
+			int wy = _base_place_y + offset_y + j;
+			if (wy < 0 || wy >= world.height()) {
+				continue;
+			}
+
+			if (world.tagOf(wx, wy).type != PixelType::Decoration) {
+				continue;
+			}
+
+			int buf_index = (wy * world.width() + wx) * 4;
+			sf::Color color = _gate_wall_shape.colorOf(i, j);
+			buf[buf_index + 0] = color.r;
+			buf[buf_index + 1] = color.g;
+			buf[buf_index + 2] = color.b;
+			buf[buf_index + 3] = color.a;
+		}
+	}
+}
+
 int Gate::priority() const noexcept {
 	return 5; // gates must be earlier than lasers
 }
