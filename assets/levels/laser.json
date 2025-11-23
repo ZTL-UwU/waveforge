@@ -1,9 +1,9 @@
 {
 	"format": 1,
-	"map": "level/demo/map",
+	"map": "level/laser/map",
 	"metadata": {
-		"level_name": "Simple Intro Level",
-		"description": "You can do it!"
+		"level_name": "Laser",
+		"description": "It's hot!"
 	},
 	"items": [
 		{

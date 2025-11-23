@@ -2,8 +2,8 @@
 	"format": 1,
 	"map": "level/steam_jet/map",
 	"metadata": {
-		"level_name": "Steam",
-		"description": "HINT:DUCK GOES UP ON STEAM"
+		"level_name": "Steam Powered",
+		"description": "HINT:in exact order"
 	},
 	"items": [
 		{

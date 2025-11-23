@@ -444,16 +444,16 @@
 			"description": "Loading credits UI configuration"
 		},
 		{
-			"id": "level/demo/map",
+			"id": "level/laser/map",
 			"type": "image",
-			"file": "levels/demo.png",
-			"description": "Loading demo level prototype image"
+			"file": "levels/laser.png",
+			"description": "Loading laser level prototype image"
 		},
 		{
-			"id": "level/demo",
+			"id": "level/laser",
 			"type": "level-metadata",
-			"file": "levels/demo.json",
-			"description": "Loading demo level metadata"
+			"file": "levels/laser.json",
+			"description": "Loading laser level metadata"
 		},
 		{
 			"id": "level/steam_jet/map",
@@ -483,7 +483,7 @@
 			"id": "level-sequence",
 			"type": "level-sequence",
 			"levels": [
-				"level/demo",
+				"level/laser",
 				"level/density",
 				"level/steam_jet"
 			],
