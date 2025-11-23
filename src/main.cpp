@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 	auto &save = wf::SaveData::instance();
 
 	argparse::ArgumentParser program(
-		"waveforge", "0.1", argparse::default_arguments::help
+		"waveforge", "0.2", argparse::default_arguments::help
 	);
 
 	program.add_argument("level")

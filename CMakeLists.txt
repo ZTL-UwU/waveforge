@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(waveforge VERSION 0.1 LANGUAGES CXX)
+project(waveforge VERSION 0.2 LANGUAGES CXX)
 
 include(FetchContent)
 
