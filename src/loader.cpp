@@ -66,6 +66,31 @@ Item constructItemByName(const std::string &name) {
 	return (it->second)();
 }
 
+PixelTypeAndColor decideMarkerBaseColor(
+	const sf::Image &img, unsigned int x, unsigned int y
+) {
+	constexpr unsigned int dx[] = {1, 1, 0};
+	constexpr unsigned int dy[] = {0, 1, 1};
+	PixelTypeAndColor result{PixelType::Air, 255};
+	int count = 0;
+
+	// B-M voting
+	for (int i = 0; i < 3; ++i) {
+		sf::Color check_color = img.getPixel({x + dx[i], y + dy[i]});
+		auto p = pixelTypeFromColor(check_color);
+		if (p.type == result.type && p.color_index == result.color_index) {
+			count += 1;
+		} else {
+			count -= 1;
+			if (count < 0) {
+				result = p;
+				count = 1;
+			}
+		}
+	}
+	return result;
+}
+
 template<typename T>
 StructureEntity constructStructureWithoutDirection(
 	const sf::Image &img, unsigned int x, unsigned int y
@@ -181,7 +206,7 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 				}
 				setPositionAtBottomCenter(level.duck, x, y);
 				duck_placed = true;
-				break;
+				continue;
 
 			case checkpoint_marker_color.toInteger():
 				if (checkpoint_placed) {
@@ -192,7 +217,7 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 				}
 				setPositionAtBottomCenter(level.checkpoint, x, y);
 				checkpoint_placed = true;
-				break;
+				continue;
 
 			case laser_emitter_marker_color.toInteger():
 				structures.push_back(
@@ -288,6 +313,12 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 						x, y
 					)
 				);
+			}
+
+			auto ptype_color = decideMarkerBaseColor(image, x, y);
+			world.replacePixel(x, y, constructElementByType(ptype_color.type));
+			if (ptype_color.color_index != 255) {
+				world.tagOf(x, y).color_index = ptype_color.color_index;
 			}
 		}
 	}
