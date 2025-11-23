@@ -444,6 +444,18 @@
 			"description": "Loading credits UI configuration"
 		},
 		{
+			"id": "level/hello/map",
+			"type": "image",
+			"file": "levels/hello.png",
+			"description": "Loading hello level prototype image"
+		},
+		{
+			"id": "level/hello",
+			"type": "level-metadata",
+			"file": "levels/hello.json",
+			"description": "Loading hello level metadata"
+		},
+		{
 			"id": "level/laser/map",
 			"type": "image",
 			"file": "levels/laser.png",
@@ -483,6 +495,7 @@
 			"id": "level-sequence",
 			"type": "level-sequence",
 			"levels": [
+				"level/hello",
 				"level/laser",
 				"level/density",
 				"level/steam_jet"

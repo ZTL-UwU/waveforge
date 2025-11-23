@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/hello/map",
+	"metadata": {
+		"level_name": "Hello Duck!",
+		"description": "Quack! Quack!"
+	},
+	"items": [
+		{
+			"id": "water_brush",
+			"amount": 99
+		}
+	]
+}
