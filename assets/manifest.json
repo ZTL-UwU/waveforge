@@ -480,6 +480,18 @@
 			"description": "Loading zigzag level metadata"
 		},
 		{
+			"id": "level/signal/map",
+			"type": "image",
+			"file": "levels/signal.png",
+			"description": "Loading signal level prototype image"
+		},
+		{
+			"id": "level/signal",
+			"type": "level-metadata",
+			"file": "levels/signal.json",
+			"description": "Loading signal level metadata"
+		},
+		{
 			"id": "level/laser/map",
 			"type": "image",
 			"file": "levels/laser.png",
@@ -522,6 +534,7 @@
 				"level/hello",
 				"level/fire",
 				"level/zigzag",
+				"level/signal",
 				"level/laser",
 				"level/density",
 				"level/steam_jet"

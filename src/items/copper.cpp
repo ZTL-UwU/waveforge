@@ -26,9 +26,11 @@ bool CopperBrush::use(Level &level, int x, int y, int scale) noexcept {
 				continue;
 			}
 
-			if (!world.classOfIs(wx, wy, PixelClass::Solid)
-			    && !world.isExternalEntityPresent(wx, wy)) {
+			if (!world.isExternalEntityPresent(wx, wy)) {
+				auto &tag = world.tagOf(wx, wy);
+				int old_heat = tag.heat;
 				world.replacePixel(wx, wy, element::Copper::create());
+				tag.heat = old_heat;
 				used = true;
 			}
 		}

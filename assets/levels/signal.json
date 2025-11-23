@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/signal/map",
+	"metadata": {
+		"level_name": "Signal Wave",
+		"description": "Just wire it up!"
+	},
+	"items": [
+		{
+			"id": "copper_brush",
+			"amount": 1
+		}
+	]
+}
