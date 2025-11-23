@@ -3,6 +3,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/structures.h"
 #include <format>
+#include <iostream>
 
 namespace wf {
 namespace structure {
@@ -68,11 +69,13 @@ bool LaserEmitter::step(PixelWorld &world) noexcept {
 
 		// Solid & smoke can block laser beam
 		if (pixel_tag.pclass == PixelClass::Solid) {
+			std::cerr << "Laser beam blocked at (" << cur_x << ", " << cur_y << ")\n";
 			pixel_tag.heat += laser_heat_amount;
 			break;
 		}
 
 		if (pixel_tag.type == PixelType::Smoke) {
+			std::cerr << "Laser beam blocked at (" << cur_x << ", " << cur_y << ")\n";
 			break;
 		}
 
