@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/fire/map",
+	"metadata": {
+		"level_name": "Fire",
+		"description": "No worry. Duck is fireproof!"
+	},
+	"items": [
+		{
+			"id": "fire_brush",
+			"amount": 5
+		}
+	]
+}

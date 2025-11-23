@@ -456,6 +456,18 @@
 			"description": "Loading hello level metadata"
 		},
 		{
+			"id": "level/fire/map",
+			"type": "image",
+			"file": "levels/fire.png",
+			"description": "Loading fire level prototype image"
+		},
+		{
+			"id": "level/fire",
+			"type": "level-metadata",
+			"file": "levels/fire.json",
+			"description": "Loading fire level metadata"
+		},
+		{
 			"id": "level/laser/map",
 			"type": "image",
 			"file": "levels/laser.png",
@@ -496,6 +508,7 @@
 			"type": "level-sequence",
 			"levels": [
 				"level/hello",
+				"level/fire",
 				"level/laser",
 				"level/density",
 				"level/steam_jet"
