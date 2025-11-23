@@ -1,0 +1,18 @@
+{
+	"format": 1,
+	"map": "level/zigzag/map",
+	"metadata": {
+		"level_name": "Zig Zag",
+		"description": "You can do it!"
+	},
+	"items": [
+		{
+			"id": "water_brush_large",
+			"amount": 50
+		},
+		{
+			"id": "water_brush",
+			"amount": 50
+		}
+	]
+}

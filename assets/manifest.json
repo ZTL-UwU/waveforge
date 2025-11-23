@@ -468,6 +468,18 @@
 			"description": "Loading fire level metadata"
 		},
 		{
+			"id": "level/zigzag/map",
+			"type": "image",
+			"file": "levels/zigzag.png",
+			"description": "Loading zigzag level prototype image"
+		},
+		{
+			"id": "level/zigzag",
+			"type": "level-metadata",
+			"file": "levels/zigzag.json",
+			"description": "Loading zigzag level metadata"
+		},
+		{
 			"id": "level/laser/map",
 			"type": "image",
 			"file": "levels/laser.png",
@@ -509,6 +521,7 @@
 			"levels": [
 				"level/hello",
 				"level/fire",
+				"level/zigzag",
 				"level/laser",
 				"level/density",
 				"level/steam_jet"
