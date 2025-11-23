@@ -300,6 +300,30 @@
 			"description": "Creating gate pixel shapes for all facings"
 		},
 		{
+			"id": "gate/wall/raw",
+			"type": "image",
+			"file": "gate-wall.png",
+			"description": "Loading gate wall PNG"
+		},
+		{
+			"id": "gate/wall/trimmed",
+			"type": "trim-image",
+			"input": "gate/wall/raw",
+			"description": "Trimming gate wall image"
+		},
+		{
+			"id": "gate/wall/images",
+			"type": "create-image-of-all-facings",
+			"input": "gate/wall/trimmed",
+			"description": "Creating gate wall images for all facings"
+		},
+		{
+			"id": "gate/wall/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "gate/wall/images",
+			"description": "Creating gate wall pixel shapes for all facings"
+		},
+		{
 			"id": "transistor/raw",
 			"type": "image",
 			"file": "transistor.png",

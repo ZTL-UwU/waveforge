@@ -1,12 +1,12 @@
 #include "wforge/elements.h"
 #include "wforge/fallsand.h"
 #include "wforge/structures.h"
+#include <cstdlib>
 
 namespace wf::structure {
 
 namespace {
 
-constexpr int gate_length = 20;
 constexpr int gate_open_speed = 3; // ticks per pixel, i.e. larger is slower
 
 PixelShape &gateShape(FacingDirection dir) {
@@ -19,49 +19,186 @@ PixelShape &gateShape(FacingDirection dir) {
 	return ptr[static_cast<std::uint8_t>(dir)];
 }
 
+PixelShape &gateWallShape(FacingDirection dir) {
+	static PixelShape *ptr = nullptr;
+	if (ptr == nullptr) {
+		ptr = AssetsManager::instance()
+				  .getAsset<std::array<PixelShape, 4>>("gate/wall/shapes")
+				  .data();
+	}
+	return ptr[static_cast<std::uint8_t>(dir)];
+}
+
 } // namespace
 
 Gate::Gate(int x, int y, FacingDirection dir)
 	: InputElectricalStructure(x, y, gateShape(dir))
 	, _dir(dir)
-	, _open_state(0) {
-	if (poi.size() == 0) {
-		throw std::runtime_error("Gate: expected at least 1 POI, got 0\n");
+	, _open_state(0)
+	, _gate_wall_shape(gateWallShape(dir)) {
+	if (poi.size() != 2) {
+		throw std::runtime_error(
+			std::format("Gate: expected 2 POIs, got {} POIs", poi.size())
+		);
+	}
+
+	_gate_length = std::abs(
+		_gate_wall_shape.width() * xDeltaOf(dir)
+		+ _gate_wall_shape.height() * yDeltaOf(dir)
+	);
+
+	int poi_delta = std::abs(
+		(poi[1][0] - poi[0][0]) * xDeltaOf(dir)
+		+ (poi[1][1] - poi[0][1]) * yDeltaOf(dir)
+	);
+
+	_max_open_length = _gate_length - poi_delta - 1;
+	if (_max_open_length <= 0) {
+		throw std::runtime_error(
+			"Gate: invalid POI configuration, cannot open"
+		);
+	}
+
+	// Decide which poi is the base placement point
+	int poi_idx;
+	if ((poi[0][0] - poi[0][1]) * xDeltaOf(dir)
+	        + (poi[0][1] - poi[0][1]) * yDeltaOf(dir)
+	    < 0) {
+		poi_idx = 0;
+	} else {
+		poi_idx = 1;
+	}
+
+	_base_place_x = poi[poi_idx][0] + x;
+	_base_place_y = poi[poi_idx][1] + y;
+
+	// Fix base placement point to anchor at top-left
+	switch (dir) {
+	case FacingDirection::North:
+		_base_place_y -= _gate_length;
+		break;
+
+	case FacingDirection::East:
+		break;
+
+	case FacingDirection::South:
+		_base_place_x -= _gate_wall_shape.width();
+		break;
+
+	case FacingDirection::West:
+		_base_place_x -= _gate_length;
+		_base_place_y -= _gate_wall_shape.height();
+		break;
+	}
+
+	_gate_wall_pixel_types = std::make_unique<PixelTypeAndColor[]>(
+		_gate_wall_shape.width() * _gate_wall_shape.height()
+	);
+	for (int i = 0; i < _gate_wall_shape.width(); ++i) {
+		for (int j = 0; j < _gate_wall_shape.height(); ++j) {
+			_gate_wall_pixel_types[j * _gate_wall_shape.width() + i]
+				= pixelTypeFromColor(_gate_wall_shape.colorOf(i, j));
+		}
 	}
 }
 
 void Gate::setup(PixelWorld &world) {
 	PixelShapedStructure::setup(world);
-
-	int dx = xDeltaOf(_dir);
-	int dy = yDeltaOf(_dir);
-	for (int i = 0; i < gate_length; ++i) {
-		for (auto [bx, by] : poi) {
-			int wx = x + bx + i * dx;
-			int wy = y + by + i * dy;
-			if (!world.inBounds(wx, wy)) {
-				continue;
-			}
-
-			auto &tag = world.tagOf(wx, wy);
-			if (tag.pclass == PixelClass::Solid) {
-				throw std::runtime_error(
-					std::format(
-						"Gate setup failed: blocking pixel at ({}, {})\n", wx,
-						wy
-					)
-				);
-			}
-
-			int old_heat = tag.heat;
-			world.replacePixel(wx, wy, element::Stone::create());
-			tag.heat = old_heat;
-		}
+	int block_x, block_y;
+	if (!_canPlaceAt(world, 0, &block_x, &block_y)) {
+		throw std::runtime_error(
+			std::format(
+				"Gate: cannot place: blocked at ({}, {})", block_x, block_y
+			)
+		);
 	}
+	_placeTo(world, 0, false);
 }
 
 int Gate::_openProgress() const noexcept {
 	return _open_state / gate_open_speed;
+}
+
+bool Gate::_canPlaceAt(
+	PixelWorld &world, int progress, int *block_x, int *block_y
+) const noexcept {
+	int dx = xDeltaOf(_dir);
+	int dy = yDeltaOf(_dir);
+
+	int offset_x = -progress * dx;
+	int offset_y = -progress * dy;
+
+	for (int i = 0; i < _gate_wall_shape.width(); ++i) {
+		int wx = _base_place_x + offset_x + i;
+		if (wx < 0 || wx >= world.width()) {
+			continue;
+		}
+
+		for (int j = 0; j < _gate_wall_shape.height(); ++j) {
+			if (!_gate_wall_shape.hasPixel(i, j)) {
+				continue;
+			}
+			int wy = _base_place_y + offset_y + j;
+			if (wy < 0 || wy >= world.height()) {
+				continue;
+			}
+
+			auto tag = world.tagOf(wx, wy);
+			if (tag.pclass == PixelClass::Solid) {
+				if (block_x) {
+					*block_x = wx;
+				}
+
+				if (block_y) {
+					*block_y = wy;
+				}
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void Gate::_placeTo(
+	PixelWorld &world, int progress, bool remove
+) const noexcept {
+	int dx = xDeltaOf(_dir);
+	int dy = yDeltaOf(_dir);
+
+	int offset_x = -progress * dx;
+	int offset_y = -progress * dy;
+
+	for (int i = 0; i < _gate_wall_shape.width(); ++i) {
+		int wx = _base_place_x + offset_x + i;
+		if (wx < 0 || wx >= world.width()) {
+			continue;
+		}
+
+		for (int j = 0; j < _gate_wall_shape.height(); ++j) {
+			if (!_gate_wall_shape.hasPixel(i, j)) {
+				continue;
+			}
+			int wy = _base_place_y + offset_y + j;
+			if (wy < 0 || wy >= world.height()) {
+				continue;
+			}
+
+			auto &tag = world.tagOf(wx, wy);
+			int old_heat = tag.heat;
+			if (remove) {
+				world.replacePixelWithAir(wx, wy);
+			} else {
+				auto p = _gate_wall_pixel_types
+					[j * _gate_wall_shape.width() + i];
+				world.replacePixel(wx, wy, constructElementByType(p.type));
+
+				if (tag.color_index != 255) {
+					tag.color_index = p.color_index;
+				}
+			}
+			tag.heat = old_heat;
+		}
+	}
 }
 
 bool Gate::step(PixelWorld &world) noexcept {
@@ -73,148 +210,27 @@ bool Gate::step(PixelWorld &world) noexcept {
 		return false;
 	}
 
+	int move_dir = isPowered() ? 1 : -1;
 	int old_progress = _openProgress();
-	if (isPowered()) {
-		if (_canMoveFurther(world, 1)) {
-			_open_state += 1;
-		}
-	} else {
-		if (_canMoveFurther(world, -1)) {
-			_open_state -= 1;
-		}
-	}
-
+	_open_state = std::clamp(
+		_open_state + move_dir, 0, _max_open_length * gate_open_speed
+	);
 	int new_progress = _openProgress();
-	if (new_progress > old_progress) {
-		_openFurther(world);
-	} else if (new_progress < old_progress) {
-		_closeFurther(world);
+
+	if (new_progress != old_progress) {
+		_placeTo(world, old_progress, true);
+		if (_canPlaceAt(world, new_progress, nullptr, nullptr)) {
+			_placeTo(world, new_progress, false);
+		} else {
+			_open_state = old_progress * gate_open_speed;
+			_placeTo(world, old_progress, false);
+		}
 	}
 	return true;
 }
 
 int Gate::priority() const noexcept {
-	return 5; // must be earlier than lasers and pressure plates
-}
-
-void Gate::_openFurther(PixelWorld &world) noexcept {
-	int dx = xDeltaOf(_dir);
-	int dy = yDeltaOf(_dir);
-	int progress = _openProgress();
-
-	// Remove pixels at the front
-	for (auto [bx, by] : poi) {
-		int wx = x + bx + (gate_length - progress) * dx;
-		int wy = y + by + (gate_length - progress) * dy;
-		if (!world.inBounds(wx, wy)) {
-			continue;
-		}
-
-		auto &tag = world.tagOf(wx, wy);
-		int old_heat = tag.heat;
-		world.replacePixelWithAir(wx, wy);
-		tag.heat = old_heat;
-	}
-
-	// Restore pixels at the back
-	for (auto [bx, by] : poi) {
-		int wx = x + bx + (-progress) * dx;
-		int wy = y + by + (-progress) * dy;
-		if (!world.inBounds(wx, wy)) {
-			continue;
-		}
-
-		auto &tag = world.tagOf(wx, wy);
-		int old_heat = tag.heat;
-		world.replacePixel(wx, wy, element::Stone::create());
-		tag.heat = old_heat;
-	}
-}
-
-void Gate::_closeFurther(PixelWorld &world) noexcept {
-	int dx = xDeltaOf(_dir);
-	int dy = yDeltaOf(_dir);
-	int progress = _openProgress();
-
-	// Restore pixels at the front
-	for (auto [bx, by] : poi) {
-		int wx = x + bx + (gate_length - progress - 1) * dx;
-		int wy = y + by + (gate_length - progress - 1) * dy;
-		if (!world.inBounds(wx, wy)) {
-			continue;
-		}
-
-		auto &tag = world.tagOf(wx, wy);
-		int old_heat = tag.heat;
-		world.replacePixel(wx, wy, element::Stone::create());
-		tag.heat = old_heat;
-	}
-
-	// Remove pixels at the back
-	for (auto [bx, by] : poi) {
-		int wx = x + bx + (-progress - 1) * dx;
-		int wy = y + by + (-progress - 1) * dy;
-		if (!world.inBounds(wx, wy)) {
-			continue;
-		}
-
-		auto &tag = world.tagOf(wx, wy);
-		int old_heat = tag.heat;
-		world.replacePixelWithAir(wx, wy);
-		tag.heat = old_heat;
-	}
-}
-
-bool Gate::_canMoveFurther(
-	const PixelWorld &world, int direction
-) const noexcept {
-	int next_progress = _openProgress() + direction;
-	if (next_progress < 0 || next_progress >= gate_length) {
-		return false;
-	}
-
-	int dx = xDeltaOf(_dir);
-	int dy = yDeltaOf(_dir);
-	for (auto [bx, by] : poi) {
-		int wx = x + bx;
-		int wy = y + by;
-
-		if (direction < 0) {
-			wx += (gate_length - next_progress - 1) * dx;
-			wy += (gate_length - next_progress - 1) * dy;
-		} else {
-			wx += (-next_progress) * dx;
-			wy += (-next_progress) * dy;
-		}
-
-		if (!world.inBounds(wx, wy)) {
-			continue;
-		}
-
-		if (world.classOfIs(wx, wy, PixelClass::Solid)) {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Gate::_checkIntegrity(const PixelWorld &world) const noexcept {
-	int dx = xDeltaOf(_dir);
-	int dy = yDeltaOf(_dir);
-	for (int i = 0; i < gate_length; ++i) {
-		for (auto [bx, by] : poi) {
-			int wx = x + bx + i * dx;
-			int wy = y + by + i * dy;
-			if (!world.inBounds(wx, wy)) {
-				continue;
-			}
-
-			if (!world.typeOfIs(wx, wy, PixelType::Stone)) {
-				return false;
-			}
-		}
-	}
-	return true;
+	return 5; // gates must be earlier than lasers
 }
 
 } // namespace wf::structure

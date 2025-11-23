@@ -125,13 +125,20 @@ struct Gate : InputElectricalStructure {
 
 private:
 	int _openProgress() const noexcept;
-	bool _canMoveFurther(const PixelWorld &world, int d) const noexcept;
-	void _openFurther(PixelWorld &world) noexcept;
-	void _closeFurther(PixelWorld &world) noexcept;
-	bool _checkIntegrity(const PixelWorld &world) const noexcept;
+	bool _canPlaceAt(
+		PixelWorld &world, int progress, int *block_x, int *block_y
+	) const noexcept;
+	void _placeTo(PixelWorld &world, int progress, bool remove) const noexcept;
 
 	FacingDirection _dir;
 	int _open_state;
+
+	int _gate_length;
+	int _max_open_length;
+	int _base_place_x;
+	int _base_place_y;
+	const PixelShape &_gate_wall_shape;
+	std::unique_ptr<PixelTypeAndColor[]> _gate_wall_pixel_types;
 };
 
 struct TransistorNPN : InputElectricalStructure {

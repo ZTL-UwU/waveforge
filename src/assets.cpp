@@ -87,7 +87,11 @@ PixelShape::PixelShape(const sf::Image &img) noexcept
 PixelShape::PixelShape() noexcept: _width(0), _height(0), _data(nullptr) {}
 
 bool PixelShape::hasPixel(int x, int y) const noexcept {
-	return colorOf(x, y).a != 0;
+	if (colorOf(x, y).a == 0) {
+		return false;
+	}
+
+	return !isPOIPixel(x, y);
 }
 
 sf::Color PixelShape::colorOf(int x, int y) const noexcept {
