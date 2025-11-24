@@ -648,6 +648,18 @@
 				"level/steam_jet"
 			],
 			"description": "Creating level sequence"
+		},
+		{
+			"id": "level/main-menu/map",
+			"type": "image",
+			"file": "levels/main-menu.png",
+			"description": "Loading main-menu level prototype image"
+		},
+		{
+			"id": "level/main-menu",
+			"type": "level-metadata",
+			"file": "levels/main-menu.json",
+			"description": "Loading main-menu level metadata"
 		}
 	]
 }

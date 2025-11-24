@@ -1,0 +1,9 @@
+{
+	"format": 1,
+	"map": "level/main-menu/map",
+	"metadata": {
+		"level_name": "Level for main menu",
+		"description": ""
+	},
+	"items": []
+}
