@@ -3,7 +3,7 @@
 	"map": "level/zigzag/map",
 	"metadata": {
 		"level_name": "Zig Zag",
-		"description": "You can do it!",
+		"description": "You can make it!",
 		"minimap_asset_id": "level/zigzag/minimap"
 	},
 	"items": [

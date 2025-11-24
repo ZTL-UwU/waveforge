@@ -59,7 +59,9 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 
 	for (auto _level : _level_seq.levels) {
 		_level_button_texture_normal.push_back(
-			&AssetsManager::instance().getAsset<sf::Texture>(_level->minimap_asset_id)
+			&AssetsManager::instance().getAsset<sf::Texture>(
+				_level->minimap_asset_id
+			)
 		);
 	}
 	_level_button_texture_frame = loadTexture("level-button-selected-frame");
@@ -98,7 +100,7 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 		case sf::Keyboard::Key::Right:
 		case sf::Keyboard::Key::D:
 			UISounds::instance().forward.play();
-			if (_selected_index + 1 < _level_seq.levels.size()) {
+			if (_selected_index + 1 <= save.completed_levels) {
 				_selected_index++;
 			}
 			break;

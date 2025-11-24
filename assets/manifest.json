@@ -650,16 +650,16 @@
 			"description": "Creating level sequence"
 		},
 		{
-			"id": "level/main-menu/map",
+			"id": "level/auto/map",
 			"type": "image",
-			"file": "levels/main-menu.png",
-			"description": "Loading main-menu level prototype image"
+			"file": "levels/auto.png",
+			"description": "Loading auto level prototype image"
 		},
 		{
-			"id": "level/main-menu",
+			"id": "level/auto",
 			"type": "level-metadata",
-			"file": "levels/main-menu.json",
-			"description": "Loading main-menu level metadata"
+			"file": "levels/auto.json",
+			"description": "Loading auto level metadata"
 		}
 	]
 }

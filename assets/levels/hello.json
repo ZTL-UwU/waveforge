@@ -3,7 +3,7 @@
 	"map": "level/hello/map",
 	"metadata": {
 		"level_name": "Hello Duck!",
-		"description": "Quack! Quack!",
+		"description": "Quack!Quack!",
 		"minimap_asset_id": "level/hello/minimap"
 	},
 	"items": [

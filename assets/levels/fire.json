@@ -3,7 +3,7 @@
 	"map": "level/fire/map",
 	"metadata": {
 		"level_name": "Fire",
-		"description": "No worry. Duck is fireproof!",
+		"description": "No worry.Duck is fireproof!",
 		"minimap_asset_id": "level/fire/minimap"
 	},
 	"items": [
