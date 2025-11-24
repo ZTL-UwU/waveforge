@@ -146,3 +146,10 @@ target_link_libraries(waveforge PRIVATE
 	nlohmann_json::nlohmann_json
 	argparse::argparse
 )
+
+# Attach icon on Windows
+if (MSVC)
+	set_target_properties(waveforge PROPERTIES
+		RC_ICONS "${CMAKE_CURRENT_SOURCE_DIR}/assets/duck.ico"
+	)
+endif()
