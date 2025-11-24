@@ -141,7 +141,7 @@ LevelRenderer::LevelRenderer(Level &level, int scale)
 	_duck_sprite.setScale(scale_vec);
 }
 
-void LevelRenderer::_renderFallsand(sf::RenderTarget &target) noexcept {
+void LevelRenderer::_renderFallsand(sf::RenderTarget &target) {
 	std::span<std::uint8_t> fallsand_buffer_view(
 		_fallsand_buffer.get(), _level.width() * _level.height() * 4
 	);
@@ -150,7 +150,7 @@ void LevelRenderer::_renderFallsand(sf::RenderTarget &target) noexcept {
 	target.draw(_fallsand_sprite);
 }
 
-void LevelRenderer::_renderDuck(sf::RenderTarget &target) noexcept {
+void LevelRenderer::_renderDuck(sf::RenderTarget &target) {
 	sf::Vector2f duck_pos(
 		std::round(_level.duck.position.x) * scale,
 		std::round(_level.duck.position.y) * scale
@@ -160,21 +160,43 @@ void LevelRenderer::_renderDuck(sf::RenderTarget &target) noexcept {
 	target.draw(_duck_sprite);
 }
 
-void LevelRenderer::render(
-	sf::RenderTarget &target, int mouse_x, int mouse_y
-) noexcept {
+void LevelRenderer::render(sf::RenderTarget &target, int mouse_x, int mouse_y) {
 	_renderFallsand(target);
 	_renderDuck(target);
 	_level.checkpoint.render(target, scale); // checkpoint can render itself
-
+	_renderItemText(target);
 	if (auto itemstack = _level.activeItemStack()) {
 		itemstack->item->render(target, mouse_x, mouse_y, scale);
+	}
+}
 
-		constexpr sf::Color text_color = ui_text_color(120);
+void LevelRenderer::_renderItemText(sf::RenderTarget &target) {
+	constexpr sf::Color active_color = ui_text_color(200);
+	constexpr sf::Color inactive_color = ui_text_color(120);
+	constexpr int start_x = 2;
+	constexpr int start_y = 2;
+	constexpr int line_spacing = 1;
+
+	auto active_stack = _level.activeItemStack();
+	if (!active_stack) {
+		return;
+	}
+
+	int y = start_y;
+	for (const auto &itemstack : _level.items) {
+		if (itemstack.amount <= 0) {
+			continue;
+		}
+
+		bool is_active = (itemstack.id == active_stack->id);
+		auto color = is_active ? active_color : inactive_color;
 		auto display_text = std::format(
-			"{}({})", itemstack->item->name(), itemstack->amount
+			"{}{}({})", is_active ? '>' : ' ', itemstack.item->name(),
+			itemstack.amount
 		);
-		_font.renderText(target, display_text, text_color, 2, 2, scale);
+
+		_font.renderText(target, display_text, color, start_x, y, scale);
+		y += _font.charHeight(1) + line_spacing;
 	}
 }
 

@@ -3,6 +3,7 @@
 
 #include "wforge/assets.h"
 #include "wforge/fallsand.h"
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstdint>
 #include <memory>
@@ -166,7 +167,7 @@ struct LevelRenderer {
 
 	int scale;
 
-	void render(sf::RenderTarget &target, int mouse_x, int mouse_y) noexcept;
+	void render(sf::RenderTarget &target, int mouse_x, int mouse_y);
 
 private:
 	Level &_level;
@@ -176,8 +177,9 @@ private:
 	sf::Sprite _duck_sprite;
 	PixelFont &_font;
 
-	void _renderFallsand(sf::RenderTarget &target) noexcept;
-	void _renderDuck(sf::RenderTarget &target) noexcept;
+	void _renderFallsand(sf::RenderTarget &target);
+	void _renderDuck(sf::RenderTarget &target);
+	void _renderItemText(sf::RenderTarget &target);
 };
 
 struct LevelSequence {
