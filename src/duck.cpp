@@ -18,6 +18,7 @@ constexpr float duck_fluid_drag = 0.7f;
 constexpr float duck_ground_friction = 0.7f;
 constexpr float duck_solid_correction_factor = 0.01f;
 constexpr float duck_solid_correction_threshold = 1.5f;
+constexpr float duck_flow_movement_threshold = 1.5f;
 
 struct RelatedPixel {
 	int x;
@@ -180,7 +181,9 @@ void DuckEntity::step(const Level &level) noexcept {
 			total_flow += tag.fluid_dir * rp.area;
 		}
 	}
-	velocity.x += duck_flow_factor * total_flow;
+	velocity.x += std::min<float>(
+		duck_flow_factor * total_flow, duck_flow_movement_threshold
+	);
 
 	// Apply steam jet
 	float total_steam_force = .0f;
