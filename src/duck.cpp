@@ -210,6 +210,50 @@ void DuckEntity::step(const Level &level) noexcept {
 		velocity.y *= avg_drag;
 	}
 
+	bool left_colliding = false;
+	for (int dy = 0; dy < shape.height(); ++dy) {
+		if (!shape.hasPixel(0, dy)) {
+			continue;
+		}
+
+		int check_x = std::floor(position.x) - 1;
+		int check_y = std::round(position.y) + dy;
+		if (!world.inBounds(check_x, check_y)) {
+			continue;
+		}
+
+		if (world.classOfIs(check_x, check_y, PixelClass::Solid)) {
+			left_colliding = true;
+			break;
+		}
+	}
+
+	bool right_colliding = false;
+	for (int dy = 0; dy < shape.height(); ++dy) {
+		if (!shape.hasPixel(shape.width() - 1, dy)) {
+			continue;
+		}
+
+		int check_x = std::ceil(position.x) + shape.width();
+		int check_y = std::round(position.y) + dy;
+		if (!world.inBounds(check_x, check_y)) {
+			continue;
+		}
+
+		if (world.classOfIs(check_x, check_y, PixelClass::Solid)) {
+			right_colliding = true;
+			break;
+		}
+	}
+
+	if (left_colliding && velocity.x < 0.0f) {
+		velocity.x = 0.0f;
+	}
+
+	if (right_colliding && velocity.x > 0.0f) {
+		velocity.x = 0.0f;
+	}
+
 	// Apply friction when on ground
 	bool on_ground = false;
 	int foot_y = std::round(position.y + shape.height());
@@ -230,7 +274,7 @@ void DuckEntity::step(const Level &level) noexcept {
 		}
 	}
 	if (on_ground) {
-		velocity.x *= duck_ground_friction;
+		// velocity.x *= duck_ground_friction;
 	}
 
 	// Apply solid collision correction force
@@ -305,7 +349,7 @@ void DuckEntity::step(const Level &level) noexcept {
 			: 1;
 		for (int d : {rand_dir, -rand_dir}) {
 			int side_x = to_x + d;
-			if (!willCollideAt(level, side_x, to_y - 2)) {
+			if (!willCollideAt(level, side_x, to_y - 1)) {
 				to_x = side_x;
 				to_y = to_y - 1;
 			}
