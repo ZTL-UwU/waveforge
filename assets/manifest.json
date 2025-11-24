@@ -636,20 +636,6 @@
 			"description": "Loading density level metadata"
 		},
 		{
-			"id": "level-sequence",
-			"type": "level-sequence",
-			"levels": [
-				"level/hello",
-				"level/fire",
-				"level/zigzag",
-				"level/signal",
-				"level/laser",
-				"level/density",
-				"level/steam_jet"
-			],
-			"description": "Creating level sequence"
-		},
-		{
 			"id": "level/auto/map",
 			"type": "image",
 			"file": "levels/auto.png",
@@ -660,6 +646,21 @@
 			"type": "level-metadata",
 			"file": "levels/auto.json",
 			"description": "Loading auto level metadata"
+		},
+		{
+			"id": "level-sequence",
+			"type": "level-sequence",
+			"levels": [
+				"level/hello",
+				"level/fire",
+				"level/zigzag",
+				"level/signal",
+				"level/laser",
+				"level/density",
+				"level/steam_jet",
+				"level/auto"
+			],
+			"description": "Creating level sequence"
 		}
 	]
 }
