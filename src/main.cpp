@@ -13,29 +13,10 @@
 #include <iostream>
 #include <proxy/proxy.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 void entry(const std::string &level_id, int scale_config);
 
 std::filesystem::path wf::_executable_path;
 int main(int argc, char **argv) {
-#if defined(_WIN32) && defined(NDEBUG)
-	// On Windows, disable the console window for release builds
-	{
-		auto console_window = ::GetConsoleWindow();
-		if (console_window) {
-			::ShowWindow(console_window, SW_HIDE);
-			::FreeConsole();
-		}
-		::SetErrorMode(
-			SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX
-			| SEM_NOOPENFILEERRORBOX
-		);
-	}
-#endif
-
 	if (argc > 0) {
 		try {
 			wf::_executable_path = std::filesystem::absolute(argv[0]);
@@ -48,22 +29,6 @@ int main(int argc, char **argv) {
 		// fallback: current working directory
 		wf::_executable_path = std::filesystem::current_path();
 	}
-
-#ifdef NDEBUG
-	// Redirect stderr
-#ifdef __linux__
-	std::freopen("/tmp/waveforge-stderr.log", "w", stderr);
-#elif defined(__APPLE__)
-	std::freopen("/var/tmp/waveforge-stderr.log", "w", stderr);
-#elif defined(_WIN32)
-	std::freopen(
-		(wf::_executable_path / "waveforge-stderr.log").string().c_str(), "w",
-		stderr
-	);
-#else
-	// Unsupported platform, do nothing
-#endif
-#endif
 
 	CPPTRACE_TRY {
 		wf::AssetsManager::loadAllAssets();
