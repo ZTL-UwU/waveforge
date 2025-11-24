@@ -104,7 +104,7 @@ Gate::Gate(int x, int y, FacingDirection dir)
 
 void Gate::setup(PixelWorld &world) {
 	PixelShapedStructure::setup(world);
-	int block_x, block_y;
+	int block_x = -1, block_y = -1;
 	if (!_canPlaceAt(world, 0, &block_x, &block_y)) {
 		throw std::runtime_error(
 			std::format(
@@ -152,6 +152,10 @@ bool Gate::_canPlaceAt(
 				if (block_y) {
 					*block_y = wy;
 				}
+				return false;
+			}
+
+			if (world.isExternalEntityPresent(wx, wy)) {
 				return false;
 			}
 		}
