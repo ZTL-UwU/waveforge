@@ -59,6 +59,7 @@ LevelPlaying::LevelPlaying(Level level): LevelPlaying(std::move(level), 0) {}
 
 LevelPlaying::LevelPlaying(Level level, int scale)
 	: _scale(automaticScale(level.width(), level.height(), scale))
+	, _tick(0)
 	, _level(std::move(level))
 	, _renderer(_level, _scale)
 	, _hint_type(HintType::None)
@@ -79,6 +80,8 @@ void LevelPlaying::setup(SceneManager &mgr) {
 }
 
 void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
+	constexpr int retry_cooldown_ticks = 24 * 2;
+
 	if (auto mw = ev.getIf<sf::Event::MouseWheelScrolled>()) {
 		if (mw->delta > 0) {
 			_level.changeActiveItemBrushSize(1);
@@ -97,6 +100,10 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
 		switch (kb->code) {
 		case sf::Keyboard::Key::R:
+			if (_tick < retry_cooldown_ticks) {
+				break;
+			}
+
 			if (_hint_opacity > 0 && _hint_type == HintType::RestartLevel) {
 				_restartLevel(mgr, false);
 				return;
@@ -175,6 +182,7 @@ void LevelPlaying::render(
 }
 
 void LevelPlaying::step(SceneManager &mgr) {
+	_tick += 1;
 	_level.step();
 
 	if (_hint_opacity > 0) {

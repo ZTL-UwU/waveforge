@@ -94,6 +94,7 @@ private:
 	void _restartLevel(SceneManager &mgr, bool is_failed = true);
 
 	int _scale;
+	int _tick;
 	Level _level;
 	mutable LevelRenderer _renderer;
 	int _hint_type;
