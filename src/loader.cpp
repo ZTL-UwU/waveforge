@@ -180,7 +180,8 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 	for (unsigned int y = 0; y < height; ++y) {
 		for (unsigned int x = 0; x < width; ++x) {
 			sf::Color color = image.getPixel({x, y});
-			if (color.a != structure_marker_alpha) {
+			if (color.a != structure_marker_alpha
+			    && color != poi_marker_color) {
 				auto ptype_color = pixelTypeFromColor(color);
 				world.replacePixel(
 					x, y, constructElementByType(ptype_color.type)
@@ -193,11 +194,15 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 
 			if (y + 1 >= height || x + 1 >= width) {
 				throw std::runtime_error(
-					"Failed to load level map: structure marker at border"
+					"Failed to load level map: marker found at border"
 				);
 			}
 
 			switch (color.toInteger()) {
+			case poi_marker_color.toInteger():
+				// Do nothing, handled in structure construction
+				break;
+
 			case duck_marker_color.toInteger():
 				if (duck_placed) {
 					throw std::runtime_error(
@@ -206,7 +211,7 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 				}
 				setPositionAtBottomCenter(level.duck, x, y);
 				duck_placed = true;
-				continue;
+				continue; // Skip base pixel vote replacement
 
 			case checkpoint_marker_color.toInteger():
 				if (checkpoint_placed) {
@@ -217,7 +222,7 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 				}
 				setPositionAtBottomCenter(level.checkpoint, x, y);
 				checkpoint_placed = true;
-				continue;
+				continue; // Skip base pixel vote replacement
 
 			case laser_emitter_marker_color.toInteger():
 				structures.push_back(
