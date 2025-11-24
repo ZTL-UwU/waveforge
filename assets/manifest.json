@@ -270,10 +270,16 @@
 			"description": "Trimming heater image"
 		},
 		{
-			"id": "heater/shape",
-			"type": "calculate-shape",
+			"id": "heater/images",
+			"type": "create-image-of-all-facings",
 			"input": "heater/trimmed",
-			"description": "Calculating heater shape"
+			"description": "Creating heater images for all facings"
+		},
+		{
+			"id": "heater/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "heater/images",
+			"description": "Creating heater pixel shapes for all facings"
 		},
 		{
 			"id": "gate/raw",
@@ -600,28 +606,16 @@
 			"description": "Loading laser level metadata"
 		},
 		{
-			"id": "level/steam_jet/map",
+			"id": "level/polyfill/map",
 			"type": "image",
-			"file": "levels/steam_jet.png",
-			"description": "Loading steam_jet level prototype image"
+			"file": "levels/polyfill.png",
+			"description": "Loading polyfill level prototype image"
 		},
 		{
-			"id": "level/steam_jet/minimap/raw",
-			"type": "image",
-			"file": "levels/minimap/steam_jet.png",
-			"description": "Loading steam_jet level minimap image"
-		},
-		{
-			"id": "level/steam_jet/minimap",
-			"type": "create-texture",
-			"input": "level/steam_jet/minimap/raw",
-			"description": "Creating steam_jet level minimap texture"
-		},
-		{
-			"id": "level/steam_jet",
+			"id": "level/polyfill",
 			"type": "level-metadata",
-			"file": "levels/steam_jet.json",
-			"description": "Loading steam_jet level metadata"
+			"file": "levels/polyfill.json",
+			"description": "Loading polyfill level metadata"
 		},
 		{
 			"id": "level/density/map",
@@ -648,6 +642,30 @@
 			"description": "Loading density level metadata"
 		},
 		{
+			"id": "level/steam_jet/map",
+			"type": "image",
+			"file": "levels/steam_jet.png",
+			"description": "Loading steam_jet level prototype image"
+		},
+		{
+			"id": "level/steam_jet/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/steam_jet.png",
+			"description": "Loading steam_jet level minimap image"
+		},
+		{
+			"id": "level/steam_jet/minimap",
+			"type": "create-texture",
+			"input": "level/steam_jet/minimap/raw",
+			"description": "Creating steam_jet level minimap texture"
+		},
+		{
+			"id": "level/steam_jet",
+			"type": "level-metadata",
+			"file": "levels/steam_jet.json",
+			"description": "Loading steam_jet level metadata"
+		},
+		{
 			"id": "level/auto/map",
 			"type": "image",
 			"file": "levels/auto.png",
@@ -669,6 +687,7 @@
 				"level/sandy",
 				"level/signal",
 				"level/laser",
+				"level/polyfill",
 				"level/density",
 				"level/steam_jet",
 				"level/auto"

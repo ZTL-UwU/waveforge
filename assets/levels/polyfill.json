@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/polyfill/map",
+	"metadata": {
+		"level_name": "Polyfill",
+		"description": "What's the original meaning of polyfill?"
+	},
+	"items": [
+		{
+			"id": "water_brush_large",
+			"amount": 10
+		}
+	]
+}
