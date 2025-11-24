@@ -3,7 +3,8 @@
 	"map": "level/laser/map",
 	"metadata": {
 		"level_name": "Laser",
-		"description": "It's hot!"
+		"description": "It's hot!",
+		"minimap_asset_id": "level/laser/minimap"
 	},
 	"items": [
 		{

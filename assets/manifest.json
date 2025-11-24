@@ -396,6 +396,18 @@
 			"description": "Creating locked level button texture"
 		},
 		{
+			"id": "ui/level-button-selected-frame/raw",
+			"type": "image",
+			"file": "ui/level-button-selected-frame.png",
+			"description": "Loading selected level frame image"
+		},
+		{
+			"id": "ui/level-button-selected-frame",
+			"type": "create-texture",
+			"input": "ui/level-button-selected-frame/raw",
+			"description": "Creating selected level frame texture"
+		},
+		{
 			"id": "ui/level-link/raw",
 			"type": "image",
 			"file": "ui/link.png",
@@ -444,10 +456,34 @@
 			"description": "Loading credits UI configuration"
 		},
 		{
+			"id": "level/minimap/fallback/raw",
+			"type": "image",
+			"file": "levels/minimap/fallback.png",
+			"description": "Loading fallback minimap image"
+		},
+		{
+			"id": "level/minimap/fallback",
+			"type": "create-texture",
+			"input": "level/minimap/fallback/raw",
+			"description": "Creating fallback minimap texture"
+		},
+		{
 			"id": "level/hello/map",
 			"type": "image",
 			"file": "levels/hello.png",
 			"description": "Loading hello level prototype image"
+		},
+		{
+			"id": "level/hello/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/hello.png",
+			"description": "Loading hello level minimap image"
+		},
+		{
+			"id": "level/hello/minimap",
+			"type": "create-texture",
+			"input": "level/hello/minimap/raw",
+			"description": "Creating hello level minimap texture"
 		},
 		{
 			"id": "level/hello",
@@ -462,6 +498,18 @@
 			"description": "Loading fire level prototype image"
 		},
 		{
+			"id": "level/fire/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/fire.png",
+			"description": "Loading fire level minimap image"
+		},
+		{
+			"id": "level/fire/minimap",
+			"type": "create-texture",
+			"input": "level/fire/minimap/raw",
+			"description": "Creating fire level minimap texture"
+		},
+		{
 			"id": "level/fire",
 			"type": "level-metadata",
 			"file": "levels/fire.json",
@@ -472,6 +520,18 @@
 			"type": "image",
 			"file": "levels/zigzag.png",
 			"description": "Loading zigzag level prototype image"
+		},
+		{
+			"id": "level/zigzag/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/zigzag.png",
+			"description": "Loading zigzag level minimap image"
+		},
+		{
+			"id": "level/zigzag/minimap",
+			"type": "create-texture",
+			"input": "level/zigzag/minimap/raw",
+			"description": "Creating zigzag level minimap texture"
 		},
 		{
 			"id": "level/zigzag",
@@ -486,6 +546,18 @@
 			"description": "Loading signal level prototype image"
 		},
 		{
+			"id": "level/signal/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/signal.png",
+			"description": "Loading signal level minimap image"
+		},
+		{
+			"id": "level/signal/minimap",
+			"type": "create-texture",
+			"input": "level/signal/minimap/raw",
+			"description": "Creating signal level minimap texture"
+		},
+		{
 			"id": "level/signal",
 			"type": "level-metadata",
 			"file": "levels/signal.json",
@@ -496,6 +568,18 @@
 			"type": "image",
 			"file": "levels/laser.png",
 			"description": "Loading laser level prototype image"
+		},
+		{
+			"id": "level/laser/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/laser.png",
+			"description": "Loading laser level minimap image"
+		},
+		{
+			"id": "level/laser/minimap",
+			"type": "create-texture",
+			"input": "level/laser/minimap/raw",
+			"description": "Creating laser level minimap texture"
 		},
 		{
 			"id": "level/laser",
@@ -510,6 +594,18 @@
 			"description": "Loading steam_jet level prototype image"
 		},
 		{
+			"id": "level/steam_jet/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/steam_jet.png",
+			"description": "Loading steam_jet level minimap image"
+		},
+		{
+			"id": "level/steam_jet/minimap",
+			"type": "create-texture",
+			"input": "level/steam_jet/minimap/raw",
+			"description": "Creating steam_jet level minimap texture"
+		},
+		{
 			"id": "level/steam_jet",
 			"type": "level-metadata",
 			"file": "levels/steam_jet.json",
@@ -520,6 +616,18 @@
 			"type": "image",
 			"file": "levels/density.png",
 			"description": "Loading density level prototype image"
+		},
+		{
+			"id": "level/density/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/density.png",
+			"description": "Loading density level minimap image"
+		},
+		{
+			"id": "level/density/minimap",
+			"type": "create-texture",
+			"input": "level/density/minimap/raw",
+			"description": "Creating density level minimap texture"
 		},
 		{
 			"id": "level/density",

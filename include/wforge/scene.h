@@ -211,8 +211,8 @@ private:
 	std::array<int, 2> _duck_rel;
 
 	sf::Texture *_duck_texture;
-	sf::Texture *_level_button_texture_normal;
-	sf::Texture *_level_button_texture_selected;
+	std::vector<sf::Texture *> _level_button_texture_normal;
+	sf::Texture *_level_button_texture_frame;
 	sf::Texture *_level_button_texture_locked;
 	sf::Texture *_level_link_texture_activated;
 	sf::Texture *_level_link_texture_locked;
