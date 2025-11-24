@@ -3,7 +3,8 @@
 	"map": "level/signal/map",
 	"metadata": {
 		"level_name": "Signal Wave",
-		"description": "Just wire it up!"
+		"description": "Just wire it up!",
+		"minimap_asset_id": "level/signal/minimap"
 	},
 	"items": [
 		{

@@ -104,6 +104,7 @@
 		"level-button-normal": "ui/level-button",
 		"level-button-selected": "ui/level-button",
 		"level-button-locked": "ui/level-button-locked",
+		"level-button-selected-frame": "ui/level-button-selected-frame",
 		"duck": "duck/texture",
 		"link-activated": "ui/level-link",
 		"link-locked": "ui/level-link"

@@ -512,6 +512,13 @@ void fLevelMetadata(
 	metadata->map_id = json_data.at("map");
 	const auto &metadata_json = json_data.at("metadata");
 	metadata->name = metadata_json.at("level_name");
+
+	if (metadata_json.contains("minimap_asset_id")) {
+		metadata->minimap_asset_id = metadata_json.at("minimap_asset_id");
+	} else {
+		metadata->minimap_asset_id = "level/minimap/fallback";
+	}
+
 	if (metadata_json.contains("description")) {
 		metadata->description = metadata_json.at("description");
 	} else {

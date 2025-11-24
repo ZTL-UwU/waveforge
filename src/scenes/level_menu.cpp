@@ -56,8 +56,14 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 	};
 
 	_duck_texture = loadTexture("duck");
-	_level_button_texture_normal = loadTexture("level-button-normal");
-	_level_button_texture_selected = loadTexture("level-button-selected");
+
+	for (auto _level : _level_seq.levels) {
+		_level_button_texture_normal.push_back(
+			&AssetsManager::instance().getAsset<sf::Texture>(_level->minimap_asset_id)
+		);
+	}
+	_level_button_texture_frame = loadTexture("level-button-selected-frame");
+	// Stay mysterious!
 	_level_button_texture_locked = loadTexture("level-button-locked");
 	_level_link_texture_activated = loadTexture("link-activated");
 	_level_link_texture_locked = loadTexture("link-locked");
@@ -163,11 +169,9 @@ void LevelSelectionMenu::render(
 		bool level_locked = level_index > save_data.completed_levels;
 
 		auto [btn_x, btn_y] = _level_button[i];
-		sf::Texture *btn_texture = _level_button_texture_normal;
+		sf::Texture *btn_texture = _level_button_texture_normal[level_index];
 		if (level_locked) {
 			btn_texture = _level_button_texture_locked;
-		} else if (level_index == _selected_index) {
-			btn_texture = _level_button_texture_selected;
 		}
 
 		sf::Sprite btn_sprite(*btn_texture);
@@ -210,6 +214,18 @@ void LevelSelectionMenu::render(
 				target, level_label, _level_button_text.color, text_x, text_y,
 				_scale, size
 			);
+		}
+
+		// Render selection frame
+		if (level_index == _selected_index) {
+			auto [frame_x, frame_y] = _level_button[i];
+			sf::Texture *frame_texture = _level_button_texture_frame;
+			sf::Sprite frame_sprite(*frame_texture);
+			frame_sprite.setPosition(
+				sf::Vector2f(frame_x * _scale, frame_y * _scale)
+			);
+			frame_sprite.setScale(sf::Vector2f(_scale, _scale));
+			target.draw(frame_sprite);
 		}
 
 		// Render duck

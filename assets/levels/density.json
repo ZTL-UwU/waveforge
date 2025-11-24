@@ -3,7 +3,8 @@
 	"map": "level/density/map",
 	"metadata": {
 		"level_name": "Density",
-		"description": "HINT:WOOD DON'T BURN THAT EASILY"
+		"description": "HINT:WOOD DON'T BURN THAT EASILY",
+		"minimap_asset_id": "level/density/minimap"
 	},
 	"items": [
 		{
