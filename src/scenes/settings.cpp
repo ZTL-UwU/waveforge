@@ -1,9 +1,11 @@
 #include "wforge/audio.h"
+#include "wforge/colorpalette.h"
 #include "wforge/save.h"
 #include "wforge/scene.h"
 #include <format>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <string_view>
 
 namespace wf::scene {
 
@@ -177,13 +179,19 @@ struct GoBackOption : SettingsMenu::Option {
 	}
 };
 
+constexpr std::string_view cheat_code_sequence = "XYZZY";
+constexpr int hint_max_opacity = 200;
+constexpr int hint_fade_speed = 3;
+
 } // namespace
 
 SettingsMenu::~SettingsMenu() = default;
 
 SettingsMenu::SettingsMenu(int scale)
 	: font(AssetsManager::instance().getAsset<PixelFont>("font"))
-	, _current_option_index(0) {
+	, _current_option_index(0)
+	, _cheat_code_step(0)
+	, _cheat_code_hint_opacity(0) {
 	const auto &json_data = AssetsManager::instance().getAsset<nlohmann::json>(
 		"ui-config/settings-menu"
 	);
@@ -293,6 +301,30 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 			}
 			break;
 
+		case sf::Keyboard::Key::X:
+			if (_cheat_code_step < cheat_code_sequence.size()
+			    && cheat_code_sequence[_cheat_code_step] == 'X') {
+				_cheat_code_step++;
+				_cheat_code_hint_opacity = hint_max_opacity;
+			}
+			break;
+
+		case sf::Keyboard::Key::Y:
+			if (_cheat_code_step < cheat_code_sequence.size()
+			    && cheat_code_sequence[_cheat_code_step] == 'Y') {
+				_cheat_code_step++;
+				_cheat_code_hint_opacity = hint_max_opacity;
+			}
+			break;
+
+		case sf::Keyboard::Key::Z:
+			if (_cheat_code_step < cheat_code_sequence.size()
+			    && cheat_code_sequence[_cheat_code_step] == 'Z') {
+				_cheat_code_step++;
+				_cheat_code_hint_opacity = hint_max_opacity;
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -300,7 +332,20 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 }
 
 void SettingsMenu::step(SceneManager &mgr) {
-	// nothing to do here
+	if (_cheat_code_step >= cheat_code_sequence.size()
+	    && _cheat_code_hint_opacity == hint_max_opacity) {
+		// Cheat code entered, unlock all levels
+		const auto &level_seqs = AssetsManager::instance()
+									 .getAsset<LevelSequence>("level-sequence");
+		auto &save = SaveData::instance();
+		save.completed_levels = level_seqs.levels.size();
+		save.save();
+	}
+
+	_cheat_code_hint_opacity -= hint_fade_speed;
+	if (_cheat_code_hint_opacity < 0) {
+		_cheat_code_step = 0;
+	}
 }
 
 void SettingsMenu::render(
@@ -346,6 +391,18 @@ void SettingsMenu::render(
 			target, value_text, color, text_value_x, text_y, _scale,
 			_option_text_size
 		);
+	}
+
+	if (_cheat_code_hint_opacity > 0 && _cheat_code_step > 0) {
+		std::string_view hint_text = (_cheat_code_step
+		                              >= cheat_code_sequence.size())
+			? "All levels unlocked"
+			: cheat_code_sequence.substr(0, _cheat_code_step);
+		int text_width = hint_text.size() * font.charWidth();
+		int x = (_width - text_width) / 2;
+		int y = _height - font.charHeight() - 10;
+		sf::Color text_color = ui_text_color(_cheat_code_hint_opacity);
+		font.renderText(target, hint_text, text_color, x, y, _scale);
 	}
 }
 

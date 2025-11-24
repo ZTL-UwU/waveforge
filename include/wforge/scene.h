@@ -282,6 +282,9 @@ private:
 	int _option_width;
 	sf::Color _option_color;
 	sf::Color _option_active_color;
+
+	int _cheat_code_step;
+	int _cheat_code_hint_opacity;
 };
 
 struct Credits {
