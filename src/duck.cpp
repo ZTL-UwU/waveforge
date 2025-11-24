@@ -4,6 +4,7 @@
 #include "wforge/level.h"
 #include "wforge/xoroshiro.h"
 #include <SFML/Window/Joystick.hpp>
+#include <algorithm>
 #include <cmath>
 
 namespace wf {
@@ -181,8 +182,9 @@ void DuckEntity::step(const Level &level) noexcept {
 			total_flow += tag.fluid_dir * rp.area;
 		}
 	}
-	velocity.x += std::min<float>(
-		duck_flow_factor * total_flow, duck_flow_movement_threshold
+	velocity.x = std::clamp(
+		velocity.x + duck_flow_factor * total_flow,
+		-duck_flow_movement_threshold, duck_flow_movement_threshold
 	);
 
 	// Apply steam jet
