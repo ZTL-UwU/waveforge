@@ -61,8 +61,8 @@ Gate::Gate(int x, int y, FacingDirection dir)
 
 	// Decide which poi is the base placement point
 	int poi_idx;
-	if ((poi[0][0] - poi[0][1]) * xDeltaOf(dir)
-	        + (poi[0][1] - poi[0][1]) * yDeltaOf(dir)
+	if ((poi[0][0] - poi[1][0]) * xDeltaOf(dir)
+	        + (poi[0][1] - poi[1][1]) * yDeltaOf(dir)
 	    < 0) {
 		poi_idx = 0;
 	} else {
@@ -75,19 +75,19 @@ Gate::Gate(int x, int y, FacingDirection dir)
 	// Fix base placement point to anchor at top-left
 	switch (dir) {
 	case FacingDirection::North:
-		_base_place_y -= _gate_length;
+		_base_place_y -= _gate_length - 1;
 		break;
 
 	case FacingDirection::East:
 		break;
 
 	case FacingDirection::South:
-		_base_place_x -= _gate_wall_shape.width();
+		_base_place_x -= _gate_wall_shape.width() - 1;
 		break;
 
 	case FacingDirection::West:
-		_base_place_x -= _gate_length;
-		_base_place_y -= _gate_wall_shape.height();
+		_base_place_x -= _gate_length - 1;
+		_base_place_y -= _gate_wall_shape.height() - 1;
 		break;
 	}
 
