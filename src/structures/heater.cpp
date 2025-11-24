@@ -1,3 +1,4 @@
+#include "wforge/2d.h"
 #include "wforge/fallsand.h"
 #include "wforge/structures.h"
 
@@ -6,17 +7,24 @@ namespace structure {
 
 namespace {
 
-PixelShape &heaterShape() {
+PixelShape &heaterShape(FacingDirection dir) {
 	static PixelShape *ptr = nullptr;
 	if (ptr == nullptr) {
-		ptr = &AssetsManager::instance().getAsset<PixelShape>("heater/shape");
+		ptr = AssetsManager::instance()
+				  .getAsset<std::array<PixelShape, 4>>("heater/shapes")
+				  .data();
 	}
-	return *ptr;
+	return ptr[static_cast<std::uint8_t>(dir)];
 }
 
 } // namespace
 
-Heater::Heater(int x, int y): InputElectricalStructure(x, y, heaterShape()) {}
+Heater::Heater(int x, int y, FacingDirection dir)
+	: InputElectricalStructure(x, y, heaterShape(dir)) {
+	if (poi.empty()) {
+		throw std::runtime_error("Heater: missing POIs in heater shape\n");
+	}
+}
 
 bool Heater::step(PixelWorld &world) noexcept {
 	constexpr unsigned int heat_production = 15;

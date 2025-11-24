@@ -113,7 +113,7 @@ struct Heater : InputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;
 
-	Heater(int x, int y);
+	Heater(int x, int y, FacingDirection dir);
 };
 
 struct Gate : InputElectricalStructure {

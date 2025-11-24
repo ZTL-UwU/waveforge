@@ -264,7 +264,7 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 
 			case heater_marker_color.toInteger():
 				structures.push_back(
-					constructStructureWithoutDirection<structure::Heater>(
+					constructStructureWithDirection<structure::Heater>(
 						image, x, y
 					)
 				);
