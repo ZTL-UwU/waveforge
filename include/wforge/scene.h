@@ -245,7 +245,6 @@ private:
 	int _current_button_index;
 	ButtonDescriptor _play_button;
 	ButtonDescriptor _settings_button;
-	ButtonDescriptor _credits_button;
 	ButtonDescriptor _exit_button;
 };
 

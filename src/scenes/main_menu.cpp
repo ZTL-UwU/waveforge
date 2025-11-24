@@ -13,7 +13,6 @@ namespace {
 enum MainMenuButton {
 	PLAY = 0,
 	SETTINGS,
-	CREDITS,
 	EXIT,
 	BUTTON_COUNT
 };
@@ -68,7 +67,6 @@ MainMenu::MainMenu(int scale)
 
 	_play_button = parseButtonDescriptor(buttons.at("play"));
 	_settings_button = parseButtonDescriptor(buttons.at("settings"));
-	_credits_button = parseButtonDescriptor(buttons.at("credits"));
 	_exit_button = parseButtonDescriptor(buttons.at("exit"));
 }
 
@@ -114,10 +112,6 @@ void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 				mgr.changeScene(
 					pro::make_proxy<SceneFacade, SettingsMenu>(_scale)
 				);
-				return;
-
-			case MainMenuButton::CREDITS:
-				mgr.changeScene(pro::make_proxy<SceneFacade, Credits>(_scale));
 				return;
 
 			case MainMenuButton::EXIT:
@@ -170,11 +164,6 @@ void MainMenu::render(const SceneManager &mgr, sf::RenderTarget &target) const {
 	renderButton(
 		"Settings", _settings_button,
 		_current_button_index == MainMenuButton::SETTINGS
-	);
-
-	renderButton(
-		"Credits", _credits_button,
-		_current_button_index == MainMenuButton::CREDITS
 	);
 
 	renderButton(
