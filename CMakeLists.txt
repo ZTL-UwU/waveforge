@@ -1,7 +1,23 @@
 cmake_minimum_required(VERSION 3.26)
-project(waveforge VERSION 0.2 LANGUAGES CXX)
 
 include(FetchContent)
+
+find_package(Git QUIET)
+if(GIT_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE WAVEFORGE_GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+else()
+	set(WAVEFORGE_GIT_COMMIT_HASH "")
+endif()
+
+set(WAVEFORGE_VERSION "0.2")
+
+project(waveforge VERSION ${WAVEFORGE_VERSION} LANGUAGES CXX)
 
 # SFML
 FetchContent_Declare(SFML
@@ -105,6 +121,16 @@ add_executable(waveforge
 )
 
 target_compile_features(waveforge PRIVATE cxx_std_23)
+
+target_compile_definitions(waveforge PRIVATE
+	"WAVEFORGE_VERSION=\"${WAVEFORGE_VERSION}\""
+)
+
+if (WAVEFORGE_GIT_COMMIT_HASH)
+	target_compile_definitions(waveforge PRIVATE
+		"WAVEFORGE_GIT_COMMIT_HASH=\"${WAVEFORGE_GIT_COMMIT_HASH}\""
+	)
+endif()
 
 target_include_directories(waveforge PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/include

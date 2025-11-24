@@ -8,7 +8,7 @@
 namespace wf {
 
 void UITextDescriptor::render(
-	sf::RenderTarget &target, const PixelFont &font, const std::string &text,
+	sf::RenderTarget &target, const PixelFont &font, std::string_view text,
 	int scale
 ) const {
 	font.renderText(target, text, color, x, y, scale, size);
@@ -32,7 +32,7 @@ sf::RenderWindow createWindow(Scene &scene) {
 	auto [width, height] = scene->size();
 	sf::Vector2u window_size(width, height);
 	sf::RenderWindow window(
-		sf::VideoMode(window_size), "Waveforge 0.2alpha",
+		sf::VideoMode(window_size), "Waveforge " WAVEFORGE_VERSION "alpha",
 		sf::Style::Titlebar | sf::Style::Close
 	);
 	window.setFramerateLimit(24);

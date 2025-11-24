@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <format>
 #include <nlohmann/json.hpp>
+#include <string_view>
 
 namespace wf::scene {
 
@@ -68,6 +69,8 @@ MainMenu::MainMenu(int scale)
 	_play_button = parseButtonDescriptor(buttons.at("play"));
 	_settings_button = parseButtonDescriptor(buttons.at("settings"));
 	_exit_button = parseButtonDescriptor(buttons.at("exit"));
+
+	_version_text = UITextDescriptor::fromJson(json_data.at("version-text"));
 }
 
 std::array<int, 2> MainMenu::size() const {
@@ -169,6 +172,14 @@ void MainMenu::render(const SceneManager &mgr, sf::RenderTarget &target) const {
 	renderButton(
 		"Exit", _exit_button, _current_button_index == MainMenuButton::EXIT
 	);
+
+#ifdef WAVEFORGE_GIT_COMMIT_HASH
+	constexpr std::string_view version_str = "V" WAVEFORGE_VERSION
+											 "-" WAVEFORGE_GIT_COMMIT_HASH;
+#else
+	constexpr std::string_view version_str = "V" WAVEFORGE_VERSION;
+#endif
+	_version_text.render(target, font, version_str, _scale);
 }
 
 } // namespace wf::scene

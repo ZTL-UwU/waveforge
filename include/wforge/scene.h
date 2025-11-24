@@ -16,6 +16,7 @@
 #include <nlohmann/json_fwd.hpp>
 #include <proxy/v4/proxy.h>
 #include <proxy/v4/proxy_macros.h>
+#include <string_view>
 #include <vector>
 
 namespace wf {
@@ -48,8 +49,8 @@ struct UITextDescriptor {
 	sf::Color color;
 
 	void render(
-		sf::RenderTarget &target, const PixelFont &font,
-		const std::string &text, int scale
+		sf::RenderTarget &target, const PixelFont &font, std::string_view text,
+		int scale
 	) const;
 
 	static UITextDescriptor fromJson(const nlohmann::json &json_data);
@@ -246,6 +247,7 @@ private:
 	ButtonDescriptor _play_button;
 	ButtonDescriptor _settings_button;
 	ButtonDescriptor _exit_button;
+	UITextDescriptor _version_text;
 };
 
 class SettingsMenu {
