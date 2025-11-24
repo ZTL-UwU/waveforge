@@ -1,0 +1,22 @@
+{
+	"format": 1,
+	"map": "level/sandy/map",
+	"metadata": {
+		"level_name": "A Sandy Place",
+		"description": "Not enough water?You got sand!"
+	},
+	"items": [
+		{
+			"id": "water_brush_large",
+			"amount": 2
+		},
+		{
+			"id": "water_brush",
+			"amount": 1
+		},
+		{
+			"id": "fire_brush",
+			"amount": 1
+		}
+	]
+}

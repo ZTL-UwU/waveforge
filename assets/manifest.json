@@ -540,6 +540,18 @@
 			"description": "Loading zigzag level metadata"
 		},
 		{
+			"id": "level/sandy/map",
+			"type": "image",
+			"file": "levels/sandy.png",
+			"description": "Loading sandy level prototype image"
+		},
+		{
+			"id": "level/sandy",
+			"type": "level-metadata",
+			"file": "levels/sandy.json",
+			"description": "Loading sandy level metadata"
+		},
+		{
 			"id": "level/signal/map",
 			"type": "image",
 			"file": "levels/signal.png",
@@ -654,6 +666,7 @@
 				"level/hello",
 				"level/fire",
 				"level/zigzag",
+				"level/sandy",
 				"level/signal",
 				"level/laser",
 				"level/density",
