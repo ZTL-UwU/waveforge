@@ -160,6 +160,7 @@ private:
 	void _normalizeActiveItemIndex() noexcept;
 
 	int _active_item_index; // -1 means no active item
+	int _item_use_cooldown; // ticks until next item use allowed
 };
 
 struct LevelRenderer {

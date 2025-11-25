@@ -6,9 +6,11 @@
 
 namespace wf {
 
-Level::Level(int width, int height) noexcept: fallsand(width, height) {}
+Level::Level(int width, int height) noexcept
+	: fallsand(width, height), _item_use_cooldown(0) {}
 
 void Level::step() {
+	_item_use_cooldown = std::max(0, _item_use_cooldown - 1);
 	fallsand.resetEntityPresenceTags();
 	duck.commitEntityPresence(fallsand);
 	fallsand.step();
@@ -26,10 +28,16 @@ ItemStack *Level::activeItemStack() noexcept {
 }
 
 void Level::useActiveItem(int x, int y, int scale) noexcept {
+	constexpr int item_use_cooldown_ticks = 6;
+	if (_item_use_cooldown > 0) {
+		return;
+	}
+
 	if (auto itemstack = activeItemStack()) {
 		if (itemstack->item->use(*this, x, y, scale)) {
 			// item used successfully, decrease quantity
 			itemstack->amount -= 1;
+			_item_use_cooldown = item_use_cooldown_ticks;
 			_normalizeActiveItemIndex();
 		}
 	}
