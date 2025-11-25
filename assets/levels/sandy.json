@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "A Sandy Place",
 		"description": "Not enough water?You got sand!",
+		"difficulty": "average",
 		"minimap_asset_id": "level/sandy/minimap"
 	},
 	"items": [

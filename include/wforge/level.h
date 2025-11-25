@@ -112,13 +112,24 @@ private:
 };
 
 struct LevelMetadata {
+	enum class Difficulty {
+		Unkown,
+		Easy,
+		Average,
+		Hard
+	};
+
 	int index;
 	std::string map_id;
 	std::string name;
 	std::string description;
 	std::string author;
+	Difficulty difficulty;
 	sf::Texture *minimap_texture;
 	std::vector<std::tuple<std::string, int>> items;
+
+	static Difficulty parseDifficulty(std::string_view diff_str) noexcept;
+	static std::string_view difficultyToString(Difficulty difficulty);
 };
 
 struct Level {

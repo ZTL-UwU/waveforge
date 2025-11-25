@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Laser Signal",
 		"description": "Laser communication is the future!",
+		"difficulty": "easy",
 		"minimap_asset_id": "level/laser-signal/minimap"
 	},
 	"items": [

@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Rocket",
 		"description": "Wanna see stars?",
+		"difficulty": "average",
 		"minimap_asset_id": "level/rocket/minimap"
 	},
 	"items": [

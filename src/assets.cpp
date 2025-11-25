@@ -514,6 +514,9 @@ void fLevelMetadata(
 		.name = metadata_json.at("level_name"),
 		.description = metadata_json.value("description", ""),
 		.author = metadata_json.value("author", ""),
+		.difficulty = LevelMetadata::parseDifficulty(
+			metadata_json.value("difficulty", "unkown")
+		),
 		.minimap_texture = &mgr.getAsset<sf::Texture>(
 			metadata_json.value("minimap_asset_id", "level/minimap/fallback")
 		)

@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Timing",
 		"description": "duck is you.time is win.",
+		"difficulty": "average",
 		"minimap_asset_id": "level/timing/minimap"
 	},
 	"items": [

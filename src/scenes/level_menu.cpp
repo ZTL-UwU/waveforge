@@ -28,6 +28,9 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 	);
 	_level_title = UITextDescriptor::fromJson(json_data.at("level-title"));
 	_level_desc = UITextDescriptor::fromJson(json_data.at("level-description"));
+	_level_difficulty = UITextDescriptor::fromJson(
+		json_data.at("level-difficulty")
+	);
 	_enter_hint = UITextDescriptor::fromJson(json_data.at("enter-hint"));
 
 	for (const auto &btn : json_data.at("level-buttons")) {
@@ -163,10 +166,6 @@ void LevelSelectionMenu::render(
 		bool level_locked = level_index > save_data.completed_levels;
 
 		auto [btn_x, btn_y] = _level_button[i];
-		// sf::Texture *btn_texture = _level_button_texture_normal[level_index];
-		// if (level_locked) {
-		// 	btn_texture = _level_button_texture_locked;
-		// }
 		const auto &btn_texture = level_locked
 			? *_level_button_texture_locked
 			: *_level_seq.levels[level_index]->minimap_texture;
@@ -264,6 +263,15 @@ void LevelSelectionMenu::render(
 		// Render level description
 		_level_desc.render(
 			target, font, selected_metadata->description, _scale
+		);
+
+		_level_difficulty.render(
+			target, font,
+			std::format(
+				"Difficulty:{}",
+				LevelMetadata::difficultyToString(selected_metadata->difficulty)
+			),
+			_scale
 		);
 
 		// Render enter hint

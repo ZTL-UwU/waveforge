@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Steam Powered",
 		"description": "Will u purchase it if published?",
+		"difficulty": "average",
 		"minimap_asset_id": "level/steam-jet/minimap"
 	},
 	"items": [

@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Fire",
 		"description": "No worry.Duck is fireproof!",
+		"difficulty": "easy",
 		"minimap_asset_id": "level/fire/minimap"
 	},
 	"items": [

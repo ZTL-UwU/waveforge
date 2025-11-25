@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Signal Wave",
 		"description": "Just wire it up with copper!",
+		"difficulty": "easy",
 		"minimap_asset_id": "level/signal/minimap"
 	},
 	"items": [

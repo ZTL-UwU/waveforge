@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Hello Duck!",
 		"description": "Quack!Quack!",
+		"difficulty": "easy",
 		"minimap_asset_id": "level/hello/minimap"
 	},
 	"items": [

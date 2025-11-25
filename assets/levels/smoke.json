@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Smoke",
 		"description": "HINT:Smoke blocks light",
+		"difficulty": "average",
 		"minimap_asset_id": "level/smoke/minimap"
 	},
 	"items": [

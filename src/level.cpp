@@ -6,6 +6,33 @@
 
 namespace wf {
 
+LevelMetadata::Difficulty LevelMetadata::parseDifficulty(
+	std::string_view diff_str
+) noexcept {
+	if (diff_str == "easy") {
+		return Difficulty::Easy;
+	} else if (diff_str == "average") {
+		return Difficulty::Average;
+	} else if (diff_str == "hard") {
+		return Difficulty::Hard;
+	} else {
+		return Difficulty::Unkown;
+	}
+}
+
+std::string_view LevelMetadata::difficultyToString(Difficulty difficulty) {
+	switch (difficulty) {
+	case Difficulty::Easy:
+		return "Easy";
+	case Difficulty::Average:
+		return "Average";
+	case Difficulty::Hard:
+		return "Hard";
+	default:
+		return "???";
+	}
+}
+
 Level::Level(int width, int height) noexcept
 	: fallsand(width, height), _item_use_cooldown(0) {}
 

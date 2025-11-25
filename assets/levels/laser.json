@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Laser",
 		"description": "It's hot!",
+		"difficulty": "easy",
 		"minimap_asset_id": "level/laser/minimap"
 	},
 	"items": [

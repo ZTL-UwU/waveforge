@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Zig Zag",
 		"description": "You can make it!",
+		"difficulty": "hard",
 		"minimap_asset_id": "level/zigzag/minimap"
 	},
 	"items": [

@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Downstream",
 		"description": "Let's go!",
+		"difficulty": "average",
 		"minimap_asset_id": "level/down/minimap"
 	},
 	"items": [

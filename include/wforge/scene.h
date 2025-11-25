@@ -207,6 +207,7 @@ private:
 	UITextDescriptor _level_button_text;
 	UITextDescriptor _level_title;
 	UITextDescriptor _level_desc;
+	UITextDescriptor _level_difficulty;
 	UITextDescriptor _enter_hint;
 	std::vector<std::array<int, 2>> _level_button;
 	std::vector<std::array<int, 2>> _level_links;

@@ -4,6 +4,7 @@
 	"metadata": {
 		"level_name": "Density",
 		"description": "HINT:WOOD DON'T BURN THAT EASILY",
+		"difficulty": "hard",
 		"minimap_asset_id": "level/density/minimap"
 	},
 	"items": [
