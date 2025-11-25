@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/down/map",
+	"metadata": {
+		"level_name": "Downstream",
+		"description": "Let's go!"
+	},
+	"items": [
+		{
+			"id": "water_brush_large",
+			"amount": 12
+		}
+	]
+}

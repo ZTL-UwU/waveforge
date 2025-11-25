@@ -522,6 +522,18 @@
 			"description": "Loading fire level metadata"
 		},
 		{
+			"id": "level/down/map",
+			"type": "image",
+			"file": "levels/down.png",
+			"description": "Loading down level prototype image"
+		},
+		{
+			"id": "level/down",
+			"type": "level-metadata",
+			"file": "levels/down.json",
+			"description": "Loading down level metadata"
+		},
+		{
 			"id": "level/zigzag/map",
 			"type": "image",
 			"file": "levels/zigzag.png",
@@ -683,8 +695,9 @@
 			"levels": [
 				"level/hello",
 				"level/fire",
-				"level/zigzag",
+				"level/down",
 				"level/sandy",
+				"level/zigzag",
 				"level/signal",
 				"level/laser",
 				"level/rocket",
