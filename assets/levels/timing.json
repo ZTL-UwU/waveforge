@@ -3,7 +3,8 @@
 	"map": "level/timing/map",
 	"metadata": {
 		"level_name": "Timing",
-		"description": "duck is you.time is win."
+		"description": "duck is you.time is win.",
+		"minimap_asset_id": "level/timing/minimap"
 	},
 	"items": [
 		{

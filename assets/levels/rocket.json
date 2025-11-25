@@ -3,7 +3,8 @@
 	"map": "level/rocket/map",
 	"metadata": {
 		"level_name": "Rocket",
-		"description": "Wanna to see stars?"
+		"description": "Wanna see stars?",
+		"minimap_asset_id": "level/rocket/minimap"
 	},
 	"items": [
 		{

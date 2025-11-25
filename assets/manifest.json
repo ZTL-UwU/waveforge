@@ -528,6 +528,18 @@
 			"description": "Loading down level prototype image"
 		},
 		{
+			"id": "level/down/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/down.png",
+			"description": "Loading down level minimap image"
+		},
+		{
+			"id": "level/down/minimap",
+			"type": "create-texture",
+			"input": "level/down/minimap/raw",
+			"description": "Creating down level minimap texture"
+		},
+		{
 			"id": "level/down",
 			"type": "level-metadata",
 			"file": "levels/down.json",
@@ -562,6 +574,18 @@
 			"type": "image",
 			"file": "levels/sandy.png",
 			"description": "Loading sandy level prototype image"
+		},
+		{
+			"id": "level/sandy/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/sandy.png",
+			"description": "Loading sandy level minimap image"
+		},
+		{
+			"id": "level/sandy/minimap",
+			"type": "create-texture",
+			"input": "level/sandy/minimap/raw",
+			"description": "Creating sandy level minimap texture"
 		},
 		{
 			"id": "level/sandy",
@@ -624,6 +648,18 @@
 			"description": "Loading laser signal level prototype image"
 		},
 		{
+			"id": "level/laser-signal/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/laser_signal.png",
+			"description": "Loading laser signal level minimap image"
+		},
+		{
+			"id": "level/laser-signal/minimap",
+			"type": "create-texture",
+			"input": "level/laser-signal/minimap/raw",
+			"description": "Creating laser signal level minimap texture"
+		},
+		{
 			"id": "level/laser-signal",
 			"type": "level-metadata",
 			"file": "levels/laser_signal.json",
@@ -634,6 +670,18 @@
 			"type": "image",
 			"file": "levels/rocket.png",
 			"description": "Loading rocket level prototype image"
+		},
+		{
+			"id": "level/rocket/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/rocket.png",
+			"description": "Loading rocket level minimap image"
+		},
+		{
+			"id": "level/rocket/minimap",
+			"type": "create-texture",
+			"input": "level/rocket/minimap/raw",
+			"description": "Creating rocket level minimap texture"
 		},
 		{
 			"id": "level/rocket",
@@ -648,6 +696,18 @@
 			"description": "Loading timing level prototype image"
 		},
 		{
+			"id": "level/timing/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/timing.png",
+			"description": "Loading timing level minimap image"
+		},
+		{
+			"id": "level/timing/minimap",
+			"type": "create-texture",
+			"input": "level/timing/minimap/raw",
+			"description": "Creating timing level minimap texture"
+		},
+		{
 			"id": "level/timing",
 			"type": "level-metadata",
 			"file": "levels/timing.json",
@@ -658,6 +718,18 @@
 			"type": "image",
 			"file": "levels/smoke.png",
 			"description": "Loading smoke level prototype image"
+		},
+		{
+			"id": "level/smoke/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/smoke.png",
+			"description": "Loading smoke level minimap image"
+		},
+		{
+			"id": "level/smoke/minimap",
+			"type": "create-texture",
+			"input": "level/smoke/minimap/raw",
+			"description": "Creating smoke level minimap texture"
 		},
 		{
 			"id": "level/smoke",

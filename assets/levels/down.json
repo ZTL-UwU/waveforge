@@ -3,7 +3,8 @@
 	"map": "level/down/map",
 	"metadata": {
 		"level_name": "Downstream",
-		"description": "Let's go!"
+		"description": "Let's go!",
+		"minimap_asset_id": "level/down/minimap"
 	},
 	"items": [
 		{
