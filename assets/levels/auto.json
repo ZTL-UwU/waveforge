@@ -3,7 +3,8 @@
 	"map": "level/auto/map",
 	"metadata": {
 		"level_name": "Waveforge",
-		"description": "Note:this level cannot be solved."
+		"description": "Note:this level cannot be solved.",
+		"minimap_asset_id": "level/auto/minimap"
 	},
 	"items": []
 }
