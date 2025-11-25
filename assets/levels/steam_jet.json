@@ -3,7 +3,7 @@
 	"map": "level/steam-jet/map",
 	"metadata": {
 		"level_name": "Steam Powered",
-		"description": "HINT:in exact order",
+		"description": "Will u purchase if publish on steam?",
 		"minimap_asset_id": "level/steam-jet/minimap"
 	},
 	"items": [

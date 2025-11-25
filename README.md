@@ -10,7 +10,7 @@ For more details about the game physics system, please refer to [Physics System 
 
 ## Current status
 
-Three demo levels are created and can be played. The settings screen is not implemented yet. The UI for main menu and level complete screens are placeholders. The new art style is being worked on.
+The game is almost finished. The are 10+ playable levels with unique mechanics and challenges. The core physics simulation system is implemented, including fluid simulation, thermal simulation, structure system, etc. Basic UI and audio systems are also implemented. Further polish, including art and sound effect tweaks are still needed.
 
 ### Controls
 
@@ -19,10 +19,11 @@ Three demo levels are created and can be played. The settings screen is not impl
 | Arrow Keys/WASD   | UI navigation |
 | Enter/Space  | UI selection               |
 | ESC		  | Back |
-| R		  | Retry current level       |
+| R (twice)		  | Retry current level       |
 | LMB		  | Use current item			|
 | Mouse Wheel | Change item brush size		|
-| Arrow Up/Down / W S | Change current item		|
+| Arrow Up / W | Previous item in inventory |
+| Arrow Down / S | Next item in inventory |
 
 ## Build instructions
 
