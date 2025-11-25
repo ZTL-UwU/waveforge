@@ -618,6 +618,18 @@
 			"description": "Loading laser level metadata"
 		},
 		{
+			"id": "level/laser-signal/map",
+			"type": "image",
+			"file": "levels/laser_signal.png",
+			"description": "Loading laser signal level prototype image"
+		},
+		{
+			"id": "level/laser-signal",
+			"type": "level-metadata",
+			"file": "levels/laser_signal.json",
+			"description": "Loading laser signal level metadata"
+		},
+		{
 			"id": "level/rocket/map",
 			"type": "image",
 			"file": "levels/rocket.png",
@@ -700,6 +712,7 @@
 				"level/zigzag",
 				"level/signal",
 				"level/laser",
+				"level/laser-signal",
 				"level/rocket",
 				"level/density",
 				"level/steam_jet",

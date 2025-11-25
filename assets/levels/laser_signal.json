@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/laser-signal/map",
+	"metadata": {
+		"level_name": "Laser Signal",
+		"description": "Laser communication is the future!"
+	},
+	"items": [
+		{
+			"id": "fire_brush",
+			"amount": 2
+		}
+	]
+}
