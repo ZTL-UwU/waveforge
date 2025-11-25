@@ -792,6 +792,18 @@
 			"description": "Loading auto level prototype image"
 		},
 		{
+			"id": "level/auto/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/auto.png",
+			"description": "Loading auto level minimap image"
+		},
+		{
+			"id": "level/auto/minimap",
+			"type": "create-texture",
+			"input": "level/auto/minimap/raw",
+			"description": "Creating auto level minimap texture"
+		},
+		{
 			"id": "level/auto",
 			"type": "level-metadata",
 			"file": "levels/auto.json",
