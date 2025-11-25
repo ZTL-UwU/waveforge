@@ -3,7 +3,8 @@
 	"map": "level/smoke/map",
 	"metadata": {
 		"level_name": "Smoke",
-		"description": "HINT:Smoke blocks light"
+		"description": "HINT:Smoke blocks light",
+		"minimap_asset_id": "level/smoke/minimap"
 	},
 	"items": [
 		{

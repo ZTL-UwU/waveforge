@@ -3,7 +3,8 @@
 	"map": "level/laser-signal/map",
 	"metadata": {
 		"level_name": "Laser Signal",
-		"description": "Laser communication is the future!"
+		"description": "Laser communication is the future!",
+		"minimap_asset_id": "level/laser-signal/minimap"
 	},
 	"items": [
 		{
