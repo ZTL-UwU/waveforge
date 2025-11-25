@@ -726,6 +726,18 @@
 			"description": "Loading timing level metadata"
 		},
 		{
+			"id": "level/circuit/map",
+			"type": "image",
+			"file": "levels/circuit.png",
+			"description": "Loading circuit level prototype image"
+		},
+		{
+			"id": "level/circuit",
+			"type": "level-metadata",
+			"file": "levels/circuit.json",
+			"description": "Loading circuit level metadata"
+		},
+		{
 			"id": "level/smoke/map",
 			"type": "image",
 			"file": "levels/smoke.png",
@@ -836,6 +848,7 @@
 				"level/laser-signal",
 				"level/rocket",
 				"level/timing",
+				"level/circuit",
 				"level/smoke",
 				"level/density",
 				"level/steam-jet",

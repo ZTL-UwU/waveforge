@@ -1,0 +1,15 @@
+{
+	"format": 1,
+	"map": "level/circuit/map",
+	"metadata": {
+		"level_name": "A Genius Idea",
+		"description": "You need to do circuit, right?",
+		"difficulty": "hard"
+	},
+	"items": [
+		{
+			"id": "copper_brush",
+			"amount": 2
+		}
+	]
+}
