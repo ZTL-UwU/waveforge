@@ -1,10 +1,10 @@
 {
 	"format": 1,
-	"map": "level/steam_jet/map",
+	"map": "level/steam-jet/map",
 	"metadata": {
 		"level_name": "Steam Powered",
 		"description": "HINT:in exact order",
-		"minimap_asset_id": "level/steam_jet/minimap"
+		"minimap_asset_id": "level/steam-jet/minimap"
 	},
 	"items": [
 		{

@@ -642,6 +642,18 @@
 			"description": "Loading rocket level metadata"
 		},
 		{
+			"id": "level/timing/map",
+			"type": "image",
+			"file": "levels/timing.png",
+			"description": "Loading timing level prototype image"
+		},
+		{
+			"id": "level/timing",
+			"type": "level-metadata",
+			"file": "levels/timing.json",
+			"description": "Loading timing level metadata"
+		},
+		{
 			"id": "level/density/map",
 			"type": "image",
 			"file": "levels/density.png",
@@ -666,28 +678,28 @@
 			"description": "Loading density level metadata"
 		},
 		{
-			"id": "level/steam_jet/map",
+			"id": "level/steam-jet/map",
 			"type": "image",
 			"file": "levels/steam_jet.png",
-			"description": "Loading steam_jet level prototype image"
+			"description": "Loading steam-jet level prototype image"
 		},
 		{
-			"id": "level/steam_jet/minimap/raw",
+			"id": "level/steam-jet/minimap/raw",
 			"type": "image",
 			"file": "levels/minimap/steam_jet.png",
-			"description": "Loading steam_jet level minimap image"
+			"description": "Loading steam-jet level minimap image"
 		},
 		{
-			"id": "level/steam_jet/minimap",
+			"id": "level/steam-jet/minimap",
 			"type": "create-texture",
-			"input": "level/steam_jet/minimap/raw",
-			"description": "Creating steam_jet level minimap texture"
+			"input": "level/steam-jet/minimap/raw",
+			"description": "Creating steam-jet level minimap texture"
 		},
 		{
-			"id": "level/steam_jet",
+			"id": "level/steam-jet",
 			"type": "level-metadata",
 			"file": "levels/steam_jet.json",
-			"description": "Loading steam_jet level metadata"
+			"description": "Loading steam-jet level metadata"
 		},
 		{
 			"id": "level/auto/map",
@@ -714,8 +726,9 @@
 				"level/laser",
 				"level/laser-signal",
 				"level/rocket",
+				"level/timing",
 				"level/density",
-				"level/steam_jet",
+				"level/steam-jet",
 				"level/auto"
 			],
 			"description": "Creating level sequence"

@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/timing/map",
+	"metadata": {
+		"level_name": "Timing",
+		"description": "duck is you.time is win"
+	},
+	"items": [
+		{
+			"id": "water_brush",
+			"amount": 99
+		}
+	]
+}
