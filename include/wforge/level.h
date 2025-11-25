@@ -113,11 +113,11 @@ private:
 
 struct LevelMetadata {
 	int index;
+	std::string map_id;
 	std::string name;
 	std::string description;
-	std::string map_id;
 	std::string author;
-	std::string minimap_asset_id;
+	sf::Texture *minimap_texture;
 	std::vector<std::tuple<std::string, int>> items;
 };
 

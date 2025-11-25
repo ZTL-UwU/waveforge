@@ -507,29 +507,17 @@ void fLevelMetadata(
 		);
 	}
 
-	LevelMetadata *metadata = new LevelMetadata();
-
-	metadata->map_id = json_data.at("map");
 	const auto &metadata_json = json_data.at("metadata");
-	metadata->name = metadata_json.at("level_name");
 
-	if (metadata_json.contains("minimap_asset_id")) {
-		metadata->minimap_asset_id = metadata_json.at("minimap_asset_id");
-	} else {
-		metadata->minimap_asset_id = "level/minimap/fallback";
-	}
-
-	if (metadata_json.contains("description")) {
-		metadata->description = metadata_json.at("description");
-	} else {
-		metadata->description = "";
-	}
-
-	if (metadata_json.contains("author")) {
-		metadata->author = metadata_json.at("author");
-	} else {
-		metadata->author = "";
-	}
+	LevelMetadata *metadata = new LevelMetadata{
+		.map_id = json_data.at("map"),
+		.name = metadata_json.at("level_name"),
+		.description = metadata_json.value("description", ""),
+		.author = metadata_json.value("author", ""),
+		.minimap_texture = &mgr.getAsset<sf::Texture>(
+			metadata_json.value("minimap_asset_id", "level/minimap/fallback")
+		)
+	};
 
 	for (const auto &item_entry : json_data.at("items")) {
 		const std::string &item_name = item_entry.at("id");

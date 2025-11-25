@@ -57,15 +57,7 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 
 	_duck_texture = loadTexture("duck");
 
-	for (auto _level : _level_seq.levels) {
-		_level_button_texture_normal.push_back(
-			&AssetsManager::instance().getAsset<sf::Texture>(
-				_level->minimap_asset_id
-			)
-		);
-	}
 	_level_button_texture_frame = loadTexture("level-button-selected-frame");
-	// Stay mysterious!
 	_level_button_texture_locked = loadTexture("level-button-locked");
 	_level_link_texture_activated = loadTexture("link-activated");
 	_level_link_texture_locked = loadTexture("link-locked");
@@ -171,12 +163,15 @@ void LevelSelectionMenu::render(
 		bool level_locked = level_index > save_data.completed_levels;
 
 		auto [btn_x, btn_y] = _level_button[i];
-		sf::Texture *btn_texture = _level_button_texture_normal[level_index];
-		if (level_locked) {
-			btn_texture = _level_button_texture_locked;
-		}
+		// sf::Texture *btn_texture = _level_button_texture_normal[level_index];
+		// if (level_locked) {
+		// 	btn_texture = _level_button_texture_locked;
+		// }
+		const auto &btn_texture = level_locked
+			? *_level_button_texture_locked
+			: *_level_seq.levels[level_index]->minimap_texture;
 
-		sf::Sprite btn_sprite(*btn_texture);
+		sf::Sprite btn_sprite(btn_texture);
 		btn_sprite.setPosition(sf::Vector2f(btn_x * _scale, btn_y * _scale));
 		btn_sprite.setScale(sf::Vector2f(_scale, _scale));
 		target.draw(btn_sprite);
@@ -205,8 +200,8 @@ void LevelSelectionMenu::render(
 			int text_width = level_label.size() * font.charWidth(size);
 			int text_height = font.charHeight(size);
 
-			int bottom_right_x = btn_x + btn_texture->getSize().x;
-			int bottom_right_y = btn_y + btn_texture->getSize().y;
+			int bottom_right_x = btn_x + btn_texture.getSize().x;
+			int bottom_right_y = btn_y + btn_texture.getSize().y;
 			int text_x = topleft_x
 				+ (bottom_right_x - topleft_x - text_width) / 2;
 			int text_y = topleft_y
