@@ -654,6 +654,18 @@
 			"description": "Loading timing level metadata"
 		},
 		{
+			"id": "level/smoke/map",
+			"type": "image",
+			"file": "levels/smoke.png",
+			"description": "Loading smoke level prototype image"
+		},
+		{
+			"id": "level/smoke",
+			"type": "level-metadata",
+			"file": "levels/smoke.json",
+			"description": "Loading smoke level metadata"
+		},
+		{
 			"id": "level/density/map",
 			"type": "image",
 			"file": "levels/density.png",
@@ -727,6 +739,7 @@
 				"level/laser-signal",
 				"level/rocket",
 				"level/timing",
+				"level/smoke",
 				"level/density",
 				"level/steam-jet",
 				"level/auto"

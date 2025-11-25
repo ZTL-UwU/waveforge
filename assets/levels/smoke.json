@@ -1,0 +1,18 @@
+{
+	"format": 1,
+	"map": "level/smoke/map",
+	"metadata": {
+		"level_name": "Smoke",
+		"description": "HINT:Smoke blocks light"
+	},
+	"items": [
+		{
+			"id": "fire_brush",
+			"amount": 5
+		},
+		{
+			"id": "water_brush",
+			"amount": 10
+		}
+	]
+}
