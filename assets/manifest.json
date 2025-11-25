@@ -546,6 +546,30 @@
 			"description": "Loading down level metadata"
 		},
 		{
+			"id": "level/sandy/map",
+			"type": "image",
+			"file": "levels/sandy.png",
+			"description": "Loading sandy level prototype image"
+		},
+		{
+			"id": "level/sandy/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/sandy.png",
+			"description": "Loading sandy level minimap image"
+		},
+		{
+			"id": "level/sandy/minimap",
+			"type": "create-texture",
+			"input": "level/sandy/minimap/raw",
+			"description": "Creating sandy level minimap texture"
+		},
+		{
+			"id": "level/sandy",
+			"type": "level-metadata",
+			"file": "levels/sandy.json",
+			"description": "Loading sandy level metadata"
+		},
+		{
 			"id": "level/zigzag/map",
 			"type": "image",
 			"file": "levels/zigzag.png",
@@ -570,28 +594,16 @@
 			"description": "Loading zigzag level metadata"
 		},
 		{
-			"id": "level/sandy/map",
+			"id": "level/upsteam/map",
 			"type": "image",
-			"file": "levels/sandy.png",
-			"description": "Loading sandy level prototype image"
+			"file": "levels/upsteam.png",
+			"description": "Loading upsteam level prototype image"
 		},
 		{
-			"id": "level/sandy/minimap/raw",
-			"type": "image",
-			"file": "levels/minimap/sandy.png",
-			"description": "Loading sandy level minimap image"
-		},
-		{
-			"id": "level/sandy/minimap",
-			"type": "create-texture",
-			"input": "level/sandy/minimap/raw",
-			"description": "Creating sandy level minimap texture"
-		},
-		{
-			"id": "level/sandy",
+			"id": "level/upsteam",
 			"type": "level-metadata",
-			"file": "levels/sandy.json",
-			"description": "Loading sandy level metadata"
+			"file": "levels/upsteam.json",
+			"description": "Loading upsteam level metadata"
 		},
 		{
 			"id": "level/signal/map",
@@ -818,6 +830,7 @@
 				"level/down",
 				"level/sandy",
 				"level/zigzag",
+				"level/upsteam",
 				"level/signal",
 				"level/laser",
 				"level/laser-signal",

@@ -1,0 +1,19 @@
+{
+	"format": 1,
+	"map": "level/upsteam/map",
+	"metadata": {
+		"level_name": "Upsteam",
+		"description": "Let's go higher!",
+		"difficulty": "average"
+	},
+	"items": [
+		{
+			"id": "oil_brush_large",
+			"amount": 3
+		},
+		{
+			"id": "fire_brush",
+			"amount": 5
+		}
+	]
+}
