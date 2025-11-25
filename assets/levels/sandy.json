@@ -3,7 +3,8 @@
 	"map": "level/sandy/map",
 	"metadata": {
 		"level_name": "A Sandy Place",
-		"description": "Not enough water?You got sand!"
+		"description": "Not enough water?You got sand!",
+		"minimap_asset_id": "level/sandy/minimap"
 	},
 	"items": [
 		{

@@ -552,6 +552,18 @@
 			"description": "Loading sandy level prototype image"
 		},
 		{
+			"id": "level/sandy/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/sandy.png",
+			"description": "Loading sandy level minimap image"
+		},
+		{
+			"id": "level/sandy/minimap",
+			"type": "create-texture",
+			"input": "level/sandy/minimap/raw",
+			"description": "Creating sandy level minimap texture"
+		},
+		{
 			"id": "level/sandy",
 			"type": "level-metadata",
 			"file": "levels/sandy.json",
@@ -612,6 +624,18 @@
 			"description": "Loading polyfill level prototype image"
 		},
 		{
+			"id": "level/polyfill/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/polyfill.png",
+			"description": "Loading polyfill level minimap image"
+		},
+		{
+			"id": "level/polyfill/minimap",
+			"type": "create-texture",
+			"input": "level/polyfill/minimap/raw",
+			"description": "Creating polyfill level minimap texture"
+		},
+		{
 			"id": "level/polyfill",
 			"type": "level-metadata",
 			"file": "levels/polyfill.json",
@@ -670,6 +694,18 @@
 			"type": "image",
 			"file": "levels/auto.png",
 			"description": "Loading auto level prototype image"
+		},
+		{
+			"id": "level/auto/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/auto.png",
+			"description": "Loading auto level minimap image"
+		},
+		{
+			"id": "level/auto/minimap",
+			"type": "create-texture",
+			"input": "level/auto/minimap/raw",
+			"description": "Creating auto level minimap texture"
 		},
 		{
 			"id": "level/auto",

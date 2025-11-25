@@ -3,7 +3,8 @@
 	"map": "level/polyfill/map",
 	"metadata": {
 		"level_name": "Polyfill",
-		"description": "What's the original meaning of polyfill?"
+		"description": "What's the original meaning of polyfill?",
+		"minimap_asset_id": "level/polyfill/minimap"
 	},
 	"items": [
 		{
