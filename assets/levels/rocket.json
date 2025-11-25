@@ -1,0 +1,14 @@
+{
+	"format": 1,
+	"map": "level/rocket/map",
+	"metadata": {
+		"level_name": "Rocket",
+		"description": "Wanna to see stars?"
+	},
+	"items": [
+		{
+			"id": "water_brush_large",
+			"amount": 10
+		}
+	]
+}

@@ -606,16 +606,16 @@
 			"description": "Loading laser level metadata"
 		},
 		{
-			"id": "level/polyfill/map",
+			"id": "level/rocket/map",
 			"type": "image",
-			"file": "levels/polyfill.png",
-			"description": "Loading polyfill level prototype image"
+			"file": "levels/rocket.png",
+			"description": "Loading rocket level prototype image"
 		},
 		{
-			"id": "level/polyfill",
+			"id": "level/rocket",
 			"type": "level-metadata",
-			"file": "levels/polyfill.json",
-			"description": "Loading polyfill level metadata"
+			"file": "levels/rocket.json",
+			"description": "Loading rocket level metadata"
 		},
 		{
 			"id": "level/density/map",
@@ -687,7 +687,7 @@
 				"level/sandy",
 				"level/signal",
 				"level/laser",
-				"level/polyfill",
+				"level/rocket",
 				"level/density",
 				"level/steam_jet",
 				"level/auto"
