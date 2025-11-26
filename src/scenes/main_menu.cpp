@@ -20,7 +20,7 @@ enum MainMenuButton {
 
 } // namespace
 
-MainMenu::MainMenu(int scale)
+MainMenu::MainMenu()
 	: font(AssetsManager::instance().getAsset<PixelFont>("font"))
 	, _current_button_index(MainMenuButton::PLAY) {
 	const auto &json_data = AssetsManager::instance().getAsset<nlohmann::json>(
@@ -29,7 +29,6 @@ MainMenu::MainMenu(int scale)
 
 	_width = json_data.at("width");
 	_height = json_data.at("height");
-	_scale = automaticScale(_width, _height, scale);
 
 	const auto &textures = json_data.at("textures");
 	_background_texture = &AssetsManager::instance().getAsset<sf::Texture>(
@@ -74,7 +73,7 @@ MainMenu::MainMenu(int scale)
 }
 
 std::array<int, 2> MainMenu::size() const {
-	return {_width * _scale, _height * _scale};
+	return {_width, _height};
 }
 
 void MainMenu::setup(SceneManager &mgr) {
@@ -107,14 +106,12 @@ void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 			switch (_current_button_index) {
 			case MainMenuButton::PLAY:
 				mgr.changeScene(
-					pro::make_proxy<SceneFacade, LevelSelectionMenu>(_scale)
+					pro::make_proxy<SceneFacade, LevelSelectionMenu>()
 				);
 				return;
 
 			case MainMenuButton::SETTINGS:
-				mgr.changeScene(
-					pro::make_proxy<SceneFacade, SettingsMenu>(_scale)
-				);
+				mgr.changeScene(pro::make_proxy<SceneFacade, SettingsMenu>());
 				return;
 
 			case MainMenuButton::EXIT:
@@ -142,11 +139,13 @@ void MainMenu::step(SceneManager &mgr) {
 	// No-op
 }
 
-void MainMenu::render(const SceneManager &mgr, sf::RenderTarget &target) const {
+void MainMenu::render(
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
+) const {
 	// Render background
 	sf::Sprite bg_sprite(*_background_texture);
 	bg_sprite.setPosition(sf::Vector2f(0, 0));
-	bg_sprite.setScale(sf::Vector2f(_scale, _scale));
+	bg_sprite.setScale(sf::Vector2f(scale, scale));
 	target.draw(bg_sprite);
 
 	// Render buttons
@@ -154,7 +153,7 @@ void MainMenu::render(const SceneManager &mgr, sf::RenderTarget &target) const {
 	                        const ButtonDescriptor &desc, bool is_active) {
 		sf::Color color = is_active ? desc.active_color : desc.color;
 		font.renderText(
-			target, std::string(label), color, desc.x, desc.y, _scale, desc.size
+			target, std::string(label), color, desc.x, desc.y, scale, desc.size
 		);
 	};
 
@@ -179,7 +178,7 @@ void MainMenu::render(const SceneManager &mgr, sf::RenderTarget &target) const {
 #else
 	constexpr std::string_view version_str = "V" WAVEFORGE_VERSION;
 #endif
-	_version_text.render(target, font, version_str, _scale);
+	_version_text.render(target, font, version_str, scale);
 }
 
 } // namespace wf::scene

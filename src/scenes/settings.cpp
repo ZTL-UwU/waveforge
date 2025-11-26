@@ -187,7 +187,7 @@ constexpr int hint_fade_speed = 3;
 
 SettingsMenu::~SettingsMenu() = default;
 
-SettingsMenu::SettingsMenu(int scale)
+SettingsMenu::SettingsMenu()
 	: font(AssetsManager::instance().getAsset<PixelFont>("font"))
 	, _current_option_index(0)
 	, _cheat_code_step(0)
@@ -198,7 +198,6 @@ SettingsMenu::SettingsMenu(int scale)
 
 	_width = json_data.at("width");
 	_height = json_data.at("height");
-	_scale = automaticScale(_width, _height, scale);
 
 	_header = UITextDescriptor::fromJson(json_data.at("header"));
 	_restart_hint = UITextDescriptor::fromJson(json_data.at("restart-hint"));
@@ -233,7 +232,7 @@ SettingsMenu::SettingsMenu(int scale)
 }
 
 std::array<int, 2> SettingsMenu::size() const {
-	return {_width * _scale, _height * _scale};
+	return {_width, _height};
 }
 
 void SettingsMenu::setup(SceneManager &mgr) {
@@ -244,7 +243,7 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 	if (auto kb = evt.getIf<sf::Event::KeyPressed>()) {
 		switch (kb->code) {
 		case sf::Keyboard::Key::Escape:
-			mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>(_scale));
+			mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>());
 			return;
 
 		case sf::Keyboard::Key::Tab:
@@ -296,7 +295,7 @@ void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 		case sf::Keyboard::Key::Space:
 			if (_options[_current_option_index]->handleEnter()) {
 				// go back to main menu
-				mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>(_scale));
+				mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>());
 				return;
 			}
 			break;
@@ -349,11 +348,11 @@ void SettingsMenu::step(SceneManager &mgr) {
 }
 
 void SettingsMenu::render(
-	const SceneManager &mgr, sf::RenderTarget &target
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
 ) const {
 	// Render header & restart hint
-	_header.render(target, font, "Settings", _scale);
-	_restart_hint.render(target, font, "some changes require restart", _scale);
+	_header.render(target, font, "Settings", scale);
+	_restart_hint.render(target, font, "some changes require restart", scale);
 
 	// Render options
 	for (size_t i = 0; i < _options.size(); ++i) {
@@ -368,7 +367,7 @@ void SettingsMenu::render(
 		int text_opt_x = _option_start_pos[0];
 		int text_y = _option_start_pos[1] + i * _option_spacing;
 		font.renderText(
-			target, option_text, color, text_opt_x, text_y, _scale,
+			target, option_text, color, text_opt_x, text_y, scale,
 			_option_text_size
 		);
 
@@ -388,7 +387,7 @@ void SettingsMenu::render(
 		int border_x = _option_start_pos[0] + _option_width;
 		int text_value_x = border_x - value_text_width;
 		font.renderText(
-			target, value_text, color, text_value_x, text_y, _scale,
+			target, value_text, color, text_value_x, text_y, scale,
 			_option_text_size
 		);
 	}
@@ -402,7 +401,7 @@ void SettingsMenu::render(
 		int x = (_width - text_width) / 2;
 		int y = _height - font.charHeight() - 10;
 		sf::Color text_color = ui_text_color(_cheat_code_hint_opacity);
-		font.renderText(target, hint_text, text_color, x, y, _scale);
+		font.renderText(target, hint_text, text_color, x, y, scale);
 	}
 }
 

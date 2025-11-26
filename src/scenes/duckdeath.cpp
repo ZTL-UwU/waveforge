@@ -24,14 +24,13 @@ PixelAnimationFrames &duckDeathAnimation() {
 } // namespace
 
 DuckDeath::DuckDeath(
-	int level_width, int level_height, int duck_x, int duck_y, int scale,
+	int level_width, int level_height, int duck_x, int duck_y,
 	LevelMetadata level_metadata
 )
 	: _level_width(level_width)
 	, _level_height(level_height)
 	, _duck_x(duck_x)
 	, _duck_y(duck_y)
-	, _scale(scale)
 	, _tick(0)
 	, _animation_frame(0)
 	, _level_metadata(std::move(level_metadata))
@@ -72,7 +71,7 @@ DuckDeath::DuckDeath(
 }
 
 std::array<int, 2> DuckDeath::size() const {
-	return {_level_width * _scale, _level_height * _scale};
+	return {_level_width, _level_height};
 }
 
 void DuckDeath::setup(SceneManager &mgr) {
@@ -103,7 +102,7 @@ void DuckDeath::step(SceneManager &mgr) {
 		_reborn_sound.stop();
 		mgr.changeScene(
 			pro::make_proxy<SceneFacade, LevelPlaying>(
-				Level::loadFromMetadata(std::move(_level_metadata)), _scale
+				Level::loadFromMetadata(std::move(_level_metadata))
 			)
 		);
 		return;
@@ -128,12 +127,12 @@ void DuckDeath::step(SceneManager &mgr) {
 }
 
 void DuckDeath::render(
-	const SceneManager &mgr, sf::RenderTarget &target
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
 ) const {
 	target.clear(sf::Color(220, 220, 220, 255));
 	int rx = _duck_x - _duck_anchor_bx;
 	int ry = _duck_y - _duck_anchor_by;
-	_animation.render(target, _animation_frame, rx, ry, _scale);
+	_animation.render(target, _animation_frame, rx, ry, scale);
 }
 
 } // namespace wf::scene

@@ -2,6 +2,7 @@
 #include "wforge/assets.h"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Window.hpp>
+#include <format>
 #include <iostream>
 #include <nlohmann/json.hpp>
 
@@ -28,9 +29,10 @@ UITextDescriptor UITextDescriptor::fromJson(const nlohmann::json &json_data) {
 
 namespace {
 
-sf::RenderWindow createWindow(Scene &scene) {
+sf::RenderWindow createWindow(Scene &scene, int scale) {
 	auto [width, height] = scene->size();
-	sf::Vector2u window_size(width, height);
+	scale = automaticScale(width, height, scale);
+	sf::Vector2u window_size(width * scale, height * scale);
 	sf::RenderWindow window(
 		sf::VideoMode(window_size), "Waveforge " WAVEFORGE_VERSION "alpha",
 		sf::Style::Titlebar | sf::Style::Close
@@ -47,21 +49,24 @@ int automaticScale(int width, int height, int scale_configured) {
 	}
 
 	auto player_screen_size = sf::VideoMode::getDesktopMode().size;
-	int res = std::max<int>(
+	return std::max<int>(
 		1,
 		std::min<int>(
 			player_screen_size.x / width - 1, player_screen_size.y / height - 1
 		)
 	);
-
-	std::cerr << "Automatic scale selected: " << res << "x\n";
-	return res;
 }
 
-SceneManager::SceneManager(Scene initial_scene)
-	: window(createWindow(initial_scene))
+SceneManager::SceneManager(Scene initial_scene, int scale)
+	: window(createWindow(initial_scene, scale))
 	, _current_scene(std::move(initial_scene))
-	, _scene_changed(false) {
+	, _scene_changed(false)
+	, _config_scale(scale) {
+	auto [width, height] = _current_scene->size();
+	_scale = automaticScale(width, height, scale);
+	std::cerr << std::format(
+		"Screen size {}x{}, using scale {}x\n", width, height, _scale
+	);
 	_current_scene->setup(*this);
 }
 
@@ -75,7 +80,12 @@ void SceneManager::changeScene(Scene new_scene) {
 	auto [width, height] = _current_scene->size();
 	if (width != old_width || height != old_height) {
 		window.close();
-		window = createWindow(_current_scene);
+		_scale = automaticScale(width, height, _config_scale);
+		std::cerr << std::format(
+			"Screen size changed to {}x{}, using scale {}x\n", width, height,
+			_scale
+		);
+		window = createWindow(_current_scene, _config_scale);
 	}
 	_current_scene->setup(*this);
 	_scene_changed = true;
@@ -94,7 +104,7 @@ void SceneManager::tick() {
 
 	bgm.step();
 	window.clear(sf::Color::White);
-	_current_scene->render(*this, window);
+	_current_scene->render(*this, window, _scale);
 	window.display();
 }
 

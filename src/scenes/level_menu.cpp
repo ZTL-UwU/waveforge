@@ -9,7 +9,7 @@
 
 namespace wf::scene {
 
-LevelSelectionMenu::LevelSelectionMenu(int scale)
+LevelSelectionMenu::LevelSelectionMenu()
 	: _level_seq(
 		  AssetsManager::instance().getAsset<LevelSequence>("level-sequence")
 	  )
@@ -20,7 +20,6 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 
 	_width = json_data.at("width");
 	_height = json_data.at("height");
-	_scale = automaticScale(_width, _height, scale);
 
 	_header = UITextDescriptor::fromJson(json_data.at("header"));
 	_level_button_text = UITextDescriptor::fromJson(
@@ -73,7 +72,7 @@ LevelSelectionMenu::LevelSelectionMenu(int scale)
 }
 
 std::array<int, 2> LevelSelectionMenu::size() const {
-	return {_width * _scale, _height * _scale};
+	return {_width, _height};
 }
 
 void LevelSelectionMenu::setup(SceneManager &mgr) {
@@ -108,15 +107,14 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 						pro::make_proxy<SceneFacade, LevelPlaying>(
 							Level::loadFromMetadata(
 								*_level_seq.levels.at(_selected_index)
-							),
-							_scale
+							)
 						)
 					);
 				} else {
 					mgr.changeScene(
 						pro::make_proxy<SceneFacade, LevelLoading>(
 							_width, _height,
-							*_level_seq.levels.at(_selected_index), _scale
+							*_level_seq.levels.at(_selected_index)
 						)
 					);
 				}
@@ -125,7 +123,7 @@ void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 			break;
 
 		case sf::Keyboard::Key::Escape:
-			mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>(_scale));
+			mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>());
 			return;
 
 		default:
@@ -139,10 +137,10 @@ void LevelSelectionMenu::step(SceneManager &mgr) {
 }
 
 void LevelSelectionMenu::render(
-	const SceneManager &mgr, sf::RenderTarget &target
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
 ) const {
 	// Render header
-	_header.render(target, font, "Levels", _scale);
+	_header.render(target, font, "Levels", scale);
 
 	// Render level buttons and links
 	auto &save_data = SaveData::instance();
@@ -171,8 +169,8 @@ void LevelSelectionMenu::render(
 			: *_level_seq.levels[level_index]->minimap_texture;
 
 		sf::Sprite btn_sprite(btn_texture);
-		btn_sprite.setPosition(sf::Vector2f(btn_x * _scale, btn_y * _scale));
-		btn_sprite.setScale(sf::Vector2f(_scale, _scale));
+		btn_sprite.setPosition(sf::Vector2f(btn_x * scale, btn_y * scale));
+		btn_sprite.setScale(sf::Vector2f(scale, scale));
 		target.draw(btn_sprite);
 
 		if (level_index != 0) {
@@ -183,9 +181,9 @@ void LevelSelectionMenu::render(
 				: _level_link_texture_activated;
 			sf::Sprite link_sprite(*link_texture);
 			link_sprite.setPosition(
-				sf::Vector2f(link_x * _scale, link_y * _scale)
+				sf::Vector2f(link_x * scale, link_y * scale)
 			);
-			link_sprite.setScale(sf::Vector2f(_scale, _scale));
+			link_sprite.setScale(sf::Vector2f(scale, scale));
 			target.draw(link_sprite);
 		}
 
@@ -208,7 +206,7 @@ void LevelSelectionMenu::render(
 
 			font.renderText(
 				target, level_label, _level_button_text.color, text_x, text_y,
-				_scale, size
+				scale, size
 			);
 		}
 
@@ -218,9 +216,9 @@ void LevelSelectionMenu::render(
 			sf::Texture *frame_texture = _level_button_texture_frame;
 			sf::Sprite frame_sprite(*frame_texture);
 			frame_sprite.setPosition(
-				sf::Vector2f(frame_x * _scale, frame_y * _scale)
+				sf::Vector2f(frame_x * scale, frame_y * scale)
 			);
-			frame_sprite.setScale(sf::Vector2f(_scale, _scale));
+			frame_sprite.setScale(sf::Vector2f(scale, scale));
 			target.draw(frame_sprite);
 		}
 
@@ -234,9 +232,9 @@ void LevelSelectionMenu::render(
 			int duck_render_y = duck_y - _duck_texture->getSize().y + 1;
 			sf::Sprite duck_sprite(*_duck_texture);
 			duck_sprite.setPosition(
-				sf::Vector2f(duck_render_x * _scale, duck_render_y * _scale)
+				sf::Vector2f(duck_render_x * scale, duck_render_y * scale)
 			);
-			duck_sprite.setScale(sf::Vector2f(_scale, _scale));
+			duck_sprite.setScale(sf::Vector2f(scale, scale));
 			target.draw(duck_sprite);
 		}
 	}
@@ -250,20 +248,18 @@ void LevelSelectionMenu::render(
 			? _level_link_texture_locked
 			: _level_link_texture_activated;
 		sf::Sprite link_sprite(*link_texture);
-		link_sprite.setPosition(sf::Vector2f(link_x * _scale, link_y * _scale));
-		link_sprite.setScale(sf::Vector2f(_scale, _scale));
+		link_sprite.setPosition(sf::Vector2f(link_x * scale, link_y * scale));
+		link_sprite.setScale(sf::Vector2f(scale, scale));
 		target.draw(link_sprite);
 	}
 
 	auto selected_metadata = _level_seq.levels.at(_selected_index);
 	// Render level title
-	_level_title.render(target, font, selected_metadata->name, _scale);
+	_level_title.render(target, font, selected_metadata->name, scale);
 
 	if (_selected_index <= save_data.completed_levels) {
 		// Render level description
-		_level_desc.render(
-			target, font, selected_metadata->description, _scale
-		);
+		_level_desc.render(target, font, selected_metadata->description, scale);
 
 		_level_difficulty.render(
 			target, font,
@@ -271,11 +267,11 @@ void LevelSelectionMenu::render(
 				"Difficulty:{}",
 				LevelMetadata::difficultyToString(selected_metadata->difficulty)
 			),
-			_scale
+			scale
 		);
 
 		// Render enter hint
-		_enter_hint.render(target, font, "[ENTER]", _scale);
+		_enter_hint.render(target, font, "[ENTER]", scale);
 	}
 }
 

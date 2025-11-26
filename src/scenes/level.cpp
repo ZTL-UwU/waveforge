@@ -45,29 +45,24 @@ std::string_view hintTextOf(int type) {
 
 } // namespace
 
-LevelPlaying::LevelPlaying(const std::string &level_id, int scale)
+LevelPlaying::LevelPlaying(const std::string &level_id)
 	: LevelPlaying(
 		  Level::loadFromMetadata(
 			  AssetsManager::instance().getAsset<LevelMetadata>(
 				  "level/" + level_id
 			  )
-		  ),
-		  scale
+		  )
 	  ) {}
 
-LevelPlaying::LevelPlaying(Level level): LevelPlaying(std::move(level), 0) {}
-
-LevelPlaying::LevelPlaying(Level level, int scale)
-	: _scale(automaticScale(level.width(), level.height(), scale))
-	, _tick(0)
+LevelPlaying::LevelPlaying(Level level)
+	: _tick(0)
 	, _level(std::move(level))
-	, _renderer(_level, _scale)
 	, _hint_type(HintType::None)
 	, _hint_opacity(0)
 	, font(*loadFont()) {}
 
 std::array<int, 2> LevelPlaying::size() const {
-	return {_level.width() * _scale, _level.height() * _scale};
+	return {_level.width(), _level.height()};
 }
 
 void LevelPlaying::setup(SceneManager &mgr) {
@@ -93,7 +88,7 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (auto mb = ev.getIf<sf::Event::MouseButtonPressed>()) {
 		auto mouse_pos = mgr.mousePosition();
 		if (mb->button == sf::Mouse::Button::Left) {
-			_level.useActiveItem(mouse_pos.x, mouse_pos.y, _scale);
+			_level.useActiveItem(mouse_pos.x, mouse_pos.y, mgr.scale());
 		}
 	}
 
@@ -116,7 +111,7 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 		case sf::Keyboard::Key::Escape:
 			if (_hint_opacity > 0 && _hint_type == HintType::QuitLevel) {
 				mgr.changeScene(
-					pro::make_proxy<SceneFacade, LevelSelectionMenu>(_scale)
+					pro::make_proxy<SceneFacade, LevelSelectionMenu>()
 				);
 				return;
 			} else {
@@ -158,7 +153,7 @@ void LevelPlaying::_restartLevel(SceneManager &mgr, bool is_failed) {
 
 	mgr.changeScene(
 		pro::make_proxy<SceneFacade, DuckDeath>(
-			_level.width(), _level.height(), duck_x, duck_y, _scale,
+			_level.width(), _level.height(), duck_x, duck_y,
 			LevelMetadata(_level.metadata)
 		)
 	);
@@ -166,10 +161,11 @@ void LevelPlaying::_restartLevel(SceneManager &mgr, bool is_failed) {
 }
 
 void LevelPlaying::render(
-	const SceneManager &mgr, sf::RenderTarget &target
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
 ) const {
 	auto mouse_pos = mgr.mousePosition();
-	_renderer.render(target, mouse_pos.x, mouse_pos.y);
+	LevelRenderer renderer(const_cast<Level &>(_level), scale);
+	renderer.render(target, mouse_pos.x, mouse_pos.y);
 
 	if (_hint_opacity > 0) {
 		auto hint_text = hintTextOf(_hint_type);
@@ -177,7 +173,7 @@ void LevelPlaying::render(
 		int x = (_level.width() - text_width) / 2;
 		int y = _level.height() - font.charHeight() - 10;
 		sf::Color text_color = ui_text_color(_hint_opacity);
-		font.renderText(target, hint_text, text_color, x, y, _scale);
+		font.renderText(target, hint_text, text_color, x, y, scale);
 	}
 }
 
@@ -210,7 +206,7 @@ void LevelPlaying::step(SceneManager &mgr) {
 			pro::make_proxy<SceneFacade, LevelComplete>(
 				_level.width(), _level.height(),
 				std::round(_level.duck.position.x),
-				std::round(_level.duck.position.y), _scale
+				std::round(_level.duck.position.y)
 			)
 		);
 		return;

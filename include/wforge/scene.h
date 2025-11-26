@@ -36,7 +36,7 @@ struct SceneFacade : pro::facade_builder
 	::add_convention<_dispatch::MemSetup, void(SceneManager &)>
 	::add_convention<_dispatch::MemHandleEvent, void(SceneManager &, sf::Event &)>
 	::add_convention<_dispatch::MemStep, void(SceneManager &)>
-	::add_convention<_dispatch::MemRender, void(const SceneManager &, sf::RenderTarget &) const>
+	::add_convention<_dispatch::MemRender, void(const SceneManager &, sf::RenderTarget &, int) const>
 	::build {};
 /* clang-format on */
 
@@ -60,7 +60,7 @@ int automaticScale(int width, int height, int scale_configured = 0);
 
 class SceneManager {
 public:
-	SceneManager(Scene initial_scene);
+	SceneManager(Scene initial_scene, int scale = 0);
 	~SceneManager();
 
 	void changeScene(Scene new_scene);
@@ -68,6 +68,9 @@ public:
 	void tick();
 
 	sf::Vector2i mousePosition() const;
+	int scale() const {
+		return _scale;
+	}
 
 	sf::RenderWindow window;
 	BGMManager bgm;
@@ -75,28 +78,29 @@ public:
 private:
 	Scene _current_scene;
 	bool _scene_changed;
+	int _config_scale;
+	int _scale;
 };
 
 namespace scene {
 
 struct LevelPlaying {
-	LevelPlaying(const std::string &level_id, int scale);
+	LevelPlaying(const std::string &level_id);
 	LevelPlaying(Level level);
-	LevelPlaying(Level level, int scale);
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 private:
 	void _restartLevel(SceneManager &mgr, bool is_failed = true);
 
-	int _scale;
 	int _tick;
 	Level _level;
-	mutable LevelRenderer _renderer;
 	int _hint_type;
 	int _hint_opacity;
 	PixelFont &font;
@@ -104,7 +108,7 @@ private:
 
 struct DuckDeath {
 	DuckDeath(
-		int level_width, int level_height, int duck_x, int duck_y, int scale,
+		int level_width, int level_height, int duck_x, int duck_y,
 		LevelMetadata level_metadata
 	);
 
@@ -112,7 +116,9 @@ struct DuckDeath {
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 private:
 	int _level_width;
@@ -120,7 +126,6 @@ private:
 
 	int _duck_x;
 	int _duck_y;
-	int _scale;
 	int _duck_anchor_bx;
 	int _duck_anchor_by;
 
@@ -140,20 +145,19 @@ private:
 };
 
 struct LevelComplete {
-	LevelComplete(
-		int level_width, int level_height, int duck_x, int duck_y, int scale
-	);
+	LevelComplete(int level_width, int level_height, int duck_x, int duck_y);
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 private:
 	int _level_width;
 	int _level_height;
-	int _scale;
 	int _pending_timer;
 	int _current_step;
 	bool _display_text;
@@ -165,20 +169,19 @@ private:
 };
 
 struct LevelLoading {
-	LevelLoading(
-		int width, int height, LevelMetadata level_metadata, int scale
-	);
+	LevelLoading(int width, int height, LevelMetadata level_metadata);
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 private:
 	int _width;
 	int _height;
-	int _scale;
 	int _tick;
 	int _total_duration;
 	const PixelFont &font;
@@ -186,16 +189,17 @@ private:
 };
 
 struct LevelSelectionMenu {
-	LevelSelectionMenu(int scale);
+	LevelSelectionMenu();
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 private:
-	int _scale;
 	int _selected_index;
 	const LevelSequence &_level_seq;
 
@@ -221,16 +225,17 @@ private:
 };
 
 struct MainMenu {
-	MainMenu(int scale);
+	MainMenu();
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 private:
-	int _scale;
 	int _width;
 	int _height;
 	const PixelFont &font;
@@ -253,19 +258,20 @@ private:
 
 class SettingsMenu {
 public:
-	SettingsMenu(int scale);
+	SettingsMenu();
 	~SettingsMenu();
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 	struct Option;
 
 private:
-	int _scale;
 	int _width;
 	int _height;
 	const PixelFont &font;
@@ -288,16 +294,17 @@ private:
 };
 
 struct Credits {
-	Credits(int scale);
+	Credits();
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);
 	void handleEvent(SceneManager &mgr, sf::Event &evt);
 	void step(SceneManager &mgr);
-	void render(const SceneManager &mgr, sf::RenderTarget &target) const;
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
 
 private:
-	int _scale;
 	int _width;
 	int _height;
 	const PixelFont &font;

@@ -78,12 +78,11 @@ int main(int argc, char **argv) {
 void entry(const std::string &level_id, int scale_config) {
 	wf::SceneManager scene_mgr(
 		level_id == "-"
-			? pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>(
-				  scale_config
-			  )
+			? pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>()
 			: pro::make_proxy<wf::SceneFacade, wf::scene::LevelPlaying>(
-				  level_id, scale_config
-			  )
+				  level_id
+			  ),
+		scale_config
 	);
 
 	auto &window = scene_mgr.window;

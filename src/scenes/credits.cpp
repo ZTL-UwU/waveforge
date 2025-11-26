@@ -6,7 +6,7 @@
 
 namespace wf::scene {
 
-Credits::Credits(int scale)
+Credits::Credits()
 	: font(AssetsManager::instance().getAsset<PixelFont>("font")) {
 	const auto &json_data = AssetsManager::instance().getAsset<nlohmann::json>(
 		"ui-config/credits"
@@ -14,7 +14,6 @@ Credits::Credits(int scale)
 
 	_width = json_data.at("width");
 	_height = json_data.at("height");
-	_scale = automaticScale(_width, _height, scale);
 
 	_header = UITextDescriptor::fromJson(json_data.at("header"));
 
@@ -40,7 +39,7 @@ Credits::Credits(int scale)
 }
 
 std::array<int, 2> Credits::size() const {
-	return {_width * _scale, _height * _scale};
+	return {_width, _height};
 }
 
 void Credits::setup(SceneManager &mgr) {
@@ -54,7 +53,7 @@ void Credits::handleEvent(SceneManager &mgr, sf::Event &evt) {
 		case sf::Keyboard::Key::Enter:
 		case sf::Keyboard::Key::Space:
 			UISounds::instance().forward.play();
-			mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>(_scale));
+			mgr.changeScene(pro::make_proxy<SceneFacade, MainMenu>());
 			return;
 
 		default:
@@ -67,9 +66,11 @@ void Credits::step(SceneManager &mgr) {
 	// no-op
 }
 
-void Credits::render(const SceneManager &mgr, sf::RenderTarget &target) const {
+void Credits::render(
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
+) const {
 	// Render header
-	_header.render(target, font, "Credits", _scale);
+	_header.render(target, font, "Credits", scale);
 
 	// Render content rows
 	for (size_t i = 0; i < _content.size(); ++i) {
@@ -82,7 +83,7 @@ void Credits::render(const SceneManager &mgr, sf::RenderTarget &target) const {
 
 		// left label
 		font.renderText(
-			target, left, _credits_color, text_x, text_y, _scale, _credits_size
+			target, left, _credits_color, text_x, text_y, scale, _credits_size
 		);
 
 		// right value (right-aligned within width)
@@ -91,7 +92,7 @@ void Credits::render(const SceneManager &mgr, sf::RenderTarget &target) const {
 		int border_x = _credits_pos[0] + _credits_width;
 		int text_value_x = border_x - value_text_width;
 		font.renderText(
-			target, right, _credits_color, text_value_x, text_y, _scale,
+			target, right, _credits_color, text_value_x, text_y, scale,
 			_credits_size
 		);
 	}

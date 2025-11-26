@@ -18,11 +18,10 @@ constexpr std::string_view level_complete_text = "LEVEL COMPLETED!";
 }
 
 LevelComplete::LevelComplete(
-	int level_width, int level_height, int duck_x, int duck_y, int scale
+	int level_width, int level_height, int duck_x, int duck_y
 )
 	: _level_width(level_width)
 	, _level_height(level_height)
-	, _scale(scale)
 	, _pending_timer(0)
 	, _current_step(0)
 	, _display_text(false)
@@ -57,7 +56,7 @@ LevelComplete::LevelComplete(
 }
 
 std::array<int, 2> LevelComplete::size() const {
-	return {_level_width * _scale, _level_height * _scale};
+	return {_level_width, _level_height};
 }
 
 void LevelComplete::setup(SceneManager &mgr) {
@@ -82,7 +81,7 @@ void LevelComplete::step(SceneManager &mgr) {
 
 	if (_display_text) {
 		// Go back to level menu
-		mgr.changeScene(Scene(std::make_unique<LevelSelectionMenu>(_scale)));
+		mgr.changeScene(Scene(std::make_unique<LevelSelectionMenu>()));
 		return;
 	}
 
@@ -96,13 +95,13 @@ void LevelComplete::step(SceneManager &mgr) {
 }
 
 void LevelComplete::render(
-	const SceneManager &mgr, sf::RenderTarget &target
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
 ) const {
 	sf::Sprite duck_sprite(_duck_texture);
-	duck_sprite.setScale(sf::Vector2f(_scale, _scale));
+	duck_sprite.setScale(sf::Vector2f(scale, scale));
 
 	auto [cur_x, cur_y] = _step_positions[_current_step];
-	duck_sprite.setPosition(sf::Vector2f(cur_x * _scale, cur_y * _scale));
+	duck_sprite.setPosition(sf::Vector2f(cur_x * scale, cur_y * scale));
 	target.draw(duck_sprite);
 
 	if (_display_text) {
@@ -110,17 +109,14 @@ void LevelComplete::render(
 		int text_y = (_level_height - font.charHeight()) / 2;
 		font.renderText(
 			target, level_complete_text, ui_text_color(255), text_x, text_y,
-			_scale
+			scale
 		);
 	}
 }
 
-LevelLoading::LevelLoading(
-	int width, int height, LevelMetadata level_metadata, int scale
-)
+LevelLoading::LevelLoading(int width, int height, LevelMetadata level_metadata)
 	: _width(width)
 	, _height(height)
-	, _scale(scale)
 	, _tick(0)
 	, font(AssetsManager::instance().getAsset<PixelFont>("font"))
 	, _level_metadata(std::move(level_metadata)) {
@@ -129,7 +125,7 @@ LevelLoading::LevelLoading(
 }
 
 std::array<int, 2> LevelLoading::size() const {
-	return {_width * _scale, _height * _scale};
+	return {_width, _height};
 }
 
 void LevelLoading::setup(SceneManager &mgr) {
@@ -144,21 +140,21 @@ void LevelLoading::step(SceneManager &mgr) {
 		// Load level scene
 		mgr.changeScene(Scene(
 			pro::make_proxy<SceneFacade, LevelPlaying>(
-				Level::loadFromMetadata(std::move(_level_metadata)), _scale
+				Level::loadFromMetadata(std::move(_level_metadata))
 			)
 		));
 	}
 }
 
 void LevelLoading::render(
-	const SceneManager &mgr, sf::RenderTarget &target
+	const SceneManager &mgr, sf::RenderTarget &target, int scale
 ) const {
 	constexpr std::string_view loading_text = "LOADING...";
 
 	int text_width = loading_text.size() * font.charWidth();
 	int x = (_width - text_width) / 2;
 	int y = (_height - font.charHeight()) / 2;
-	font.renderText(target, loading_text, ui_text_color(255), x, y, _scale);
+	font.renderText(target, loading_text, ui_text_color(255), x, y, scale);
 }
 
 } // namespace wf::scene
