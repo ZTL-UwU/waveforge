@@ -3,7 +3,7 @@
 	"map": "level/circuit/map",
 	"metadata": {
 		"level_name": "A Genius Idea",
-		"description": "You need to do circuit, right?",
+		"description": "2 solutions.Can you find both?",
 		"difficulty": "hard",
 		"minimap_asset_id": "level/circuit/minimap"
 	},
