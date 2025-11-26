@@ -184,10 +184,14 @@ private:
 	std::unique_ptr<std::uint8_t[]> _fallsand_buffer;
 	sf::Texture _fallsand_texture;
 	sf::Sprite _fallsand_sprite;
+	std::unique_ptr<std::uint8_t[]> _heat_buffer;
+	sf::Texture _heat_texture;
+	sf::Sprite _heat_sprite;
 	sf::Sprite _duck_sprite;
 	PixelFont &_font;
 
 	void _renderFallsand(sf::RenderTarget &target);
+	void _renderHeat(sf::RenderTarget &target);
 	void _renderDuck(sf::RenderTarget &target, int scale);
 	void _renderItemText(sf::RenderTarget &target, int scale);
 };

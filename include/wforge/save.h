@@ -8,6 +8,7 @@ struct UserSettings {
 	int global_volume;
 	bool strict_pixel_perfection;
 	bool skip_animations;
+	bool debug_heat_render;
 
 	static UserSettings defaultSettings() noexcept;
 };

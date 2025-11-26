@@ -1,5 +1,7 @@
 #include "wforge/level.h"
 #include "wforge/colorpalette.h"
+#include "wforge/fallsand.h"
+#include "wforge/save.h"
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cmath>
@@ -152,6 +154,11 @@ LevelRenderer::LevelRenderer(Level &level)
 	  )
 	, _fallsand_texture()
 	, _fallsand_sprite(_fallsand_texture)
+	, _heat_buffer(
+		  std::make_unique<std::uint8_t[]>(level.width() * level.height() * 4)
+	  )
+	, _heat_texture()
+	, _heat_sprite(_heat_texture)
 	, _duck_sprite(
 		  AssetsManager::instance().getAsset<sf::Texture>("duck/texture")
 	  )
@@ -163,6 +170,12 @@ LevelRenderer::LevelRenderer(Level &level)
 	}
 	_fallsand_texture.setSmooth(false);
 	_fallsand_sprite = sf::Sprite(_fallsand_texture);
+
+	if (!_heat_texture.resize(sf::Vector2u(level.width(), level.height()))) {
+		throw std::runtime_error("Failed to create heat texture");
+	}
+	_heat_texture.setSmooth(false);
+	_heat_sprite = sf::Sprite(_heat_texture);
 }
 
 void LevelRenderer::_renderFallsand(sf::RenderTarget &target) {
@@ -172,6 +185,37 @@ void LevelRenderer::_renderFallsand(sf::RenderTarget &target) {
 	_level.fallsand.renderToBuffer(fallsand_buffer_view);
 	_fallsand_texture.update(_fallsand_buffer.get());
 	target.draw(_fallsand_sprite);
+}
+
+void LevelRenderer::_renderHeat(sf::RenderTarget &target) {
+	// Render heat overlay (semi-transparent red, brighter = hotter)
+	const int width = _level.width();
+	const int height = _level.height();
+
+	for (int y = 0; y < height; ++y) {
+		for (int x = 0; x < width; ++x) {
+			auto tag = _level.fallsand.tagOf(x, y);
+			int idx = (y * width + x) * 4;
+
+			// Heat value is 0-127, map it to red color with alpha
+			if (tag.heat > 0) {
+				// Normalize heat to 0-255 range
+				int heat_normalized = (tag.heat * 256) / PixelTag::heat_max;
+				_heat_buffer[idx + 0] = 255; // R
+				_heat_buffer[idx + 1] = 0;   // G
+				_heat_buffer[idx + 2] = 0;   // B
+				_heat_buffer[idx + 3] = heat_normalized;
+			} else {
+				_heat_buffer[idx + 0] = 0;
+				_heat_buffer[idx + 1] = 0;
+				_heat_buffer[idx + 2] = 0;
+				_heat_buffer[idx + 3] = 0;
+			}
+		}
+	}
+
+	_heat_texture.update(_heat_buffer.get());
+	target.draw(_heat_sprite);
 }
 
 void LevelRenderer::_renderDuck(sf::RenderTarget &target, int scale) {
@@ -189,7 +233,14 @@ void LevelRenderer::render(
 	sf::RenderTarget &target, int mouse_x, int mouse_y, int scale
 ) {
 	_fallsand_sprite.setScale(sf::Vector2f(scale, scale));
+	_heat_sprite.setScale(sf::Vector2f(scale, scale));
 	_renderFallsand(target);
+
+	// Render heat overlay if debug mode is enabled
+	if (SaveData::instance().user_settings.debug_heat_render) {
+		_renderHeat(target);
+	}
+
 	_renderDuck(target, scale);
 	_level.checkpoint.render(target, scale); // checkpoint can render itself
 	_renderItemText(target, scale);

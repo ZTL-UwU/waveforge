@@ -8,7 +8,7 @@ PixelTag Air::newTag() const noexcept {
 		.type = PixelType::Air,
 		.pclass = PixelClass::Gas,
 		.color_index = colorIndexOf("Air"),
-		.thermal_conductivity = 1,
+		.thermal_conductivity = 5,
 	};
 }
 

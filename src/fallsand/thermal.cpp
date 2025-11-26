@@ -17,9 +17,10 @@ constexpr float heat_decay_factor = 0.005f;
 
 void PixelWorld::thermalAnalysisStep() noexcept {
 	auto &rng = Xoroshiro128PP::globalInstance();
+	const auto rng_max = std::decay<decltype(rng)>::type::max();
 	std::array<int, 2> world_dim{_width, _height};
 
-	std::vector<unsigned int> next_heat(_width * _height, 0);
+	std::vector<int> next_heat(_width * _height, 0);
 
 	// Heat transfer
 	for (int y = 0; y < _height; ++y) {
@@ -31,7 +32,7 @@ void PixelWorld::thermalAnalysisStep() noexcept {
 				continue;
 			}
 
-			int transfer_amount = 0;
+			float total_transfer_amount = 0;
 
 			int total_thermal_conductivity = std::round(
 				tag.heat
@@ -54,18 +55,24 @@ void PixelWorld::thermalAnalysisStep() noexcept {
 					* std::min(tag.thermal_conductivity,
 				               ntag.thermal_conductivity);
 
-				int received_heat = std::round(
-					1.f * tag.heat * conductivity / total_thermal_conductivity
-				);
-				transfer_amount += received_heat;
+				float transfer_amount = 1.f * tag.heat * conductivity
+					/ total_thermal_conductivity;
+
+				int received_heat = std::floor(transfer_amount);
+				float frac = (transfer_amount - received_heat) / 2;
+				if (rng() < std::round(frac * static_cast<double>(rng_max))) {
+					received_heat += 1;
+				}
+
+				total_transfer_amount += transfer_amount;
 				next_heat[ny * _width + nx] += received_heat;
 			}
-			next_heat[y * _width + x] += tag.heat - transfer_amount;
+			next_heat[y * _width + x] += tag.heat
+				- std::round(total_transfer_amount);
 		}
 	}
 
 	// Heat decay
-	const auto rng_max = std::decay<decltype(rng)>::type::max();
 	for (int i = 0; i < _width * _height; ++i) {
 		float delta = next_heat[i] * heat_decay_factor;
 		int nat = std::floor(delta);
@@ -77,7 +84,7 @@ void PixelWorld::thermalAnalysisStep() noexcept {
 	}
 
 	for (int i = 0; i < _width * _height; ++i) {
-		_tags[i].heat = std::clamp(next_heat[i], 0u, PixelTag::heat_max);
+		_tags[i].heat = std::clamp<int>(next_heat[i], 0, PixelTag::heat_max);
 	}
 }
 

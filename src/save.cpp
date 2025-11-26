@@ -62,6 +62,7 @@ void loadUserSettings(UserSettings &settings, nlohmann::json &json_data) {
 		"strict_pixel_perfection", false
 	);
 	settings.skip_animations = json_data.value("skip_animations", false);
+	settings.debug_heat_render = json_data.value("debug_heat_render", false);
 }
 
 void loadSaveData(SaveData &data, nlohmann::json &json_data) {
@@ -112,6 +113,7 @@ void SaveData::save() const {
 		{"volume", user_settings.global_volume},
 		{"strict_pixel_perfection", user_settings.strict_pixel_perfection},
 		{"skip_animations", user_settings.skip_animations},
+		{"debug_heat_render", user_settings.debug_heat_render},
 	};
 
 	std::ofstream file(path);
@@ -146,6 +148,7 @@ UserSettings UserSettings::defaultSettings() noexcept {
 		.global_volume = 80,
 		.strict_pixel_perfection = false,
 		.skip_animations = false,
+		.debug_heat_render = false,
 	};
 }
 

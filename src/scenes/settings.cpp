@@ -136,6 +136,29 @@ struct SkipAnimationsOption : SettingsMenu::Option {
 	}
 };
 
+struct DebugHeatRenderOption : SettingsMenu::Option {
+	std::string displayText() const override {
+		return "Debug Heat Render";
+	}
+
+	std::string valueText() const override {
+		bool enabled = SaveData::instance().user_settings.debug_heat_render;
+		return enabled ? "On" : "Off";
+	}
+
+	void handleLeft() override {
+		auto &save = SaveData::instance();
+		save.user_settings.debug_heat_render = false;
+		save.save();
+	}
+
+	void handleRight() override {
+		auto &save = SaveData::instance();
+		save.user_settings.debug_heat_render = true;
+		save.save();
+	}
+};
+
 struct ResetSettingsOption : SettingsMenu::Option {
 	std::string displayText() const override {
 		return "Reset Settings";
@@ -226,6 +249,7 @@ SettingsMenu::SettingsMenu()
 	_options.push_back(std::make_unique<VolumnOption>());
 	_options.push_back(std::make_unique<StrictPixelPerfectionOption>());
 	_options.push_back(std::make_unique<SkipAnimationsOption>());
+	_options.push_back(std::make_unique<DebugHeatRenderOption>());
 	_options.push_back(std::make_unique<ResetSettingsOption>());
 	_options.push_back(std::make_unique<ResetAllOption>());
 	_options.push_back(std::make_unique<GoBackOption>());

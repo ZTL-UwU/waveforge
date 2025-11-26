@@ -10,7 +10,7 @@ PixelTag Stone::newTag() const noexcept {
 		.type = PixelType::Stone,
 		.pclass = PixelClass::Solid,
 		.color_index = colorIndexOf("Stone1"),
-		.thermal_conductivity = 30,
+		.thermal_conductivity = 10,
 	};
 }
 
