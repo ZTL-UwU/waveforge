@@ -1,3 +1,4 @@
+#include "wforge/2d.h"
 #include "wforge/colorpalette.h"
 #include "wforge/elements.h"
 #include "wforge/fallsand.h"
@@ -28,6 +29,7 @@ PixelTag Oil::newTag() const noexcept {
 void Oil::step(PixelWorld &world, int x, int y) noexcept {
 	constexpr unsigned int ignite_heat_threshold = 40;
 	constexpr unsigned int produced_fire_heat = 50;
+	constexpr unsigned int produced_fire_heat_to_neighbors = 3;
 	constexpr unsigned int smoke_heat = 50;
 	constexpr unsigned int die_smoke_chance = 25;   // %
 	constexpr unsigned int random_smoke_chance = 3; // %
@@ -46,6 +48,15 @@ void Oil::step(PixelWorld &world, int x, int y) noexcept {
 		int next_heat = std::min(
 			PixelTag::heat_max, my_tag.heat + produced_fire_heat
 		);
+
+		for (auto [nx, ny] :
+		     neighbors4({x, y}, {world.width(), world.height()})) {
+			auto &neighbor_tag = world.tagOf(nx, ny);
+			neighbor_tag.heat = std::min(
+				PixelTag::heat_max,
+				neighbor_tag.heat + produced_fire_heat_to_neighbors
+			);
+		}
 
 		auto &rng = Xoroshiro128PP::globalInstance();
 		if (burn_time_left <= 0) {

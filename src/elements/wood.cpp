@@ -1,3 +1,4 @@
+#include "wforge/2d.h"
 #include "wforge/colorpalette.h"
 #include "wforge/elements.h"
 #include "wforge/fallsand.h"
@@ -32,13 +33,18 @@ PixelElement Wood::create() noexcept {
 void Wood::step(PixelWorld &world, int x, int y) noexcept {
 	constexpr unsigned int ignition_heat_threshold = 60;
 	constexpr unsigned int produced_fire_heat = 40;
+	constexpr unsigned int produced_fire_heat_to_neighbors = 2;
 	constexpr unsigned int smoke_heat = 40;
 	constexpr unsigned int die_smoke_chance = 25;   // %
 	constexpr unsigned int random_smoke_chance = 2; // %
+	constexpr unsigned int ignition_chance = 10;    // %
 
+	auto &rng = Xoroshiro128PP::globalInstance();
 	auto &my_tag = world.tagOf(x, y);
 	if (!my_tag.ignited && my_tag.heat >= ignition_heat_threshold) {
-		my_tag.ignited = true;
+		if (rng.next() % 100 < ignition_chance) {
+			my_tag.ignited = true;
+		}
 	}
 
 	if (my_tag.ignited) {
@@ -47,7 +53,15 @@ void Wood::step(PixelWorld &world, int x, int y) noexcept {
 			PixelTag::heat_max, my_tag.heat + produced_fire_heat
 		);
 
-		auto &rng = Xoroshiro128PP::globalInstance();
+		for (auto [nx, ny] :
+		     neighbors4({x, y}, {world.width(), world.height()})) {
+			auto &neighbor_tag = world.tagOf(nx, ny);
+			neighbor_tag.heat = std::min(
+				PixelTag::heat_max,
+				neighbor_tag.heat + produced_fire_heat_to_neighbors
+			);
+		}
+
 		if (burn_time_left <= 0) {
 			if (rng.next() % 100 < die_smoke_chance) {
 				world.replacePixel(x, y, pro::make_proxy<PixelFacade, Smoke>());

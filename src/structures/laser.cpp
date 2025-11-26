@@ -43,7 +43,7 @@ LaserEmitter::LaserEmitter(int x, int y, FacingDirection dir)
 }
 
 bool LaserEmitter::step(PixelWorld &world) noexcept {
-	constexpr int laser_heat_amount = 5;
+	constexpr int laser_heat_amount = 10;
 
 	if (!PixelShapedStructure::step(world)) {
 		return false;
