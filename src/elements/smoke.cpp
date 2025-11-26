@@ -17,7 +17,7 @@ PixelTag Smoke::newTag() const noexcept {
 }
 
 void Smoke::step(PixelWorld &world, int x, int y) noexcept {
-	constexpr unsigned int smoke_disappear_heat_threshold = 12;
+	constexpr unsigned int smoke_disappear_heat_threshold = 6;
 
 	auto &my_tag = world.tagOf(x, y);
 	if (my_tag.heat <= smoke_disappear_heat_threshold) {
