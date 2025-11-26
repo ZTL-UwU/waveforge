@@ -1,7 +1,10 @@
 #include "wforge/scene.h"
 #include "wforge/assets.h"
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Window.hpp>
+#include <cstdio>
+#include <cstdlib>
 #include <format>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -40,6 +43,23 @@ sf::RenderWindow createWindow(Scene &scene, int scale) {
 	window.setFramerateLimit(24);
 	return window;
 }
+
+#ifdef WAVEFORGE_DEMO_VIDEO
+
+std::FILE *demoVideoFile() {
+	static std::FILE *file = nullptr;
+	if (file == nullptr) {
+		file = std::fopen("demo_video_frames.dat", "wb");
+		std::atexit([]() {
+			if (file != nullptr) {
+				std::fclose(file);
+			}
+		});
+	}
+	return file;
+}
+
+#endif
 
 } // namespace
 
@@ -105,11 +125,23 @@ void SceneManager::tick() {
 	bgm.step();
 	window.clear(sf::Color::White);
 	_current_scene->render(*this, window, _scale);
+
+#ifdef WAVEFORGE_DEMO_VIDEO
+	auto [width, height] = _current_scene->size();
+	sf::RenderTexture render_texture(sf::Vector2u(width, height));
+	render_texture.clear(sf::Color::White);
+	_current_scene->render(*this, render_texture, 1);
+
+	auto image = render_texture.getTexture().copyToImage();
+	auto file = demoVideoFile();
+	std::fwrite(image.getPixelsPtr(), 1, width * height * 4, file);
+#endif
+
 	window.display();
 }
 
 sf::Vector2i SceneManager::mousePosition() const {
-	return sf::Mouse::getPosition(window);
+	return sf::Mouse::getPosition(window) / _scale;
 }
 
 } // namespace wf

@@ -78,7 +78,7 @@ The game scene management is implemented as a finite state machine, where each s
 
 ## Acknowledgements
 
-We would like to thank zurry for thier inspiring thoughts on game play, mechanics and level design.
+We would like to thank zurry for thier inspiring thoughts on game play, mechanics and level design. We would also like to thank [RitaRossweisse301](https://github.com/RitaRossweisse301) for early testing and feedback.
 
 We would also like to thank the following open source projects for making this game possible:
 

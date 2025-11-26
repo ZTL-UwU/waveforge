@@ -1,7 +1,6 @@
 #include "wforge/level.h"
 #include "wforge/save.h"
 #include <algorithm>
-#include <cmath>
 
 namespace wf::item {
 BrushSizeChangableItem::BrushSizeChangableItem(
@@ -24,9 +23,8 @@ int BrushSizeChangableItem::brushSize() const noexcept {
 std::array<int, 2> BrushSizeChangableItem::brushTopLeft(
 	int x, int y, int scale
 ) const noexcept {
-	// convert screen coords to world coords
-	int world_x = std::round(1.f * x / scale);
-	int world_y = std::round(1.f * y / scale);
+	int world_x = x;
+	int world_y = y;
 
 	int half_brush = _brush_size / 2;
 	return {world_x - half_brush, world_y - half_brush};

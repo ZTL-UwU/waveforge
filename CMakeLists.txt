@@ -19,6 +19,8 @@ set(WAVEFORGE_VERSION "0.2")
 
 project(waveforge VERSION ${WAVEFORGE_VERSION} LANGUAGES CXX)
 
+option(WAVEFORGE_DEMO_VIDEO "Enable features for demo video recording" OFF)
+
 # SFML
 FetchContent_Declare(SFML
 	GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -146,3 +148,9 @@ target_link_libraries(waveforge PRIVATE
 	nlohmann_json::nlohmann_json
 	argparse::argparse
 )
+
+if (WAVEFORGE_DEMO_VIDEO)
+	target_compile_definitions(waveforge PRIVATE
+		"WAVEFORGE_DEMO_VIDEO=1"
+	)
+endif()
