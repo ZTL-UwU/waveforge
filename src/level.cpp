@@ -151,9 +151,8 @@ bool Level::isCompleted() const noexcept {
 	return checkpoint.isCompleted();
 }
 
-LevelRenderer::LevelRenderer(Level &level, int scale)
+LevelRenderer::LevelRenderer(Level &level)
 	: _level(level)
-	, scale(scale)
 	, _fallsand_buffer(
 		  std::make_unique<std::uint8_t[]>(level.width() * level.height() * 4)
 	  )
@@ -169,11 +168,7 @@ LevelRenderer::LevelRenderer(Level &level, int scale)
 		throw std::runtime_error("Failed to create fallsand texture");
 	}
 	_fallsand_texture.setSmooth(false);
-
-	sf::Vector2f scale_vec(scale, scale);
 	_fallsand_sprite = sf::Sprite(_fallsand_texture);
-	_fallsand_sprite.setScale(scale_vec);
-	_duck_sprite.setScale(scale_vec);
 }
 
 void LevelRenderer::_renderFallsand(sf::RenderTarget &target) {
@@ -185,27 +180,31 @@ void LevelRenderer::_renderFallsand(sf::RenderTarget &target) {
 	target.draw(_fallsand_sprite);
 }
 
-void LevelRenderer::_renderDuck(sf::RenderTarget &target) {
+void LevelRenderer::_renderDuck(sf::RenderTarget &target, int scale) {
 	sf::Vector2f duck_pos(
 		std::round(_level.duck.position.x) * scale,
 		std::round(_level.duck.position.y) * scale
 	);
 
 	_duck_sprite.setPosition(duck_pos);
+	_duck_sprite.setScale(sf::Vector2f(scale, scale));
 	target.draw(_duck_sprite);
 }
 
-void LevelRenderer::render(sf::RenderTarget &target, int mouse_x, int mouse_y) {
+void LevelRenderer::render(
+	sf::RenderTarget &target, int mouse_x, int mouse_y, int scale
+) {
+	_fallsand_sprite.setScale(sf::Vector2f(scale, scale));
 	_renderFallsand(target);
-	_renderDuck(target);
+	_renderDuck(target, scale);
 	_level.checkpoint.render(target, scale); // checkpoint can render itself
-	_renderItemText(target);
+	_renderItemText(target, scale);
 	if (auto itemstack = _level.activeItemStack()) {
 		itemstack->item->render(target, mouse_x, mouse_y, scale);
 	}
 }
 
-void LevelRenderer::_renderItemText(sf::RenderTarget &target) {
+void LevelRenderer::_renderItemText(sf::RenderTarget &target, int scale) {
 	constexpr sf::Color active_color = ui_text_color(200);
 	constexpr sf::Color inactive_color = ui_text_color(120);
 	constexpr int start_x = 2;

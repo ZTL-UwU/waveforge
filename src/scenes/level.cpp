@@ -57,6 +57,7 @@ LevelPlaying::LevelPlaying(const std::string &level_id)
 LevelPlaying::LevelPlaying(Level level)
 	: _tick(0)
 	, _level(std::move(level))
+	, _renderer(_level)
 	, _hint_type(HintType::None)
 	, _hint_opacity(0)
 	, font(*loadFont()) {}
@@ -164,8 +165,7 @@ void LevelPlaying::render(
 	const SceneManager &mgr, sf::RenderTarget &target, int scale
 ) const {
 	auto mouse_pos = mgr.mousePosition();
-	LevelRenderer renderer(const_cast<Level &>(_level), scale);
-	renderer.render(target, mouse_pos.x, mouse_pos.y);
+	_renderer.render(target, mouse_pos.x, mouse_pos.y, scale);
 
 	if (_hint_opacity > 0) {
 		auto hint_text = hintTextOf(_hint_type);

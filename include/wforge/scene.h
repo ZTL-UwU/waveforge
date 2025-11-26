@@ -101,6 +101,7 @@ private:
 
 	int _tick;
 	Level _level;
+	mutable LevelRenderer _renderer;
 	int _hint_type;
 	int _hint_opacity;
 	PixelFont &font;

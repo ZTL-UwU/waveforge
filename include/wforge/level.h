@@ -175,11 +175,9 @@ private:
 };
 
 struct LevelRenderer {
-	LevelRenderer(Level &level, int scale);
+	LevelRenderer(Level &level);
 
-	int scale;
-
-	void render(sf::RenderTarget &target, int mouse_x, int mouse_y);
+	void render(sf::RenderTarget &target, int mouse_x, int mouse_y, int scale);
 
 private:
 	Level &_level;
@@ -190,8 +188,8 @@ private:
 	PixelFont &_font;
 
 	void _renderFallsand(sf::RenderTarget &target);
-	void _renderDuck(sf::RenderTarget &target);
-	void _renderItemText(sf::RenderTarget &target);
+	void _renderDuck(sf::RenderTarget &target, int scale);
+	void _renderItemText(sf::RenderTarget &target, int scale);
 };
 
 struct LevelSequence {
