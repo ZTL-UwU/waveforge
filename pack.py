@@ -26,11 +26,12 @@ def copy_assets(assets_dir: Path, output_assets_dir: Path):
         if file_path.is_file() and file_path.suffix in included_extensions:
             # Calculate relative path
             relative_path = file_path.relative_to(assets_dir)
+            # Exclude all files in 'prototype' directories
+            if 'prototype' in relative_path.parts:
+                continue
             output_path = output_assets_dir / relative_path
-            
             # Ensure output directory exists
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            
             if file_path.suffix == '.json':
                 # Minify JSON
                 try:

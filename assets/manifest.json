@@ -100,20 +100,6 @@
 			]
 		},
 		{
-			"id": "music/Pixel Tide",
-			"type": "music",
-			"file": "Pixel Tide.mp3",
-			"description": "Loading Pixel Tide music",
-			"collections": []
-		},
-		{
-			"id": "music/Pixel Tide-X",
-			"type": "music",
-			"file": "Pixel Tide-X.mp3",
-			"description": "Loading Pixel Tide-X music",
-			"collections": []
-		},
-		{
 			"id": "config/fade-io",
 			"type": "json",
 			"file": "fade-io.json",
