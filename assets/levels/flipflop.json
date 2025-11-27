@@ -3,7 +3,7 @@
 	"metadata": {
 		"level_name": "Flipflop",
 		"description": "Lock the lock!",
-		"difficulty": "medium"
+		"difficulty": "average"
 	},
 	"map": "level/flipflop/map",
 	"items": [
