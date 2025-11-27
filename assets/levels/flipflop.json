@@ -1,0 +1,19 @@
+{
+	"format": 1,
+	"metadata": {
+		"level_name": "Flipflop",
+		"description": "Lock the lock!",
+		"difficulty": "medium"
+	},
+	"map": "level/flipflop/map",
+	"items": [
+		{
+			"id": "oil_brush",
+			"amount": 25
+		},
+		{
+			"id": "fire_brush",
+			"amount": 2
+		}
+	]
+}

@@ -29,6 +29,79 @@ PixelShape &laserReceiverShape(FacingDirection dir) {
 	return ptr[static_cast<std::uint8_t>(dir)];
 }
 
+PixelShape &mirrorShape(FacingDirection dir) {
+	static PixelShape *ptr = nullptr;
+	if (ptr == nullptr) {
+		ptr = AssetsManager::instance()
+				  .getAsset<std::array<PixelShape, 4>>("mirror/shapes")
+				  .data();
+	}
+	return ptr[static_cast<std::uint8_t>(dir)];
+}
+
+void shootLaserBeam(
+	PixelWorld &world, int start_x, int start_y, FacingDirection dir
+) noexcept {
+	constexpr int laser_heat_amount = 10;
+	constexpr int max_reflections = 8;
+
+	int cur_x = start_x;
+	int cur_y = start_y;
+	for (int _ = 0; _ < max_reflections; ++_) {
+		int dx = xDeltaOf(dir);
+		int dy = yDeltaOf(dir);
+		for (; cur_x >= 0 && cur_x < world.width() && cur_y >= 0
+		     && cur_y < world.height();
+		     (cur_x += dx), (cur_y += dy)) {
+			auto &pixel_tag = world.tagOf(cur_x, cur_y);
+
+			// Solid, smoke and external entity can block the laser beam
+			if (pixel_tag.pclass == PixelClass::Solid) {
+				auto static_tag = world.staticTagOf(cur_x - dx, cur_y - dy);
+				if (static_tag.is_reflective_surface) {
+					cur_x -= dx;
+					cur_y -= dy;
+					break;
+				}
+
+				pixel_tag.heat += laser_heat_amount;
+				return;
+			}
+
+			if (pixel_tag.type == PixelType::Smoke
+			    || world.isExternalEntityPresent(cur_x, cur_y)) {
+				return;
+			}
+
+			// Activate laser
+			world.activateLaserAt(cur_x, cur_y);
+		}
+
+		// Decide reflected direction
+		bool reflected = false;
+		for (auto next_dir : {rotate90CW(dir), rotate90CCW(dir)}) {
+			int check_x = cur_x + xDeltaOf(next_dir);
+			int check_y = cur_y + yDeltaOf(next_dir);
+			if (!world.inBounds(check_x, check_y)) {
+				continue;
+			}
+
+			auto &check_tag = world.tagOf(check_x, check_y);
+			if (check_tag.pclass == PixelClass::Solid) {
+				continue;
+			}
+
+			dir = next_dir;
+			reflected = true;
+			break;
+		}
+
+		if (!reflected) {
+			break;
+		}
+	}
+}
+
 } // namespace
 
 LaserEmitter::LaserEmitter(int x, int y, FacingDirection dir)
@@ -57,29 +130,9 @@ bool LaserEmitter::step(PixelWorld &world) noexcept {
 		return true;
 	}
 
-	int dx = xDeltaOf(_dir);
-	int dy = yDeltaOf(_dir);
 	int poi_x = x + poi[0][0];
 	int poi_y = y + poi[0][1];
-	for (int cur_x = poi_x, cur_y = poi_y; cur_x >= 0 && cur_x < world.width()
-	     && cur_y >= 0 && cur_y < world.height();
-	     (cur_x += dx), (cur_y += dy)) {
-		auto &pixel_tag = world.tagOf(cur_x, cur_y);
-
-		// Solid, smoke and external entity can block the laser beam
-		if (pixel_tag.pclass == PixelClass::Solid) {
-			pixel_tag.heat += laser_heat_amount;
-			break;
-		}
-
-		if (pixel_tag.type == PixelType::Smoke
-		    || world.isExternalEntityPresent(cur_x, cur_y)) {
-			break;
-		}
-
-		// Activate laser
-		world.activateLaserAt(cur_x, cur_y);
-	}
+	shootLaserBeam(world, poi_x, poi_y, _dir);
 	return true;
 }
 
@@ -118,6 +171,30 @@ bool LaserReceiver::step(PixelWorld &world) noexcept {
 int LaserReceiver::priority() const noexcept {
 	// Must run after LaserEmitter
 	return 100;
+}
+
+Mirror::Mirror(int x, int y, FacingDirection dir)
+	: PixelShapedStructure(x, y, mirrorShape(dir)) {
+	if (poi.empty()) {
+		throw std::runtime_error("Mirror: expected at least 1 POI, got 0\n");
+	}
+}
+
+bool Mirror::step(PixelWorld &world) noexcept {
+	if (!PixelShapedStructure::step(world)) {
+		return false;
+	}
+
+	for (const auto &point : poi) {
+		int poi_x = x + point[0];
+		int poi_y = y + point[1];
+		world.staticTagOf(poi_x, poi_y).is_reflective_surface = true;
+	}
+	return true;
+}
+
+int Mirror::priority() const noexcept {
+	return 0; // High priority to set reflective surfaces before laser steps
 }
 
 } // namespace structure

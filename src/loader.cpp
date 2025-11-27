@@ -21,6 +21,7 @@ constexpr sf::Color duck_marker_color{250, 200, 46, 231};
 constexpr sf::Color checkpoint_marker_color{89, 241, 255, 231};
 constexpr sf::Color laser_emitter_marker_color{51, 255, 184, 231};
 constexpr sf::Color laser_receiver_marker_color{187, 39, 82, 231};
+constexpr sf::Color mirror_marker_color{147, 186, 201, 231};
 constexpr sf::Color pressure_plate_marker_color{240, 34, 159, 231};
 constexpr sf::Color heavy_pressure_plate_marker_color{196, 251, 3, 231};
 constexpr sf::Color power_source_marker_color{148, 168, 58, 231};
@@ -235,6 +236,14 @@ Level Level::loadFromMetadata(LevelMetadata metadata) {
 			case laser_receiver_marker_color.toInteger():
 				structures.push_back(
 					constructStructureWithDirection<structure::LaserReceiver>(
+						image, x, y
+					)
+				);
+				break;
+
+			case mirror_marker_color.toInteger():
+				structures.push_back(
+					constructStructureWithDirection<structure::Mirror>(
 						image, x, y
 					)
 				);

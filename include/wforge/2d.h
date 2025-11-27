@@ -39,6 +39,18 @@ inline int yDeltaOf(FacingDirection dir) noexcept {
 	return 0;
 }
 
+inline FacingDirection rotate90CW(FacingDirection dir) noexcept {
+	return static_cast<FacingDirection>(
+		(static_cast<std::uint8_t>(dir) + 1) % 4
+	);
+}
+
+inline FacingDirection rotate90CCW(FacingDirection dir) noexcept {
+	return static_cast<FacingDirection>(
+		(static_cast<std::uint8_t>(dir) + 3) % 4
+	);
+}
+
 // All tiles from start to end inclusively
 std::generator<std::array<int, 2>> tilesOnSegment(
 	std::array<int, 2> start, std::array<int, 2> end

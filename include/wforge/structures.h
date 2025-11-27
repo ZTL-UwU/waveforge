@@ -88,6 +88,13 @@ struct LaserReceiver : OutputElectricalStructure {
 	LaserReceiver(int x, int y, FacingDirection dir);
 };
 
+struct Mirror : PixelShapedStructure {
+	bool step(PixelWorld &world) noexcept;
+	int priority() const noexcept;
+
+	Mirror(int x, int y, FacingDirection dir);
+};
+
 struct PressurePlate : OutputElectricalStructure {
 	bool step(PixelWorld &world) noexcept;
 	int priority() const noexcept;

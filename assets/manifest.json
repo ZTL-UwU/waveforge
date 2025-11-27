@@ -204,6 +204,30 @@
 			"description": "Creating laser receiver pixel shapes for all facings"
 		},
 		{
+			"id": "mirror/raw",
+			"type": "image",
+			"file": "mirror.png",
+			"description": "Loading mirror PNG"
+		},
+		{
+			"id": "mirror/trimmed",
+			"type": "trim-image",
+			"input": "mirror/raw",
+			"description": "Trimming mirror image"
+		},
+		{
+			"id": "mirror/images",
+			"type": "create-image-of-all-facings",
+			"input": "mirror/trimmed",
+			"description": "Creating mirror images for all facings"
+		},
+		{
+			"id": "mirror/shapes",
+			"type": "create-pixel-shape-of-all-facings",
+			"input": "mirror/images",
+			"description": "Creating mirror pixel shapes for all facings"
+		},
+		{
 			"id": "pressure-plate/raw",
 			"type": "image",
 			"file": "pressure-plate.png",
@@ -834,6 +858,18 @@
 			"description": "Loading steam-jet level metadata"
 		},
 		{
+			"id": "level/flipflop/map",
+			"type": "image",
+			"file": "levels/flipflop.png",
+			"description": "Loading flipflop level prototype image"
+		},
+		{
+			"id": "level/flipflop",
+			"type": "level-metadata",
+			"file": "levels/flipflop.json",
+			"description": "Loading flipflop level metadata"
+		},
+		{
 			"id": "level/auto/map",
 			"type": "image",
 			"file": "levels/auto.png",
@@ -876,6 +912,7 @@
 				"level/smoke",
 				"level/density",
 				"level/steam-jet",
+				"level/flipflop",
 				"level/auto"
 			],
 			"description": "Creating level sequence"

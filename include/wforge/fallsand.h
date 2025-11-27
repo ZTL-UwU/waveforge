@@ -104,6 +104,7 @@ struct StaticPixelTag {
 	bool laser_active : 1 = false;
 	bool laser_stroke : 1 = false;
 	bool external_entity_present : 1 = false;
+	bool is_reflective_surface : 1 = false;
 };
 
 class PixelWorld {
