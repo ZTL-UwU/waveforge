@@ -76,6 +76,12 @@ public:
 		});
 	}
 
+	~ThermalWorker() noexcept {
+		_thread.request_stop();
+		_cv.notify_one();
+		_thread.join();
+	}
+
 private:
 	void workerLoop(std::stop_token stoken) {
 		while (!stoken.stop_requested()) {
