@@ -102,6 +102,7 @@ struct PixelTag {
 
 struct StaticPixelTag {
 	bool laser_active : 1 = false;
+	bool laser_stroke : 1 = false;
 	bool external_entity_present : 1 = false;
 };
 

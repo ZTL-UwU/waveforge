@@ -1,3 +1,4 @@
+#include "wforge/2d.h"
 #include "wforge/colorpalette.h"
 #include "wforge/elements.h"
 #include "wforge/fallsand.h"
@@ -120,6 +121,10 @@ StaticPixelTag &PixelWorld::staticTagOf(int x, int y) noexcept {
 void PixelWorld::activateLaserAt(int x, int y) noexcept {
 	auto &stag = staticTagOf(x, y);
 	stag.laser_active = true;
+	for (auto [nx, ny] : neighbors4({x, y}, {_width, _height})) {
+		auto &nstag = staticTagOf(nx, ny);
+		nstag.laser_stroke = true;
+	}
 }
 
 bool PixelWorld::isExternalEntityPresent(int x, int y) const noexcept {
@@ -182,6 +187,7 @@ void PixelWorld::resetDirtyFlags() noexcept {
 void PixelWorld::step() noexcept {
 	for (int i = 0; i < _width * _height; ++i) {
 		_static_tags[i].laser_active = false;
+		_static_tags[i].laser_stroke = false;
 		if (_tags[i].electric_power > 0) {
 			_tags[i].electric_power -= 1;
 		}
@@ -272,6 +278,9 @@ void PixelWorld::renderToBuffer(std::span<std::uint8_t> buf) const noexcept {
 			color = laserBlendedColorOfIndex(color_idx);
 		} else if (_tags[i].electric_power >= render_electric_power_threshold) {
 			color = colorPaletteOfIndex(color_idx).active_color;
+		} else if (_tags[i].type == PixelType::Air
+		           && _static_tags[i].laser_stroke) {
+			color = colorOfName("LaserStroke");
 		} else {
 			color = colorOfIndex(color_idx);
 		}

@@ -130,6 +130,10 @@ constexpr ColorPaletteEntry _colors[] = {
 		.color = sf::Color(51, 255, 184, 200),
 	},
 	{
+		.name = "LaserStroke",
+		.color = sf::Color(146, 226, 80, 255),
+	},
+	{
 		.name = "POIMarker",
 		.color = sf::Color(255, 0, 0, 40),
 	},
