@@ -55,7 +55,7 @@ void shootLaserBeam(
 		     (cur_x += dx), (cur_y += dy)) {
 			auto &pixel_tag = world.tagOf(cur_x, cur_y);
 
-			// Solid, smoke and external entity can block the laser beam
+			// Solid and smoke can block the laser beam
 			if (pixel_tag.pclass == PixelClass::Solid) {
 				auto static_tag = world.staticTagOf(cur_x - dx, cur_y - dy);
 				if (static_tag.is_reflective_surface) {
@@ -68,8 +68,7 @@ void shootLaserBeam(
 				return;
 			}
 
-			if (pixel_tag.type == PixelType::Smoke
-			    || world.isExternalEntityPresent(cur_x, cur_y)) {
+			if (pixel_tag.type == PixelType::Smoke) {
 				return;
 			}
 
