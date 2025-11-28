@@ -13,7 +13,7 @@ enum class FacingDirection : std::uint8_t {
 	West = 3,
 };
 
-inline int xDeltaOf(FacingDirection dir) noexcept {
+inline constexpr int xDeltaOf(FacingDirection dir) noexcept {
 	switch (dir) {
 	case FacingDirection::North:
 	case FacingDirection::South:
@@ -26,7 +26,7 @@ inline int xDeltaOf(FacingDirection dir) noexcept {
 	return 0;
 }
 
-inline int yDeltaOf(FacingDirection dir) noexcept {
+inline constexpr int yDeltaOf(FacingDirection dir) noexcept {
 	switch (dir) {
 	case FacingDirection::East:
 	case FacingDirection::West:
@@ -39,13 +39,13 @@ inline int yDeltaOf(FacingDirection dir) noexcept {
 	return 0;
 }
 
-inline FacingDirection rotate90CW(FacingDirection dir) noexcept {
+inline constexpr FacingDirection rotate90CW(FacingDirection dir) noexcept {
 	return static_cast<FacingDirection>(
 		(static_cast<std::uint8_t>(dir) + 1) % 4
 	);
 }
 
-inline FacingDirection rotate90CCW(FacingDirection dir) noexcept {
+inline constexpr FacingDirection rotate90CCW(FacingDirection dir) noexcept {
 	return static_cast<FacingDirection>(
 		(static_cast<std::uint8_t>(dir) + 3) % 4
 	);

@@ -79,8 +79,9 @@ void Level::changeActiveItemBrushSize(int delta) noexcept {
 }
 
 void Level::selectItem(int index) noexcept {
-	if (index >= 0 && index < static_cast<int>(items.size()) && items[index].amount > 0) {
-			_active_item_index = index;
+	if (index >= 0 && index < static_cast<int>(items.size())
+	    && items[index].amount > 0) {
+		_active_item_index = index;
 	}
 }
 
@@ -188,6 +189,7 @@ void LevelRenderer::_renderFallsand(sf::RenderTarget &target) {
 }
 
 void LevelRenderer::_renderHeat(sf::RenderTarget &target) {
+#ifndef NDEBUG
 	// Render heat overlay (semi-transparent red, brighter = hotter)
 	const int width = _level.width();
 	const int height = _level.height();
@@ -216,6 +218,7 @@ void LevelRenderer::_renderHeat(sf::RenderTarget &target) {
 
 	_heat_texture.update(_heat_buffer.get());
 	target.draw(_heat_sprite);
+#endif
 }
 
 void LevelRenderer::_renderDuck(sf::RenderTarget &target, int scale) {

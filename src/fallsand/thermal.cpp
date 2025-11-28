@@ -1,6 +1,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <condition_variable>
 #include <cstdlib>
@@ -158,6 +159,7 @@ private:
 
 					conductivity_weights[i] = delta_heat
 						* relative_conductivity;
+					total_thermal_conductivity += conductivity_weights[i];
 				}
 
 				for (int i = 0; i < 4; ++i) {

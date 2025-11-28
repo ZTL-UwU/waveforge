@@ -11,6 +11,10 @@
 		{
 			"id": "fire_brush",
 			"amount": 1
+		},
+		{
+			"id": "water_brush",
+			"amount": 2
 		}
 	]
 }

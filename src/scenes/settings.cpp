@@ -249,7 +249,11 @@ SettingsMenu::SettingsMenu()
 	_options.push_back(std::make_unique<VolumnOption>());
 	_options.push_back(std::make_unique<StrictPixelPerfectionOption>());
 	_options.push_back(std::make_unique<SkipAnimationsOption>());
+
+#ifndef NDEBUG
 	_options.push_back(std::make_unique<DebugHeatRenderOption>());
+#endif
+
 	_options.push_back(std::make_unique<ResetSettingsOption>());
 	_options.push_back(std::make_unique<ResetAllOption>());
 	_options.push_back(std::make_unique<GoBackOption>());
