@@ -676,6 +676,18 @@
 			"description": "Loading laser level metadata"
 		},
 		{
+			"id": "level/cage/map",
+			"type": "image",
+			"file": "levels/cage.png",
+			"description": "Loading cage level prototype image"
+		},
+		{
+			"id": "level/cage",
+			"type": "level-metadata",
+			"file": "levels/cage.json",
+			"description": "Loading cage level metadata"
+		},
+		{
 			"id": "level/laser-signal/map",
 			"type": "image",
 			"file": "levels/laser_signal.png",
@@ -891,6 +903,7 @@
 				"level/upsteam",
 				"level/signal",
 				"level/laser",
+				"level/cage",
 				"level/laser-signal",
 				"level/rocket",
 				"level/timing",

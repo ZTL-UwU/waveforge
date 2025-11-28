@@ -1,0 +1,19 @@
+{
+	"format": 1,
+	"map": "level/cage/map",
+	"metadata": {
+		"level_name": "Caged In",
+		"description": "Escape from waveov...",
+		"difficulty": "average"
+	},
+	"items": [
+		{
+			"id": "fire_brush",
+			"amount": 1
+		},
+		{
+			"id": "water_brush_large",
+			"amount": 10
+		}
+	]
+}
