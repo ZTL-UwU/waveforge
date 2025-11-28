@@ -1,4 +1,3 @@
-#include "wforge/2d.h"
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 #include <algorithm>
@@ -225,8 +224,11 @@ void searchConnected(
 	PixelWorld &world, AnalysisContext &ctx, int vid, int sx, int sy,
 	PixelType ptype
 ) noexcept {
-	Coord world_size = {world.width(), world.height()};
+	constexpr int dx[] = {-1, 1, 0, 0};
+	constexpr int dy[] = {0, 0, -1, 1};
+
 	auto &vtx = ctx.vertices[vid];
+	int width = world.width();
 
 	FrameVector<Coord> stack;
 	stack.push_back({sx, sy});
@@ -240,9 +242,15 @@ void searchConnected(
 		}
 
 		tag.dirty = true;
-		ctx.pixel_vid[y * world_size[0] + x] = vid;
+		ctx.pixel_vid[y * width + x] = vid;
 
-		for (auto [nx, ny] : neighbors4({x, y}, world_size)) {
+		for (int i = 0; i < 4; ++i) {
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			if (!world.inBounds(nx, ny)) {
+				continue;
+			}
+
 			auto ntag = world.tagOf(nx, ny);
 			if (ntag.type != ptype || ntag.dirty) {
 				continue;

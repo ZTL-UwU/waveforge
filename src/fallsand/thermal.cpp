@@ -49,15 +49,13 @@ public:
 	ThermalWorker &operator=(const ThermalWorker &) = delete;
 
 	void startWork(
-		WorkPhase phase, const PixelWorld *world, int width, int height,
-		int y_start, int y_end, std::vector<int> heat_maps[]
+		WorkPhase phase, const PixelWorld *world, int y_start, int y_end,
+		std::vector<int> heat_maps[]
 	) {
 		{
 			std::lock_guard<std::mutex> lock(_work_mutex);
 			_phase = phase;
 			_world = world;
-			_width = width;
-			_height = height;
 			_y_start = y_start;
 			_y_end = y_end;
 			_heat_maps = heat_maps;
@@ -121,14 +119,17 @@ private:
 	void doHeatTransfer() {
 		constexpr int dx[] = {-1, 1, 0, 0};
 		constexpr int dy[] = {0, 0, -1, 1};
+		const int width = _world->width();
+		const int height = _world->height();
+
 		int conductivity_weights[4];
 
 		for (int y = _y_start; y < _y_end; ++y) {
-			for (int x = 0; x < _width; ++x) {
+			for (int x = 0; x < width; ++x) {
 				auto tag = _world->tagOf(x, y);
 
 				if (tag.heat == 0 || tag.thermal_conductivity == 0) {
-					_heat_maps[_worker_id][y * _width + x] += tag.heat;
+					_heat_maps[_worker_id][y * width + x] += tag.heat;
 					continue;
 				}
 
@@ -144,7 +145,7 @@ private:
 				for (int i = 0; i < 4; ++i) {
 					int nx = x + dx[i];
 					int ny = y + dy[i];
-					if (nx < 0 || nx >= _width || ny < 0 || ny >= _height) {
+					if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
 						conductivity_weights[i] = 0;
 						continue;
 					}
@@ -180,17 +181,19 @@ private:
 					}
 
 					total_transfer_amount += transfer_amount;
-					_heat_maps[_worker_id][ny * _width + nx] += received_heat;
+					_heat_maps[_worker_id][ny * width + nx] += received_heat;
 				}
-				_heat_maps[_worker_id][y * _width + x] += tag.heat
+				_heat_maps[_worker_id][y * width + x] += tag.heat
 					- std::round(total_transfer_amount);
 			}
 		}
 	}
 
 	void doHeatDecay() {
-		const int left = _y_start * _width;
-		const int right = _y_end * _width;
+		const int width = _world->width();
+		const int height = _world->height();
+		const int left = _y_start * width;
+		const int right = _y_end * width;
 
 		// Merge all worker heat maps into the first worker's heat map
 		for (int worker_id = 1; worker_id < num_thermal_analysis_workers;
@@ -231,8 +234,6 @@ private:
 	// Work parameters
 	WorkPhase _phase;
 	const PixelWorld *_world = nullptr;
-	int _width = 0;
-	int _height = 0;
 	int _y_start = 0;
 	int _y_end = 0;
 	std::vector<int> *_heat_maps = nullptr;
@@ -247,7 +248,10 @@ public:
 		}
 	}
 
-	void executeHeatTransfer(const PixelWorld *world, int width, int height) {
+	void executeHeatTransfer(const PixelWorld *world) {
+		const int height = world->height();
+		const int width = world->width();
+
 		const int rows_per_worker = (height + num_thermal_analysis_workers - 1)
 			/ num_thermal_analysis_workers;
 
@@ -261,7 +265,7 @@ public:
 			int y_start = i * rows_per_worker;
 			int y_end = std::min(y_start + rows_per_worker, height);
 			_workers[i]->startWork(
-				WorkPhase::HeatTransfer, world, width, height, y_start, y_end,
+				WorkPhase::HeatTransfer, world, y_start, y_end,
 				_worker_heat_maps.data()
 			);
 		}
@@ -272,7 +276,10 @@ public:
 		}
 	}
 
-	void executeHeatDecay(const PixelWorld *world, int width, int height) {
+	void executeHeatDecay(const PixelWorld *world) {
+		const int height = world->height();
+		const int width = world->width();
+
 		const int rows_per_worker = (height + num_thermal_analysis_workers - 1)
 			/ num_thermal_analysis_workers;
 
@@ -281,7 +288,7 @@ public:
 			int y_start = i * rows_per_worker;
 			int y_end = std::min(y_start + rows_per_worker, height);
 			_workers[i]->startWork(
-				WorkPhase::HeatDecay, world, width, height, y_start, y_end,
+				WorkPhase::HeatDecay, world, y_start, y_end,
 				_worker_heat_maps.data()
 			);
 		}
@@ -323,10 +330,10 @@ void PixelWorld::thermalAnalysisStep() noexcept {
 	auto &pool = getThermalWorkerPool();
 
 	// Heat transfer - parallel computation using thread pool
-	pool.executeHeatTransfer(this, _width, _height);
+	pool.executeHeatTransfer(this);
 
 	// Heat decay - parallel computation using thread pool
-	pool.executeHeatDecay(this, _width, _height);
+	pool.executeHeatDecay(this);
 
 	// Apply final results
 	const auto &next_heat = pool.getResults();
