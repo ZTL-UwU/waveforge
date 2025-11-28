@@ -1,6 +1,7 @@
 #include "wforge/fallsand.h"
 #include "wforge/xoroshiro.h"
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <iterator>
 #include <limits>
@@ -104,7 +105,7 @@ struct AnalysisContext {
 
 		auto &e = vertices[u].edges[it->second];
 		e.capacity += 1;
-		e.y_surface.push_back({x, y + 1});
+		e.y_surface.push_back(Coord{x, y + 1});
 
 		auto &re = vertices[v].edges[e.rev_index];
 		re.capacity += 1;
