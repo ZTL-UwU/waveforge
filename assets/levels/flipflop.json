@@ -3,7 +3,8 @@
 	"metadata": {
 		"level_name": "Flipflop",
 		"description": "Lock the lock!",
-		"difficulty": "average"
+		"difficulty": "average",
+		"minimap_asset_id": "level/flipflop/minimap"
 	},
 	"map": "level/flipflop/map",
 	"items": [

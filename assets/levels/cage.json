@@ -4,7 +4,8 @@
 	"metadata": {
 		"level_name": "Caged In",
 		"description": "Escape from waveov...",
-		"difficulty": "average"
+		"difficulty": "average",
+		"minimap_asset_id": "level/cage/minimap"
 	},
 	"items": [
 		{

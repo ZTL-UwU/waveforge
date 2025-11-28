@@ -682,6 +682,18 @@
 			"description": "Loading cage level prototype image"
 		},
 		{
+			"id": "level/cage/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/cage.png",
+			"description": "Loading cage level minimap image"
+		},
+		{
+			"id": "level/cage/minimap",
+			"type": "create-texture",
+			"input": "level/cage/minimap/raw",
+			"description": "Creating cage level minimap texture"
+		},
+		{
 			"id": "level/cage",
 			"type": "level-metadata",
 			"file": "levels/cage.json",
@@ -860,6 +872,18 @@
 			"type": "image",
 			"file": "levels/flipflop.png",
 			"description": "Loading flipflop level prototype image"
+		},
+		{
+			"id": "level/flipflop/minimap/raw",
+			"type": "image",
+			"file": "levels/minimap/flipflop.png",
+			"description": "Loading flipflop level minimap image"
+		},
+		{
+			"id": "level/flipflop/minimap",
+			"type": "create-texture",
+			"input": "level/flipflop/minimap/raw",
+			"description": "Creating flipflop level minimap texture"
 		},
 		{
 			"id": "level/flipflop",
