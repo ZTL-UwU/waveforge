@@ -13,7 +13,7 @@
 #include <iostream>
 #include <proxy/proxy.h>
 
-void entry(const std::string &level_id, int scale_config);
+void entry(const std::string &level_id, int scale_config, bool is_first_launch);
 
 std::filesystem::path wf::_executable_path;
 int main(int argc, char **argv) {
@@ -64,7 +64,10 @@ int main(int argc, char **argv) {
 	}
 
 	CPPTRACE_TRY {
-		entry(program.get<std::string>("level"), program.get<int>("--scale"));
+		entry(
+			program.get<std::string>("level"), program.get<int>("--scale"),
+			save.is_first_launch()
+		);
 	}
 	CPPTRACE_CATCH(const std::exception &e) {
 		std::cerr << "Unhandled exception: " << e.what() << "\n";
@@ -75,10 +78,14 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void entry(const std::string &level_id, int scale_config) {
+void entry(
+	const std::string &level_id, int scale_config, bool is_first_launch
+) {
 	wf::SceneManager scene_mgr(
 		level_id == "-"
-			? pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>()
+			? is_first_launch
+				? pro::make_proxy<wf::SceneFacade, wf::scene::KeyGuide>()
+				: pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>()
 			: pro::make_proxy<wf::SceneFacade, wf::scene::LevelPlaying>(
 				  level_id
 			  ),

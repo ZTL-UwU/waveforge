@@ -436,6 +436,24 @@
 			"description": "Creating level link texture"
 		},
 		{
+			"id": "ui/key-guide/raw",
+			"type": "image",
+			"file": "ui/key-guide.png",
+			"description": "Loading key guide background image"
+		},
+		{
+			"id": "ui/key-guide",
+			"type": "create-texture",
+			"input": "ui/key-guide/raw",
+			"description": "Creating key guide background texture"
+		},
+		{
+			"id": "ui-config/key-guide",
+			"type": "json",
+			"file": "ui/key-guide.json",
+			"description": "Loading key guide UI configuration"
+		},
+		{
 			"id": "ui-config/level-menu",
 			"type": "json",
 			"file": "ui/level-menu.json",
