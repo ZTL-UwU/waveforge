@@ -253,6 +253,7 @@ private:
 	int _current_button_index;
 	ButtonDescriptor _play_button;
 	ButtonDescriptor _settings_button;
+	ButtonDescriptor _keyguide_button;
 	ButtonDescriptor _exit_button;
 	UITextDescriptor _version_text;
 };
@@ -319,6 +320,23 @@ private:
 	sf::Color _credits_color;
 
 	std::vector<std::pair<std::string, std::string>> _content;
+};
+
+struct KeyGuide {
+	KeyGuide();
+
+	std::array<int, 2> size() const;
+	void setup(SceneManager &mgr);
+	void handleEvent(SceneManager &mgr, sf::Event &evt);
+	void step(SceneManager &mgr);
+	void render(
+		const SceneManager &mgr, sf::RenderTarget &target, int scale
+	) const;
+
+private:
+	sf::Texture *_background_texture;
+	int _width;
+	int _height;
 };
 
 } // namespace scene
