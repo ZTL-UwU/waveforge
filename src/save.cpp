@@ -142,6 +142,10 @@ void SaveData::resetAll() {
 	save();
 }
 
+bool SaveData::is_first_launch() const noexcept {
+	return completed_levels == 0;
+}
+
 UserSettings UserSettings::defaultSettings() noexcept {
 	return UserSettings{
 		.scale = 0,

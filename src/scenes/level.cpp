@@ -13,6 +13,14 @@ namespace wf::scene {
 
 namespace {
 
+enum PausedMenuButton {
+	RESUME = 0,
+	RETRY,
+	KEYGUIDE,
+	QUIT,
+	BUTTON_COUNT
+};
+
 auto loadFont() {
 	static PixelFont *font = nullptr;
 	if (!font) {
@@ -56,11 +64,18 @@ LevelPlaying::LevelPlaying(const std::string &level_id)
 
 LevelPlaying::LevelPlaying(Level level)
 	: _tick(0)
+	, _paused(false)
+	, _show_keyguide(false)
+	, _paused_menu_current_button_index(PausedMenuButton::RESUME)
 	, _level(std::move(level))
 	, _renderer(_level)
 	, _hint_type(HintType::None)
 	, _hint_opacity(0)
-	, font(*loadFont()) {}
+	, font(*loadFont()) {
+	_keybind_texture = &AssetsManager::instance().getAsset<sf::Texture>(
+		"ui/key-guide"
+	);
+}
 
 std::array<int, 2> LevelPlaying::size() const {
 	return {_level.width(), _level.height()};
@@ -76,6 +91,82 @@ void LevelPlaying::setup(SceneManager &mgr) {
 }
 
 void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
+	if (_paused) {
+		if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
+			if (_show_keyguide) {
+				switch (kb->code) {
+				case sf::Keyboard::Key::Escape:
+				case sf::Keyboard::Key::Enter:
+				case sf::Keyboard::Key::Space:
+					UISounds::instance().forward.play();
+					_show_keyguide = false;
+					return;
+				}
+			} else {
+				switch (kb->code) {
+				case sf::Keyboard::Key::Escape:
+					_paused = false;
+					break;
+
+				case sf::Keyboard::Key::Enter:
+				case sf::Keyboard::Key::Space:
+					switch (_paused_menu_current_button_index) {
+					case PausedMenuButton::RESUME:
+						_paused = false;
+						return;
+
+					case PausedMenuButton::KEYGUIDE:
+						_show_keyguide = true;
+						return;
+
+					case PausedMenuButton::RETRY:
+						_restartLevel(mgr, false);
+						return;
+
+					case PausedMenuButton::QUIT:
+						mgr.changeScene(
+							pro::make_proxy<SceneFacade, LevelSelectionMenu>()
+						);
+						return;
+
+					default:
+						// Errorneous state?
+						_paused_menu_current_button_index = PausedMenuButton::
+							RESUME;
+						break;
+					}
+					break;
+
+				case sf::Keyboard::Key::Up:
+				case sf::Keyboard::Key::W:
+					UISounds::instance().backward.play();
+					_paused_menu_current_button_index--;
+					if (_paused_menu_current_button_index < 0) {
+						_paused_menu_current_button_index
+							= PausedMenuButton::BUTTON_COUNT - 1;
+					}
+					break;
+
+				case sf::Keyboard::Key::Down:
+				case sf::Keyboard::Key::S:
+					UISounds::instance().forward.play();
+					_paused_menu_current_button_index++;
+					if (_paused_menu_current_button_index
+					    >= PausedMenuButton::BUTTON_COUNT) {
+						_paused_menu_current_button_index = 0;
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+		}
+
+		// Ignore other events when paused
+		return;
+	}
+
 	constexpr int retry_cooldown_ticks = 24 * 2;
 
 	if (auto mw = ev.getIf<sf::Event::MouseWheelScrolled>()) {
@@ -96,8 +187,12 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
 		constexpr int min_num_key = static_cast<int>(sf::Keyboard::Key::Num1);
 		constexpr int max_num_key = static_cast<int>(sf::Keyboard::Key::Num9);
-		constexpr int min_numpad_key = static_cast<int>(sf::Keyboard::Key::Numpad1);
-		constexpr int max_numpad_key = static_cast<int>(sf::Keyboard::Key::Numpad9);
+		constexpr int min_numpad_key = static_cast<int>(
+			sf::Keyboard::Key::Numpad1
+		);
+		constexpr int max_numpad_key = static_cast<int>(
+			sf::Keyboard::Key::Numpad9
+		);
 
 		const int key_code = static_cast<int>(kb->code);
 		if (key_code >= min_num_key && key_code <= max_num_key) {
@@ -127,15 +222,7 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 			break;
 
 		case sf::Keyboard::Key::Escape:
-			if (_hint_opacity > 0 && _hint_type == HintType::QuitLevel) {
-				mgr.changeScene(
-					pro::make_proxy<SceneFacade, LevelSelectionMenu>()
-				);
-				return;
-			} else {
-				_hint_type = HintType::QuitLevel;
-				_hint_opacity = hint_max_opacity;
-			}
+			_paused = true;
 			break;
 
 		case sf::Keyboard::Key::Up:
@@ -192,11 +279,78 @@ void LevelPlaying::render(
 		sf::Color text_color = ui_text_color(_hint_opacity);
 		font.renderText(target, hint_text, text_color, x, y, scale);
 	}
+
+	// Render Paused Menu
+	if (_paused) {
+		sf::RectangleShape overlay_mask;
+		overlay_mask.setSize(
+			sf::Vector2f(_level.width() * scale, _level.height() * scale)
+		);
+		overlay_mask.setFillColor(sf::Color(0, 0, 0, 150));
+		target.draw(overlay_mask);
+
+		// Render "PAUSED" text
+		const std::string pause_text = "PAUSED";
+		int x = (_level.width() - pause_text.size() * font.charWidth() * 2) / 2;
+		int y = 64;
+		font.renderText(
+			target, pause_text, sf::Color(255, 255, 255, 255), x, y, scale, 2
+		);
+
+		// Render Buttons
+		auto renderButton = [&](std::string_view label,
+		                        const ButtonDescriptor &desc, bool is_active) {
+			sf::Color color = is_active ? desc.active_color : desc.color;
+			font.renderText(
+				target, std::string(label), color, desc.x, desc.y, scale,
+				desc.size
+			);
+		};
+
+		const auto _button_list = std::array<
+			std::pair<std::string, int>, PausedMenuButton::BUTTON_COUNT>{
+			std::make_pair("Resume", PausedMenuButton::RESUME),
+			std::make_pair("Retry", PausedMenuButton::RETRY),
+			std::make_pair("Key Guide", PausedMenuButton::KEYGUIDE),
+			std::make_pair("Quit", PausedMenuButton::QUIT)
+		};
+
+		for (std::size_t i = 0; i < _button_list.size(); i++) {
+			const auto button = _button_list[i];
+
+			// Center the buttons horizontally
+			int button_x = (_level.width()
+			                - button.first.size() * font.charWidth())
+				/ 2;
+			int button_y = (_level.height() / 2) + i * (font.charHeight() + 5);
+
+			renderButton(
+				button.first,
+				ButtonDescriptor{
+					button_x, button_y, 1, sf::Color(255, 255, 255, 255),
+					sf::Color(207, 158, 9, 255)
+				},
+				_paused_menu_current_button_index == button.second
+			);
+		}
+	}
+
+	// Render Keyguide Overlay
+	if (_show_keyguide) {
+		sf::Sprite keyguide_sprite(*_keybind_texture);
+		keyguide_sprite.setPosition(sf::Vector2f(0, 0));
+		keyguide_sprite.setScale(sf::Vector2f(scale, scale));
+
+		target.draw(keyguide_sprite);
+	}
 }
 
 void LevelPlaying::step(SceneManager &mgr) {
-	_tick += 1;
-	_level.step();
+	// Only step the level when not paused
+	if (!_paused) {
+		_tick += 1;
+		_level.step();
+	}
 
 	if (_hint_opacity > 0) {
 		_hint_opacity -= hint_fade_speed;
