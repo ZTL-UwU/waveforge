@@ -104,6 +104,9 @@ struct LevelPlaying {
 		const SceneManager &mgr, sf::RenderTarget &target, int scale
 	) const;
 
+	void pause(SceneManager &mgr) noexcept;
+	void unpause(SceneManager &mgr) noexcept;
+
 private:
 	void _restartLevel(SceneManager &mgr, bool is_failed = true);
 

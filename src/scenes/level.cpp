@@ -90,6 +90,16 @@ void LevelPlaying::setup(SceneManager &mgr) {
 	);
 }
 
+void LevelPlaying::pause(SceneManager &mgr) noexcept {
+	_paused = true;
+	mgr.bgm.setVolume(0.15f);
+}
+
+void LevelPlaying::unpause(SceneManager &mgr) noexcept {
+	_paused = false;
+	mgr.bgm.setVolume(1.0f);
+}
+
 void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (_paused) {
 		if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
@@ -105,14 +115,14 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 			} else {
 				switch (kb->code) {
 				case sf::Keyboard::Key::Escape:
-					_paused = false;
+					unpause(mgr);
 					break;
 
 				case sf::Keyboard::Key::Enter:
 				case sf::Keyboard::Key::Space:
 					switch (_paused_menu_current_button_index) {
 					case PausedMenuButton::RESUME:
-						_paused = false;
+						unpause(mgr);
 						return;
 
 					case PausedMenuButton::KEYGUIDE:
@@ -130,7 +140,7 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 						return;
 
 					default:
-						// Errorneous state?
+						// Erroneous state?
 						_paused_menu_current_button_index = PausedMenuButton::
 							RESUME;
 						break;
@@ -222,7 +232,7 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 			break;
 
 		case sf::Keyboard::Key::Escape:
-			_paused = true;
+			pause(mgr);
 			break;
 
 		case sf::Keyboard::Key::Up:
