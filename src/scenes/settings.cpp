@@ -233,18 +233,6 @@ SettingsMenu::SettingsMenu()
 	_option_text_size = option_data.at("size");
 	_option_width = option_data.at("width");
 
-	_option_color = sf::Color(
-		option_data.at("color").at(0), option_data.at("color").at(1),
-		option_data.at("color").at(2), option_data.at("color").at(3)
-	);
-
-	_option_active_color = sf::Color(
-		option_data.at("active-color").at(0),
-		option_data.at("active-color").at(1),
-		option_data.at("active-color").at(2),
-		option_data.at("active-color").at(3)
-	);
-
 	_options.push_back(std::make_unique<ScaleOption>());
 	_options.push_back(std::make_unique<VolumnOption>());
 	_options.push_back(std::make_unique<StrictPixelPerfectionOption>());
@@ -386,8 +374,8 @@ void SettingsMenu::render(
 	for (size_t i = 0; i < _options.size(); ++i) {
 		const auto &option = _options[i];
 		sf::Color color = (i == _current_option_index)
-			? _option_active_color
-			: _option_color;
+			? ui_active_color
+			: ui_text_color(255);
 
 		std::string option_text = option->displayText();
 		std::string value_text = option->valueText();

@@ -2,6 +2,7 @@
 #include "wforge/audio.h"
 #include "wforge/save.h"
 #include "wforge/scene.h"
+#include "wforge/colorpalette.h"
 #include <cstdlib>
 #include <format>
 #include <nlohmann/json.hpp>
@@ -55,14 +56,6 @@ MainMenu::MainMenu()
 		desc.x = data.at("x");
 		desc.y = data.at("y");
 		desc.size = data.at("size");
-		desc.color = sf::Color(
-			data.at("color").at(0), data.at("color").at(1),
-			data.at("color").at(2), data.at("color").at(3)
-		);
-		desc.active_color = sf::Color(
-			data.at("active-color").at(0), data.at("active-color").at(1),
-			data.at("active-color").at(2), data.at("active-color").at(3)
-		);
 		return desc;
 	};
 
@@ -157,7 +150,7 @@ void MainMenu::render(
 	// Render buttons
 	auto renderButton = [&](std::string_view label,
 	                        const ButtonDescriptor &desc, bool is_active) {
-		sf::Color color = is_active ? desc.active_color : desc.color;
+		sf::Color color = is_active ? ui_active_color : ui_text_color(255);
 		font.renderText(
 			target, std::string(label), color, desc.x, desc.y, scale, desc.size
 		);

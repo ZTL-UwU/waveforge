@@ -72,9 +72,7 @@ LevelPlaying::LevelPlaying(Level level)
 	, _hint_type(HintType::None)
 	, _hint_opacity(0)
 	, font(*loadFont()) {
-	_help_texture = &AssetsManager::instance().getAsset<sf::Texture>(
-		"ui/help"
-	);
+	_help_texture = &AssetsManager::instance().getAsset<sf::Texture>("ui/help");
 }
 
 std::array<int, 2> LevelPlaying::size() const {
@@ -310,7 +308,8 @@ void LevelPlaying::render(
 		// Render Buttons
 		auto renderButton = [&](std::string_view label,
 		                        const ButtonDescriptor &desc, bool is_active) {
-			sf::Color color = is_active ? desc.active_color : desc.color;
+			sf::Color color = is_active ? ui_active_color
+										: ui_text_bright_color(255);
 			font.renderText(
 				target, std::string(label), color, desc.x, desc.y, scale,
 				desc.size
@@ -335,11 +334,7 @@ void LevelPlaying::render(
 			int button_y = (_level.height() / 2) + i * (font.charHeight() + 5);
 
 			renderButton(
-				button.first,
-				ButtonDescriptor{
-					button_x, button_y, 1, sf::Color(255, 255, 255, 255),
-					sf::Color(207, 158, 9, 255)
-				},
+				button.first, ButtonDescriptor{button_x, button_y, 1},
 				_paused_menu_current_button_index == button.second
 			);
 		}

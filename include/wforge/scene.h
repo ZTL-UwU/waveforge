@@ -86,8 +86,6 @@ struct ButtonDescriptor {
 	int x;
 	int y;
 	int size;
-	sf::Color color;
-	sf::Color active_color;
 };
 
 namespace scene {
