@@ -120,8 +120,8 @@ private:
 
 	// Paused Menu
 	int _paused_menu_current_button_index;
-	bool _show_keyguide;
-	sf::Texture *_keybind_texture;
+	bool _show_help;
+	sf::Texture *_help_texture;
 };
 
 struct DuckDeath {
@@ -262,7 +262,7 @@ private:
 	int _current_button_index;
 	ButtonDescriptor _play_button;
 	ButtonDescriptor _settings_button;
-	ButtonDescriptor _keyguide_button;
+	ButtonDescriptor _help_button;
 	ButtonDescriptor _exit_button;
 	UITextDescriptor _version_text;
 };
@@ -331,8 +331,8 @@ private:
 	std::vector<std::pair<std::string, std::string>> _content;
 };
 
-struct KeyGuide {
-	KeyGuide();
+struct Help {
+	Help();
 
 	std::array<int, 2> size() const;
 	void setup(SceneManager &mgr);

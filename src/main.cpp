@@ -81,15 +81,22 @@ int main(int argc, char **argv) {
 void entry(
 	const std::string &level_id, int scale_config, bool is_first_launch
 ) {
+	auto initialScene = [&](const std::string &level_id, bool is_first_launch) {
+		if (level_id == "-") {
+			if (is_first_launch) {
+				return pro::make_proxy<wf::SceneFacade, wf::scene::Help>();
+			} else {
+				return pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>();
+			}
+		} else {
+			return pro::make_proxy<wf::SceneFacade, wf::scene::LevelPlaying>(
+				level_id
+			);
+		}
+	};
+
 	wf::SceneManager scene_mgr(
-		level_id == "-"
-			? is_first_launch
-				? pro::make_proxy<wf::SceneFacade, wf::scene::KeyGuide>()
-				: pro::make_proxy<wf::SceneFacade, wf::scene::MainMenu>()
-			: pro::make_proxy<wf::SceneFacade, wf::scene::LevelPlaying>(
-				  level_id
-			  ),
-		scale_config
+		initialScene(level_id, is_first_launch), scale_config
 	);
 
 	auto &window = scene_mgr.window;
