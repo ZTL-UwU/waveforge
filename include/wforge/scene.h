@@ -82,6 +82,14 @@ private:
 	int _scale;
 };
 
+struct ButtonDescriptor {
+	int x;
+	int y;
+	int size;
+	sf::Color color;
+	sf::Color active_color;
+};
+
 namespace scene {
 
 struct LevelPlaying {
@@ -105,6 +113,12 @@ private:
 	int _hint_type;
 	int _hint_opacity;
 	PixelFont &font;
+	bool _paused;
+
+	// Paused Menu
+	int _paused_menu_current_button_index;
+	bool _show_keyguide;
+	sf::Texture *_keybind_texture;
 };
 
 struct DuckDeath {
@@ -241,14 +255,6 @@ private:
 	int _height;
 	const PixelFont &font;
 	sf::Texture *_background_texture;
-
-	struct ButtonDescriptor {
-		int x;
-		int y;
-		int size;
-		sf::Color color;
-		sf::Color active_color;
-	};
 
 	int _current_button_index;
 	ButtonDescriptor _play_button;
