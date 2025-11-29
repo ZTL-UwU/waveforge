@@ -125,7 +125,7 @@ void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 				return;
 
 			default:
-				// Errorneous state?
+				// Erroneous state?
 				_current_button_index = MainMenuButton::PLAY;
 				break;
 			}

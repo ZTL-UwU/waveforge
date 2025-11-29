@@ -33,6 +33,7 @@ public:
 	void fadeInCurrent(int duration_ticks, float starting_volume);
 	void step();
 	void nextMusic();
+	void setVolume(float volume);
 
 private:
 	float _cur_volume;
