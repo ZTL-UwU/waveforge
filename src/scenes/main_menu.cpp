@@ -165,7 +165,7 @@ void MainMenu::render(
 
 	auto &save = SaveData::instance();
 	renderButton(
-		save.completed_levels >= 0 ? "Play" : "New Game", _play_button,
+		save.is_first_launch() ? "New Game" : "Play", _play_button,
 		_current_button_index == MainMenuButton::PLAY
 	);
 
