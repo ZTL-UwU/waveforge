@@ -17,6 +17,11 @@ constexpr sf::Color ui_text_color(std::uint8_t a) {
 	return sf::Color(0, 0, 0, a);
 }
 
+constexpr sf::Color ui_active_color{250, 200, 46, 255};
+constexpr sf::Color ui_text_bright_color(std::uint8_t a) {
+	return sf::Color(255, 255, 255, a);
+}
+
 // All indexed colors must be here, for dynamic generated textures
 // Colors in static assets (e.g. PNG files) can be outside this palette
 constexpr ColorPaletteEntry _colors[] = {
