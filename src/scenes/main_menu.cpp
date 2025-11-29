@@ -14,7 +14,7 @@ namespace {
 enum MainMenuButton {
 	PLAY = 0,
 	SETTINGS,
-	KEYGUIDE,
+	HELP,
 	EXIT,
 	BUTTON_COUNT
 };
@@ -68,7 +68,7 @@ MainMenu::MainMenu()
 
 	_play_button = parseButtonDescriptor(buttons.at("play"));
 	_settings_button = parseButtonDescriptor(buttons.at("settings"));
-	_keyguide_button = parseButtonDescriptor(buttons.at("keyguide"));
+	_help_button = parseButtonDescriptor(buttons.at("help"));
 	_exit_button = parseButtonDescriptor(buttons.at("exit"));
 
 	_version_text = UITextDescriptor::fromJson(json_data.at("version-text"));
@@ -116,8 +116,8 @@ void MainMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
 				mgr.changeScene(pro::make_proxy<SceneFacade, SettingsMenu>());
 				return;
 
-			case MainMenuButton::KEYGUIDE:
-				mgr.changeScene(pro::make_proxy<SceneFacade, KeyGuide>());
+			case MainMenuButton::HELP:
+				mgr.changeScene(pro::make_proxy<SceneFacade, Help>());
 				return;
 
 			case MainMenuButton::EXIT:
@@ -175,8 +175,8 @@ void MainMenu::render(
 	);
 
 	renderButton(
-		"Key Guide", _keyguide_button,
-		_current_button_index == MainMenuButton::KEYGUIDE
+		"Help", _help_button,
+		_current_button_index == MainMenuButton::HELP
 	);
 
 	renderButton(

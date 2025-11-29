@@ -91,7 +91,7 @@ add_executable(waveforge
 	src/items/water.cpp
 	src/items/oil.cpp
 	src/scenes/duckdeath.cpp
-	src/scenes/key_guide.cpp
+	src/scenes/help.cpp
 	src/scenes/level_menu.cpp
 	src/scenes/level_switch.cpp
 	src/scenes/level.cpp

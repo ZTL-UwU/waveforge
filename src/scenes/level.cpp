@@ -16,7 +16,7 @@ namespace {
 enum PausedMenuButton {
 	RESUME = 0,
 	RETRY,
-	KEYGUIDE,
+	HELP,
 	QUIT,
 	BUTTON_COUNT
 };
@@ -65,15 +65,15 @@ LevelPlaying::LevelPlaying(const std::string &level_id)
 LevelPlaying::LevelPlaying(Level level)
 	: _tick(0)
 	, _paused(false)
-	, _show_keyguide(false)
+	, _show_help(false)
 	, _paused_menu_current_button_index(PausedMenuButton::RESUME)
 	, _level(std::move(level))
 	, _renderer(_level)
 	, _hint_type(HintType::None)
 	, _hint_opacity(0)
 	, font(*loadFont()) {
-	_keybind_texture = &AssetsManager::instance().getAsset<sf::Texture>(
-		"ui/key-guide"
+	_help_texture = &AssetsManager::instance().getAsset<sf::Texture>(
+		"ui/help"
 	);
 }
 
@@ -103,13 +103,13 @@ void LevelPlaying::unpause(SceneManager &mgr) noexcept {
 void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 	if (_paused) {
 		if (auto kb = ev.getIf<sf::Event::KeyPressed>()) {
-			if (_show_keyguide) {
+			if (_show_help) {
 				switch (kb->code) {
 				case sf::Keyboard::Key::Escape:
 				case sf::Keyboard::Key::Enter:
 				case sf::Keyboard::Key::Space:
-					UISounds::instance().forward.play();
-					_show_keyguide = false;
+					UISounds::instance().backward.play();
+					_show_help = false;
 					return;
 				}
 			} else {
@@ -125,8 +125,8 @@ void LevelPlaying::handleEvent(SceneManager &mgr, sf::Event &ev) {
 						unpause(mgr);
 						return;
 
-					case PausedMenuButton::KEYGUIDE:
-						_show_keyguide = true;
+					case PausedMenuButton::HELP:
+						_show_help = true;
 						return;
 
 					case PausedMenuButton::RETRY:
@@ -321,7 +321,7 @@ void LevelPlaying::render(
 			std::pair<std::string, int>, PausedMenuButton::BUTTON_COUNT>{
 			std::make_pair("Resume", PausedMenuButton::RESUME),
 			std::make_pair("Retry", PausedMenuButton::RETRY),
-			std::make_pair("Key Guide", PausedMenuButton::KEYGUIDE),
+			std::make_pair("Help", PausedMenuButton::HELP),
 			std::make_pair("Quit", PausedMenuButton::QUIT)
 		};
 
@@ -345,13 +345,13 @@ void LevelPlaying::render(
 		}
 	}
 
-	// Render Keyguide Overlay
-	if (_show_keyguide) {
-		sf::Sprite keyguide_sprite(*_keybind_texture);
-		keyguide_sprite.setPosition(sf::Vector2f(0, 0));
-		keyguide_sprite.setScale(sf::Vector2f(scale, scale));
+	// Render help Overlay
+	if (_show_help) {
+		sf::Sprite help_sprite(*_help_texture);
+		help_sprite.setPosition(sf::Vector2f(0, 0));
+		help_sprite.setScale(sf::Vector2f(scale, scale));
 
-		target.draw(keyguide_sprite);
+		target.draw(help_sprite);
 	}
 }
 
