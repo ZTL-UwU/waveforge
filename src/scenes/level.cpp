@@ -286,7 +286,7 @@ void LevelPlaying::render(
 		overlay_mask.setSize(
 			sf::Vector2f(_level.width() * scale, _level.height() * scale)
 		);
-		overlay_mask.setFillColor(sf::Color(0, 0, 0, 150));
+		overlay_mask.setFillColor(sf::Color(0, 0, 0, 200));
 		target.draw(overlay_mask);
 
 		// Render "PAUSED" text
