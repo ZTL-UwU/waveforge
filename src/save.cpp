@@ -46,7 +46,7 @@ fs::path resolveSaveFilePath() noexcept {
 			result = fs::current_path();
 		}
 	}
-	return result / "save.json";
+	return result / "save-" WAVEFORGE_VERSION ".json";
 }
 
 fs::path saveFilePath() noexcept {
