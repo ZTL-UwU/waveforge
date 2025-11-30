@@ -29,7 +29,7 @@ PixelTag Oil::newTag() const noexcept {
 void Oil::step(PixelWorld &world, int x, int y) noexcept {
 	constexpr unsigned int ignite_heat_threshold = 40;
 	constexpr unsigned int produced_fire_heat = 50;
-	constexpr unsigned int produced_fire_heat_to_neighbors = 3;
+	constexpr unsigned int produced_fire_heat_to_neighbors = 1;
 	constexpr unsigned int smoke_heat = 50;
 	constexpr unsigned int die_smoke_chance = 25;   // %
 	constexpr unsigned int random_smoke_chance = 3; // %
