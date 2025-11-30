@@ -43,7 +43,7 @@ std::array<int, 2> Credits::size() const {
 }
 
 void Credits::setup(SceneManager &mgr) {
-	// nothing to do
+	mgr.setWindowTitle("Credits");
 }
 
 void Credits::handleEvent(SceneManager &mgr, sf::Event &evt) {

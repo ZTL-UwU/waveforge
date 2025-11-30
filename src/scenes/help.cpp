@@ -37,7 +37,9 @@ void Help::handleEvent(SceneManager &mgr, sf::Event &evt) {
 	}
 }
 
-void Help::setup(SceneManager &mgr) {}
+void Help::setup(SceneManager &mgr) {
+	mgr.setWindowTitle("Help");
+}
 void Help::step(SceneManager &mgr) {}
 
 void Help::render(

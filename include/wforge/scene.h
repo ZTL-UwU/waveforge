@@ -66,6 +66,7 @@ public:
 	void changeScene(Scene new_scene);
 	void handleEvent(sf::Event &evt);
 	void tick();
+	void setWindowTitle(std::string title);
 
 	sf::Vector2i mousePosition() const;
 	int scale() const {
