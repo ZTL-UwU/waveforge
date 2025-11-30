@@ -30,6 +30,7 @@ LevelSelectionMenu::LevelSelectionMenu()
 	_level_difficulty = UITextDescriptor::fromJson(
 		json_data.at("level-difficulty")
 	);
+	_play_hint = UITextDescriptor::fromJson(json_data.at("play-hint"));
 	_enter_hint = UITextDescriptor::fromJson(json_data.at("enter-hint"));
 
 	for (const auto &btn : json_data.at("level-buttons")) {
@@ -77,6 +78,7 @@ std::array<int, 2> LevelSelectionMenu::size() const {
 
 void LevelSelectionMenu::setup(SceneManager &mgr) {
 	mgr.bgm.setCollection("background/main-menu-music");
+	mgr.setWindowTitle("Level Selection");
 }
 
 void LevelSelectionMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {
@@ -271,7 +273,8 @@ void LevelSelectionMenu::render(
 		);
 
 		// Render enter hint
-		_enter_hint.render(target, font, "[ENTER]", scale);
+		_play_hint.render(target, font, "Play", scale);
+		_enter_hint.render(target, font, "[Enter]", scale);
 	}
 }
 

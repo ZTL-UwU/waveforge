@@ -252,7 +252,7 @@ std::array<int, 2> SettingsMenu::size() const {
 }
 
 void SettingsMenu::setup(SceneManager &mgr) {
-	// nothing to do here
+	mgr.setWindowTitle("Settings");
 }
 
 void SettingsMenu::handleEvent(SceneManager &mgr, sf::Event &evt) {

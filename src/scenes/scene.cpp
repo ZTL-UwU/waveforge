@@ -111,6 +111,10 @@ void SceneManager::changeScene(Scene new_scene) {
 	_scene_changed = true;
 }
 
+void SceneManager::setWindowTitle(std::string title) {
+	window.setTitle(title);
+}
+
 void SceneManager::handleEvent(sf::Event &evt) {
 	_current_scene->handleEvent(*this, evt);
 }
